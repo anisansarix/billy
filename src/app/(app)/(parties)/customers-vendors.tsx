@@ -1,13 +1,13 @@
-import AnimatedModal from "@/components/AnimatedModal";
+import AnimatedModal from "@/components/ui/AnimatedModal";
 import { useShallow } from 'zustand/react/shallow';
 import { useRouter } from "expo-router";
 import { ArrowLeft, Edit, Phone, Plus, Save, Search, Trash2, X } from "lucide-react-native";
 import { useState } from "react";
 import { Alert, Linking, Pressable, RefreshControl, ScrollView, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Card from "@/components/Card";
-import { useAppStore } from "../../store";
-import "../../../global.css";
+import Card from "@/components/ui/Card";
+import { useAppStore } from "@/store";
+import "../../../../global.css";
 
 
 

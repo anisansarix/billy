@@ -2,7 +2,7 @@ import { BlurView } from "expo-blur";
 import { useState, useEffect } from "react";
 import { Pressable, View, Modal, Dimensions, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSpring, runOnJS } from "react-native-reanimated";
-import "../../global.css";
+import "../../../global.css";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 

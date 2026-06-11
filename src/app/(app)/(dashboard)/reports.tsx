@@ -4,11 +4,11 @@ import { ArrowLeft, Download, FileBarChart, FileText, TrendingDown, TrendingUp, 
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import AnimatedModal from "@/components/AnimatedModal";
-import Button from "@/components/Button";
-import Card from "@/components/Card";
-import { useAppStore } from "../../store";
-import "../../../global.css";
+import AnimatedModal from "@/components/ui/AnimatedModal";
+import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
+import { useAppStore } from "@/store";
+import "../../../../global.css";
 
 
 

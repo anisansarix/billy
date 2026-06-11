@@ -3,7 +3,7 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import '../../global.css';
-import { useAppStore } from "../store";
+import { useAppStore } from "@/store";
 
 SplashScreen.preventAutoHideAsync();
 

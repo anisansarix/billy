@@ -5,15 +5,15 @@ import { useState, useMemo, useRef } from "react";
 import { Image, Pressable, ScrollView, Text, View, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { useAppStore } from "../../store";
-import images from "../../../constants/images";
+import { useAppStore } from "@/store";
+import images from "../../../../constants/images";
 
-import AreaChart from "../../components/AreaChart";
-import FloatingMenu from "../../components/FloatingMenu";
-import OutstandingList from "../../components/OutstandingList";
-import StatCard from "../../components/StatCard";
-import AnimatedModal from "../../components/AnimatedModal";
-import "../../../global.css";
+import AreaChart from "@/components/charts/AreaChart";
+import FloatingMenu from "@/components/ui/FloatingMenu";
+import OutstandingList from "@/components/domain/OutstandingList";
+import StatCard from "@/components/ui/StatCard";
+import AnimatedModal from "@/components/ui/AnimatedModal";
+import "../../../../global.css";
 
 const QUICK_ACTIONS = [
     { label: "Invoice", icon: Receipt, route: "/(app)/sales" },

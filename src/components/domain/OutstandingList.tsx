@@ -1,6 +1,6 @@
 import { BlurView } from "expo-blur";
 import { Text, View } from "react-native";
-import "../../global.css";
+import "../../../global.css";
 
 type AgingData = {
     current: number;

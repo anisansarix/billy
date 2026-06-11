@@ -4,7 +4,7 @@ import { ArrowLeft, Truck, AlertCircle } from "lucide-react-native";
 import { useMemo } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAppStore } from "../../store";
+import { useAppStore } from "@/store";
 
 export default function EWayBillsScreen() {
     const router = useRouter();

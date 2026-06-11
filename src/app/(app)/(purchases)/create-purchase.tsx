@@ -1,7 +1,7 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useShallow } from 'zustand/react/shallow';
-import { useAppStore } from "../../store";
-import DocumentBuilder, { DocumentData } from "@/components/DocumentBuilder";
+import { useAppStore } from "@/store";
+import DocumentBuilder, { DocumentData } from "@/components/domain/DocumentBuilder";
 
 export default function CreatePurchaseScreen() {
     const router = useRouter();

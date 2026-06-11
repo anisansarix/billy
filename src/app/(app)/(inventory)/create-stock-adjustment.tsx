@@ -4,8 +4,8 @@ import { ArrowLeft, Save, Search, ArrowDownRight, ArrowUpRight } from "lucide-re
 import { useState, useMemo } from "react";
 import { Pressable, ScrollView, Text, TextInput, View, Alert, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAppStore } from "../../store";
-import AnimatedModal from "@/components/AnimatedModal";
+import { useAppStore } from "@/store";
+import AnimatedModal from "@/components/ui/AnimatedModal";
 
 export default function CreateStockAdjustmentScreen() {
     const router = useRouter();

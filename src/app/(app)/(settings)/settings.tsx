@@ -2,7 +2,7 @@ import { useRouter } from "expo-router";
 import { ArrowLeft, Building2, ChevronRight, LogOut, Receipt, User, Users } from "lucide-react-native";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import "../../../global.css";
+import "../../../../global.css";
 
 const SettingItem = ({ icon: Icon, title, subtitle, isDestructive = false }: { icon: React.ElementType, title: string, subtitle?: string, isDestructive?: boolean }) => (
     <Pressable className="flex-row items-center p-4 bg-white border-b border-black/5">

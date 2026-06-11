@@ -1,8 +1,8 @@
-import { useAppStore } from "../../store";
+import { useAppStore } from "@/store";
 import { useShallow } from 'zustand/react/shallow';
 import { useLocalSearchParams, useRouter } from "expo-router";
 
-import DocumentBuilder, { DocumentData } from "@/components/DocumentBuilder";
+import DocumentBuilder, { DocumentData } from "@/components/domain/DocumentBuilder";
 
 export default function CreateInvoiceScreen() {
     const router = useRouter();

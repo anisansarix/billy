@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useAppStore } from "../../store";
-import DocumentBuilder, { DocumentData } from "@/components/DocumentBuilder";
+import { useAppStore } from "@/store";
+import DocumentBuilder, { DocumentData } from "@/components/domain/DocumentBuilder";
 
 export default function CreateDeliveryChallanScreen() {
     const router = useRouter();

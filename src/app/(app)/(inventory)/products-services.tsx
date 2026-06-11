@@ -1,13 +1,13 @@
-import AnimatedModal from "@/components/AnimatedModal";
+import AnimatedModal from "@/components/ui/AnimatedModal";
 import { useShallow } from 'zustand/react/shallow';
 import { useRouter } from "expo-router";
 import { ArrowLeft, Briefcase, Package, Plus, Search, X, Save, Edit, Trash2, AlertCircle, ArrowUpRight, ArrowDownRight } from "lucide-react-native";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, TextInput, View, Alert, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Card from "@/components/Card";
-import { useAppStore } from "../../store";
-import "../../../global.css";
+import Card from "@/components/ui/Card";
+import { useAppStore } from "@/store";
+import "../../../../global.css";
 
 export default function ProductsServicesScreen() {
     const router = useRouter();

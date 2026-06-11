@@ -9,7 +9,7 @@ import {
 import { BlurView } from "expo-blur";
 
 import { useRouter, usePathname } from "expo-router";
-import AnimatedModal from "./AnimatedModal";
+import AnimatedModal from "@/components/ui/AnimatedModal";
 
 import Animated, {
     useAnimatedStyle,

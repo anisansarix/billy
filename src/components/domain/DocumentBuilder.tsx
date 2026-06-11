@@ -3,8 +3,8 @@ import { ArrowLeft, Save, Plus, ChevronDown, ChevronUp, Trash2, X } from "lucide
 import { useState, useMemo } from "react";
 import { Pressable, ScrollView, Text, TextInput, View, KeyboardAvoidingView, Platform, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import AnimatedModal from "./AnimatedModal";
-import { useAppStore } from "../store";
+import AnimatedModal from "@/components/ui/AnimatedModal";
+import { useAppStore } from "@/store";
 
 type SectionProps = {
     title: string;

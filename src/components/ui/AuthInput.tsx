@@ -1,7 +1,7 @@
 import { Eye, EyeOff } from 'lucide-react-native';
 import { useState } from 'react';
 import { Pressable, Text, TextInput, TextInputProps, View } from 'react-native';
-import "../../global.css";
+import "../../../global.css";
 
 interface AuthInputProps extends TextInputProps {
   label: string;

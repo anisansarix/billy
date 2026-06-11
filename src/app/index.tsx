@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { View, ActivityIndicator, Image, ImageBackground } from "react-native";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useAppStore } from "../store";
+import { useAppStore } from "@/store";
 import "../../global.css";
 
 export default function SplashScreen() {

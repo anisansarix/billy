@@ -3,10 +3,10 @@ import { ArrowLeft, Plus, Receipt, Wallet, Search, X, Edit, Trash2, Box, Calenda
 import { useState } from "react";
 import { Pressable, ScrollView, Text, TextInput, View, RefreshControl, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import AnimatedModal from "@/components/AnimatedModal";
-import Card from "@/components/Card";
-import { useAppStore } from "../../store";
-import "../../../global.css";
+import AnimatedModal from "@/components/ui/AnimatedModal";
+import Card from "@/components/ui/Card";
+import { useAppStore } from "@/store";
+import "../../../../global.css";
 
 
 
