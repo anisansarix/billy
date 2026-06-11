@@ -1,75 +1,80 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useAppStore } from "@/store";
+import { Party, SalesInvoice, DocumentType } from "@/types/entities";
 import DocumentBuilder, { DocumentData } from "@/components/domain/DocumentBuilder";
 
-export default function CreateDeliveryChallanScreen() {
+export default function CreateSalesInvoiceScreen() {
     const router = useRouter();
     const params = useLocalSearchParams();
     const { invoices, parties, addInvoice, updateInvoice } = useAppStore(); // Using invoices collection for estimates for now
 
     const editId = params.id as string | undefined;
-    const existingChallan = editId ? invoices.find(i => i.id === editId) : undefined;
+    const existingDoc = editId ? invoices.find(i => i.id === editId) : undefined;
     
     // For edit mode, reconstruct the initial data to match what DocumentBuilder expects
     let initialData = undefined;
-    if (existingChallan) {
-        const party = parties.find(p => p.id === existingChallan.customerId) || parties.find(p => p.id === existingChallan.vendorId);
+    if (existingDoc) {
+        const party = parties.find(p => p.id === existingDoc.partyId);
         initialData = {
-            selectedParty: party || ({ id: existingChallan.customerId || existingChallan.vendorId || "", name: existingChallan.customerName || existingChallan.vendorName || "" } as Party),
+            selectedParty: party || ({ id: existingDoc.partyId || "", legalName: "", partyType: "CUSTOMER" } as unknown as Party),
             header: {
-                type: existingChallan.type,
-                number: existingChallan.number,
-                date: existingChallan.date,
-                dueDate: existingChallan.dueDate || "",
-                status: existingChallan.status,
+                type: existingDoc.documentType,
+                number: existingDoc.documentNumber,
+                date: existingDoc.documentDate,
+                dueDate: existingDoc.dueDate || "",
+                status: existingDoc.status,
             },
-            items: existingChallan.items,
+            items: existingDoc.lineItems,
             payment: {
-                mode: existingChallan.paymentMode || "UPI",
-                terms: existingChallan.paymentTerms || "Immediate"
+                mode: existingDoc.paymentMode || "UPI",
+                terms: "Immediate"
             },
-            transport: existingChallan.transport ? { 
-                vehicleNo: existingChallan.transport.vehicleNumber || "", 
-                ewayBill: existingChallan.transport.ewayBillNumber || "", 
-                deliveryDate: existingChallan.transport.deliveryDate || "" 
+            transport: existingDoc.eWayBillNumber ? { 
+                vehicleNo: "", 
+                ewayBill: existingDoc.eWayBillNumber, 
+                deliveryDate: "" 
             } : undefined,
             notes: {
-                external: existingChallan.notes || "",
-                internal: existingChallan.internalNotes || ""
+                external: existingDoc.notes || "",
+                internal: ""
             }
-        };
+        } as any;
     }
 
     const handleSave = (documentData: DocumentData) => {
-        const challanToSave = {
-            id: editId || `dc-${Date.now()}`,
-            number: documentData.header.number,
-            date: documentData.header.date,
+        const challanToSave: any = {
+            id: editId || `${Date.now()}`,
+            documentType: DocumentType.DELIVERY_CHALLAN,
+            documentNumber: documentData.header.documentNumber,
+            documentDate: documentData.header.documentDate,
             dueDate: documentData.header.dueDate,
-            type: documentData.header.type,
-            status: documentData.header.status || "Draft",
-            customerId: documentData.selectedParty.id,
-            customerName: documentData.selectedParty.name,
-            items: documentData.items,
-            subtotal: documentData.totals.subtotal,
-            discountAmount: documentData.totals.discount,
-            cgstAmount: documentData.totals.cgst,
-            sgstAmount: documentData.totals.sgst,
-            igstAmount: documentData.totals.igst,
-            roundOff: documentData.totals.roundOff,
-            total: documentData.totals.total,
-            paymentTerms: documentData.payment.terms,
-            paymentMode: documentData.payment.mode,
-            transport: documentData.transport,
+            businessId: "b1",
+            partyId: documentData.selectedParty.id,
+            lineItems: documentData.items,
+            gstSummary: { slabs: {}, totalTaxableValuePaise: 0, totalGSTAmountPaise: 0, totalCessAmountPaise: 0 },
+            subtotalPaise: documentData.totals.subtotalPaise,
+            totalDiscountPaise: documentData.totals.discountPaise,
+            totalTaxableAmountPaise: documentData.totals.subtotalPaise - documentData.totals.discountPaise,
+            totalGSTAmountPaise: documentData.totals.cgstPaise + documentData.totals.sgstPaise + documentData.totals.igstPaise,
+            totalAmountPaise: documentData.totals.totalAmountPaise,
+            totalAmountInWords: "",
             notes: documentData.notes.external,
-            internalNotes: documentData.notes.internal,
+            isInterState: false,
+            placeOfSupply: "",
+            status: documentData.header.status || "Draft",
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            paymentMode: documentData.payment.mode,
+            paidAmountPaise: 0,
+            balanceDuePaise: documentData.totals.totalAmountPaise,
+            eWayBillNumber: documentData.transport?.ewayBill,
         };
 
         if (editId) {
-            updateInvoice(challanToSave as Invoice);
+            updateInvoice(challanToSave );
             console.log("Updated Delivery Challan!");
         } else {
-            addInvoice(challanToSave as Invoice);
+            addInvoice(challanToSave );
             console.log("Saved Delivery Challan!");
         }
         

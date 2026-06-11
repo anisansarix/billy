@@ -2,6 +2,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useShallow } from 'zustand/react/shallow';
 import { useAppStore } from "@/store";
 import DocumentBuilder, { DocumentData } from "@/components/domain/DocumentBuilder";
+import { PurchaseOrder, Party } from "@/types/entities";
 
 export default function CreatePurchaseScreen() {
     const router = useRouter();
@@ -14,62 +15,70 @@ export default function CreatePurchaseScreen() {
     // For edit mode, reconstruct the initial data to match what DocumentBuilder expects
     let initialData = undefined;
     if (existingPurchase) {
-        const party = parties.find(p => p.id === existingPurchase.customerId) || parties.find(p => p.id === existingPurchase.vendorId);
+        const party = parties.find(p => p.id === existingPurchase.partyId);
         initialData = {
-            selectedParty: party || ({ id: existingPurchase.customerId || existingPurchase.vendorId || "", name: existingPurchase.customerName || existingPurchase.vendorName || "" } as Party),
+            selectedParty: party || ({ id: existingPurchase.partyId || "", name: "" } as unknown as Party),
             header: {
-                type: existingPurchase.type,
-                number: existingPurchase.number,
-                date: existingPurchase.date,
+                type: existingPurchase.documentType,
+                number: existingPurchase.documentNumber,
+                date: existingPurchase.documentDate,
                 dueDate: existingPurchase.dueDate || "",
                 status: existingPurchase.status,
             },
-            items: existingPurchase.items,
+            items: existingPurchase.lineItems,
             payment: {
-                mode: existingPurchase.paymentMode || "UPI",
-                terms: existingPurchase.paymentTerms || "Immediate"
+                mode: "UPI",
+                terms: "Immediate"
             },
-            transport: existingPurchase.transport ? { 
-                vehicleNo: existingPurchase.transport.vehicleNumber || "", 
-                ewayBill: existingPurchase.transport.ewayBillNumber || "", 
-                deliveryDate: existingPurchase.transport.deliveryDate || "" 
+            transport: existingPurchase.expectedDeliveryDate ? { 
+                vehicleNo: "", 
+                ewayBill: "", 
+                deliveryDate: existingPurchase.expectedDeliveryDate 
             } : undefined,
             notes: {
                 external: existingPurchase.notes || "",
-                internal: existingPurchase.internalNotes || ""
+                internal: ""
             }
         };
     }
 
     const handleSave = (documentData: DocumentData) => {
-        const purchaseToSave = {
+        const purchaseToSave: PurchaseOrder = {
             id: editId || `po-${Date.now()}`,
-            number: documentData.header.number,
-            date: documentData.header.date,
+            businessId: "b1",
+            partyId: documentData.selectedParty.id,
+            partyName: documentData.selectedParty.legalName,
+            documentType: "PURCHASE_ORDER" as any,
+            documentNumber: documentData.header.documentNumber,
+            documentDate: documentData.header.documentDate,
             dueDate: documentData.header.dueDate,
-            type: documentData.header.type,
             status: documentData.header.status || "Draft",
-            vendorId: documentData.selectedParty.id,
-            vendorName: documentData.selectedParty.name,
-            items: documentData.items,
-            subtotal: documentData.totals.subtotal,
-            discountAmount: documentData.totals.discount,
-            cgstAmount: documentData.totals.cgst,
-            sgstAmount: documentData.totals.sgst,
-            igstAmount: documentData.totals.igst,
-            roundOff: documentData.totals.roundOff,
-            total: documentData.totals.total,
-            paymentTerms: documentData.payment.terms,
-            paymentMode: documentData.payment.mode,
+            lineItems: documentData.items,
+            subtotalPaise: documentData.totals.subtotalPaise,
+            totalDiscountPaise: documentData.totals.discountPaise,
+            totalTaxableAmountPaise: documentData.totals.subtotalPaise - documentData.totals.discountPaise,
+            totalGSTAmountPaise: documentData.totals.cgstPaise + documentData.totals.sgstPaise + documentData.totals.igstPaise,
+            totalAmountPaise: documentData.totals.totalAmountPaise,
+            totalAmountInWords: "",
+            gstSummary: {
+                slabs: {},
+                totalTaxableValuePaise: documentData.totals.subtotalPaise - documentData.totals.discountPaise,
+                totalGSTAmountPaise: documentData.totals.cgstPaise + documentData.totals.sgstPaise + documentData.totals.igstPaise,
+                totalCessAmountPaise: 0,
+            },
+            isInterState: false,
+            placeOfSupply: "24",
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            expectedDeliveryDate: documentData.transport?.deliveryDate || "",
             notes: documentData.notes.external,
-            internalNotes: documentData.notes.internal,
         };
 
         if (editId) {
-            updatePurchase(purchaseToSave as Invoice);
+            updatePurchase(purchaseToSave);
             console.log("Updated Purchase!");
         } else {
-            addPurchase(purchaseToSave as Invoice);
+            addPurchase(purchaseToSave);
             console.log("Saved Purchase!");
         }
         
@@ -85,7 +94,7 @@ export default function CreatePurchaseScreen() {
             partyFilter="vendor"
             hasTransport={false}
             defaultNotes="Please deliver goods within 7 days."
-            initialData={initialData}
+            initialData={initialData as any}
             onSave={handleSave}
         />
     );

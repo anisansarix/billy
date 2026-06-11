@@ -23,7 +23,7 @@ export default function SignInScreen() {
       Alert.alert("Validation Error", "Please enter your password.");
       return;
     }
-    router.push("/(app)/dashboard");
+    router.push("/(app)/(dashboard)/dashboard");
   };
 
   return (

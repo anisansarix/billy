@@ -41,7 +41,7 @@ export default function SettingsScreen() {
                 <View className="mb-6">
                     <Text className="font-sans-bold text-sm text-muted-foreground uppercase px-5 mb-2 tracking-wider">Preferences</Text>
                     <View className="bg-white border-y border-black/5">
-                        <SettingItem icon={Receipt} title="Invoice Customization" subtitle="Prefixes, Terms & Conditions, Logo" />
+                        <SettingItem icon={Receipt} title="SalesInvoice Customization" subtitle="Prefixes, Terms & Conditions, Logo" />
                         <SettingItem icon={Users} title="User Management" subtitle="Manage staff roles and permissions" />
                     </View>
                 </View>

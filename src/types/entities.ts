@@ -82,6 +82,8 @@ export interface Party {
     tradeName?: string;
     gstin?: string;
     pan?: string;
+    phone?: string;
+    email?: string;
     gstType: GSTType;
     billingAddress: Address;
     shippingAddresses: Address[];
@@ -159,6 +161,7 @@ export interface DocumentBase {
     dueDate?: string;
     businessId: string;
     partyId: string;
+    partyName: string;
     lineItems: LineItem[];
     gstSummary: GSTSummary;
     subtotalPaise: number;

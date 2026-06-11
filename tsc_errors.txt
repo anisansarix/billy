@@ -1,0 +1,447 @@
+﻿constants/data.ts(72,9): error TS2322: Type '"CUSTOMER"' is not assignable to type 'PartyType'.
+constants/data.ts(76,9): error TS2322: Type '"REGULAR"' is not assignable to type 'GSTType'.
+constants/data.ts(94,9): error TS2322: Type '"CUSTOMER"' is not assignable to type 'PartyType'.
+constants/data.ts(98,9): error TS2322: Type '"REGULAR"' is not assignable to type 'GSTType'.
+constants/data.ts(116,9): error TS2322: Type '"CUSTOMER"' is not assignable to type 'PartyType'.
+constants/data.ts(120,9): error TS2322: Type '"REGULAR"' is not assignable to type 'GSTType'.
+constants/data.ts(138,9): error TS2322: Type '"CUSTOMER"' is not assignable to type 'PartyType'.
+constants/data.ts(142,9): error TS2322: Type '"REGULAR"' is not assignable to type 'GSTType'.
+constants/data.ts(160,9): error TS2322: Type '"CUSTOMER"' is not assignable to type 'PartyType'.
+constants/data.ts(164,9): error TS2322: Type '"REGULAR"' is not assignable to type 'GSTType'.
+constants/data.ts(182,9): error TS2322: Type '"CUSTOMER"' is not assignable to type 'PartyType'.
+constants/data.ts(186,9): error TS2322: Type '"REGULAR"' is not assignable to type 'GSTType'.
+constants/data.ts(204,9): error TS2322: Type '"CUSTOMER"' is not assignable to type 'PartyType'.
+constants/data.ts(208,9): error TS2322: Type '"REGULAR"' is not assignable to type 'GSTType'.
+constants/data.ts(226,9): error TS2322: Type '"CUSTOMER"' is not assignable to type 'PartyType'.
+constants/data.ts(230,9): error TS2322: Type '"REGULAR"' is not assignable to type 'GSTType'.
+constants/data.ts(248,9): error TS2322: Type '"VENDOR"' is not assignable to type 'PartyType'.
+constants/data.ts(252,9): error TS2322: Type '"REGULAR"' is not assignable to type 'GSTType'.
+constants/data.ts(270,9): error TS2322: Type '"VENDOR"' is not assignable to type 'PartyType'.
+constants/data.ts(274,9): error TS2322: Type '"REGULAR"' is not assignable to type 'GSTType'.
+constants/data.ts(292,9): error TS2322: Type '"VENDOR"' is not assignable to type 'PartyType'.
+constants/data.ts(296,9): error TS2322: Type '"REGULAR"' is not assignable to type 'GSTType'.
+constants/data.ts(314,9): error TS2322: Type '"VENDOR"' is not assignable to type 'PartyType'.
+constants/data.ts(318,9): error TS2322: Type '"REGULAR"' is not assignable to type 'GSTType'.
+constants/data.ts(336,9): error TS2322: Type '"VENDOR"' is not assignable to type 'PartyType'.
+constants/data.ts(340,9): error TS2322: Type '"REGULAR"' is not assignable to type 'GSTType'.
+constants/data.ts(358,9): error TS2322: Type '"VENDOR"' is not assignable to type 'PartyType'.
+constants/data.ts(362,9): error TS2322: Type '"REGULAR"' is not assignable to type 'GSTType'.
+constants/data.ts(380,9): error TS2322: Type '"VENDOR"' is not assignable to type 'PartyType'.
+constants/data.ts(384,9): error TS2322: Type '"REGULAR"' is not assignable to type 'GSTType'.
+constants/data.ts(748,9): error TS2322: Type '"SALES_INVOICE"' is not assignable to type 'DocumentType.SALES_INVOICE'.
+constants/data.ts(817,9): error TS2322: Type '"SALES_INVOICE"' is not assignable to type 'DocumentType.SALES_INVOICE'.
+constants/data.ts(886,9): error TS2322: Type '"SALES_INVOICE"' is not assignable to type 'DocumentType.SALES_INVOICE'.
+constants/data.ts(955,9): error TS2322: Type '"SALES_INVOICE"' is not assignable to type 'DocumentType.SALES_INVOICE'.
+constants/data.ts(1024,9): error TS2322: Type '"SALES_INVOICE"' is not assignable to type 'DocumentType.SALES_INVOICE'.
+constants/data.ts(1093,9): error TS2322: Type '"SALES_INVOICE"' is not assignable to type 'DocumentType.SALES_INVOICE'.
+constants/data.ts(1162,9): error TS2322: Type '"SALES_INVOICE"' is not assignable to type 'DocumentType.SALES_INVOICE'.
+constants/data.ts(1231,9): error TS2322: Type '"SALES_INVOICE"' is not assignable to type 'DocumentType.SALES_INVOICE'.
+constants/data.ts(1300,9): error TS2322: Type '"SALES_INVOICE"' is not assignable to type 'DocumentType.SALES_INVOICE'.
+constants/data.ts(1369,9): error TS2322: Type '"SALES_INVOICE"' is not assignable to type 'DocumentType.SALES_INVOICE'.
+constants/data.ts(1438,9): error TS2322: Type '"SALES_INVOICE"' is not assignable to type 'DocumentType.SALES_INVOICE'.
+constants/data.ts(1507,9): error TS2322: Type '"SALES_INVOICE"' is not assignable to type 'DocumentType.SALES_INVOICE'.
+constants/data.ts(1576,9): error TS2322: Type '"SALES_INVOICE"' is not assignable to type 'DocumentType.SALES_INVOICE'.
+constants/data.ts(1645,9): error TS2322: Type '"SALES_INVOICE"' is not assignable to type 'DocumentType.SALES_INVOICE'.
+constants/data.ts(1714,9): error TS2322: Type '"SALES_INVOICE"' is not assignable to type 'DocumentType.SALES_INVOICE'.
+constants/data.ts(1783,9): error TS2322: Type '"SALES_INVOICE"' is not assignable to type 'DocumentType.SALES_INVOICE'.
+constants/data.ts(1852,9): error TS2322: Type '"SALES_INVOICE"' is not assignable to type 'DocumentType.SALES_INVOICE'.
+constants/data.ts(1921,9): error TS2322: Type '"SALES_INVOICE"' is not assignable to type 'DocumentType.SALES_INVOICE'.
+constants/data.ts(1990,9): error TS2322: Type '"SALES_INVOICE"' is not assignable to type 'DocumentType.SALES_INVOICE'.
+constants/data.ts(2059,9): error TS2322: Type '"SALES_INVOICE"' is not assignable to type 'DocumentType.SALES_INVOICE'.
+constants/data.ts(2128,9): error TS2322: Type '"SALES_INVOICE"' is not assignable to type 'DocumentType.SALES_INVOICE'.
+constants/data.ts(2197,9): error TS2322: Type '"SALES_INVOICE"' is not assignable to type 'DocumentType.SALES_INVOICE'.
+constants/data.ts(2266,9): error TS2322: Type '"SALES_INVOICE"' is not assignable to type 'DocumentType.SALES_INVOICE'.
+constants/data.ts(2335,9): error TS2322: Type '"SALES_INVOICE"' is not assignable to type 'DocumentType.SALES_INVOICE'.
+constants/data.ts(2404,9): error TS2322: Type '"SALES_INVOICE"' is not assignable to type 'DocumentType.SALES_INVOICE'.
+constants/data.ts(2476,9): error TS2322: Type '"PURCHASE_ORDER"' is not assignable to type 'DocumentType.PURCHASE_ORDER'.
+constants/data.ts(2545,9): error TS2322: Type '"PURCHASE_ORDER"' is not assignable to type 'DocumentType.PURCHASE_ORDER'.
+constants/data.ts(2614,9): error TS2322: Type '"PURCHASE_ORDER"' is not assignable to type 'DocumentType.PURCHASE_ORDER'.
+constants/data.ts(2683,9): error TS2322: Type '"PURCHASE_ORDER"' is not assignable to type 'DocumentType.PURCHASE_ORDER'.
+constants/data.ts(2752,9): error TS2322: Type '"PURCHASE_ORDER"' is not assignable to type 'DocumentType.PURCHASE_ORDER'.
+constants/data.ts(2821,9): error TS2322: Type '"PURCHASE_ORDER"' is not assignable to type 'DocumentType.PURCHASE_ORDER'.
+constants/data.ts(2890,9): error TS2322: Type '"PURCHASE_ORDER"' is not assignable to type 'DocumentType.PURCHASE_ORDER'.
+constants/data.ts(2959,9): error TS2322: Type '"PURCHASE_ORDER"' is not assignable to type 'DocumentType.PURCHASE_ORDER'.
+constants/data.ts(3028,9): error TS2322: Type '"PURCHASE_ORDER"' is not assignable to type 'DocumentType.PURCHASE_ORDER'.
+constants/data.ts(3097,9): error TS2322: Type '"PURCHASE_ORDER"' is not assignable to type 'DocumentType.PURCHASE_ORDER'.
+constants/data.ts(3166,9): error TS2322: Type '"PURCHASE_ORDER"' is not assignable to type 'DocumentType.PURCHASE_ORDER'.
+constants/data.ts(3235,9): error TS2322: Type '"PURCHASE_ORDER"' is not assignable to type 'DocumentType.PURCHASE_ORDER'.
+constants/data.ts(3304,9): error TS2322: Type '"PURCHASE_ORDER"' is not assignable to type 'DocumentType.PURCHASE_ORDER'.
+constants/data.ts(3373,9): error TS2322: Type '"PURCHASE_ORDER"' is not assignable to type 'DocumentType.PURCHASE_ORDER'.
+constants/data.ts(3442,9): error TS2322: Type '"PURCHASE_ORDER"' is not assignable to type 'DocumentType.PURCHASE_ORDER'.
+scripts/fix-ui.ts(1,16): error TS2591: Cannot find name 'fs'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+scripts/fix-ui.ts(2,18): error TS2591: Cannot find name 'path'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+scripts/fix-ui.ts(5,33): error TS7006: Parameter 'f' implicitly has an 'any' type.
+scripts/fix-ui.ts(12,26): error TS2304: Cannot find name '__dirname'.
+scripts/fix-ui.ts(13,26): error TS2304: Cannot find name '__dirname'.
+scripts/migrate-data.ts(1,16): error TS2591: Cannot find name 'fs'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+scripts/migrate-data.ts(2,18): error TS2591: Cannot find name 'path'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+scripts/migrate-data.ts(12,18): error TS2339: Property 'type' does not exist on type 'Party'.
+scripts/migrate-data.ts(12,64): error TS2339: Property 'type' does not exist on type 'Party'.
+scripts/migrate-data.ts(13,18): error TS2339: Property 'name' does not exist on type 'Party'.
+scripts/migrate-data.ts(14,18): error TS2339: Property 'name' does not exist on type 'Party'.
+scripts/migrate-data.ts(19,33): error TS2339: Property 'street' does not exist on type 'Address'.
+scripts/migrate-data.ts(23,35): error TS2551: Property 'pinCode' does not exist on type 'Address'. Did you mean 'pincode'?
+scripts/migrate-data.ts(29,26): error TS2339: Property 'creditLimit' does not exist on type 'Party'.
+scripts/migrate-data.ts(30,29): error TS2339: Property 'balance' does not exist on type 'Party'.
+scripts/migrate-data.ts(45,14): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ '0': { id: string; hsnSacCode: string; description: string; isService: boolean; isActive: boolean; gstComponent: { cgstRate: number; sgstRate: number; igstRate: number; cessRate: number; }; }; '5': { id: string; ... 4 more ...; gstComponent: { ...; }; }; '12': { ...; }; '18': { ...; }; '28': { ...; }; }'.
+  No index signature with a parameter of type 'string' was found on type '{ '0': { id: string; hsnSacCode: string; description: string; isService: boolean; isActive: boolean; gstComponent: { cgstRate: number; sgstRate: number; igstRate: number; cessRate: number; }; }; '5': { id: string; ... 4 more ...; gstComponent: { ...; }; }; '12': { ...; }; '18': { ...; }; '28': { ...; }; }'.
+scripts/migrate-data.ts(45,33): error TS2339: Property 'gst_rate' does not exist on type 'InventoryItem'.
+scripts/migrate-data.ts(46,33): error TS2339: Property 'hsn_sac' does not exist on type 'InventoryItem'.
+scripts/migrate-data.ts(51,38): error TS2339: Property 'price' does not exist on type 'InventoryItem'.
+scripts/migrate-data.ts(52,31): error TS2339: Property 'purchasePrice' does not exist on type 'InventoryItem'.
+scripts/migrate-data.ts(52,60): error TS2339: Property 'purchasePrice' does not exist on type 'InventoryItem'.
+scripts/migrate-data.ts(53,23): error TS2339: Property 'hsn_sac' does not exist on type 'InventoryItem'.
+scripts/migrate-data.ts(69,18): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ '0': { id: string; hsnSacCode: string; description: string; isService: boolean; isActive: boolean; gstComponent: { cgstRate: number; sgstRate: number; igstRate: number; cessRate: number; }; }; '5': { id: string; ... 4 more ...; gstComponent: { ...; }; }; '12': { ...; }; '18': { ...; }; '28': { ...; }; }'.
+  No index signature with a parameter of type 'string' was found on type '{ '0': { id: string; hsnSacCode: string; description: string; isService: boolean; isActive: boolean; gstComponent: { cgstRate: number; sgstRate: number; igstRate: number; cessRate: number; }; }; '5': { id: string; ... 4 more ...; gstComponent: { ...; }; }; '12': { ...; }; '18': { ...; }; '28': { ...; }; }'.
+scripts/migrate-data.ts(86,45): error TS7006: Parameter 'acc' implicitly has an 'any' type.
+scripts/migrate-data.ts(86,50): error TS7006: Parameter 'i' implicitly has an 'any' type.
+scripts/migrate-data.ts(127,31): error TS2339: Property 'amount' does not exist on type 'ExpenseRecord'.
+scripts/migrate-data.ts(136,31): error TS2339: Property 'amount' does not exist on type 'PaymentRecord'.
+scripts/migrate-data.ts(145,31): error TS2339: Property 'amount' does not exist on type '{ title: string; amountPaise: number; gstAmountPaise: number; currency: string; }'.
+scripts/migrate-data.ts(146,34): error TS2339: Property 'gstAmount' does not exist on type '{ title: string; amountPaise: number; gstAmountPaise: number; currency: string; }'.
+scripts/migrate-data.ts(152,41): error TS2551: Property 'totalReceivables' does not exist on type '{ title: string; totalReceivablesPaise: number; currency: string; items: ({ label: string; amountPaise: number; status: string; subtitle?: undefined; } | { label: string; amountPaise: number; subtitle: string; status: string; })[]; }'. Did you mean 'totalReceivablesPaise'?
+scripts/migrate-data.ts(156,35): error TS2339: Property 'amount' does not exist on type '{ label: string; amountPaise: number; status: string; subtitle?: undefined; } | { label: string; amountPaise: number; subtitle: string; status: string; }'.
+  Property 'amount' does not exist on type '{ label: string; amountPaise: number; status: string; subtitle?: undefined; }'.
+scripts/migrate-data.ts(182,28): error TS2304: Cannot find name '__dirname'.
+src/app/(app)/(dashboard)/dashboard.tsx(54,102): error TS2339: Property 'sgstAmount' does not exist on type 'SalesInvoice'.
+src/app/(app)/(dashboard)/dashboard.tsx(54,126): error TS2339: Property 'igstAmount' does not exist on type 'SalesInvoice'.
+src/app/(app)/(dashboard)/dashboard.tsx(57,107): error TS2339: Property 'sgstAmount' does not exist on type 'PurchaseOrder'.
+src/app/(app)/(dashboard)/dashboard.tsx(57,131): error TS2339: Property 'igstAmount' does not exist on type 'PurchaseOrder'.
+src/app/(app)/(dashboard)/dashboard.tsx(82,30): error TS2304: Cannot find name 'SalesInvoice'.
+src/app/(app)/(dashboard)/dashboard.tsx(121,29): error TS2339: Property 'documentDate' does not exist on type 'SalesInvoice | PurchaseOrder | PaymentRecord'.
+  Property 'documentDate' does not exist on type 'PaymentRecord'.
+src/app/(app)/(dashboard)/dashboard.tsx(157,27): error TS2339: Property 'documentDate' does not exist on type 'PaymentRecord'.
+src/app/(app)/(dashboard)/dashboard.tsx(172,69): error TS2339: Property 'sgstAmount' does not exist on type 'SalesInvoice'.
+src/app/(app)/(dashboard)/dashboard.tsx(172,93): error TS2339: Property 'igstAmount' does not exist on type 'SalesInvoice'.
+src/app/(app)/(dashboard)/dashboard.tsx(181,69): error TS2339: Property 'sgstAmount' does not exist on type 'PurchaseOrder'.
+src/app/(app)/(dashboard)/dashboard.tsx(181,93): error TS2339: Property 'igstAmount' does not exist on type 'PurchaseOrder'.
+src/app/(app)/(dashboard)/dashboard.tsx(190,160): error TS2339: Property 'sgstAmount' does not exist on type 'SalesInvoice'.
+src/app/(app)/(dashboard)/dashboard.tsx(190,184): error TS2339: Property 'igstAmount' does not exist on type 'SalesInvoice'.
+src/app/(app)/(dashboard)/dashboard.tsx(191,160): error TS2339: Property 'sgstAmount' does not exist on type 'PurchaseOrder'.
+src/app/(app)/(dashboard)/dashboard.tsx(191,184): error TS2339: Property 'igstAmount' does not exist on type 'PurchaseOrder'.
+src/app/(app)/(dashboard)/dashboard.tsx(200,27): error TS2304: Cannot find name 'InventoryItem'.
+src/app/(app)/(dashboard)/dashboard.tsx(200,105): error TS2304: Cannot find name 'InventoryItem'.
+src/app/(app)/(dashboard)/dashboard.tsx(258,44): error TS2345: Argument of type '"/(app)/gst-returns"' is not assignable to parameter of type 'RelativePathString | ExternalPathString | "/" | `/?${string}` | `/#${string}` | "/onboarding" | `/onboarding?${string}` | `/onboarding#${string}` | "/_sitemap" | `/_sitemap?${string}` | ... 131 more ... | { ...; }'.
+src/app/(app)/(dashboard)/dashboard.tsx(291,48): error TS2304: Cannot find name 'BalanceCardData'.
+src/app/(app)/(dashboard)/dashboard.tsx(292,43): error TS2304: Cannot find name 'openingBalancePaise'.
+src/app/(app)/(dashboard)/dashboard.tsx(313,67): error TS2345: Argument of type '"/(app)/products-services"' is not assignable to parameter of type 'RelativePathString | ExternalPathString | "/" | `/?${string}` | `/#${string}` | "/onboarding" | `/onboarding?${string}` | `/onboarding#${string}` | "/_sitemap" | `/_sitemap?${string}` | ... 131 more ... | { ...; }'.
+src/app/(app)/(dashboard)/dashboard.tsx(318,67): error TS2345: Argument of type '"/(app)/products-services"' is not assignable to parameter of type 'RelativePathString | ExternalPathString | "/" | `/?${string}` | `/#${string}` | "/onboarding" | `/onboarding?${string}` | `/onboarding#${string}` | "/_sitemap" | `/_sitemap?${string}` | ... 131 more ... | { ...; }'.
+src/app/(app)/(dashboard)/dashboard.tsx(333,116): error TS2339: Property 'partyName' does not exist on type 'SalesInvoice'.
+src/app/(app)/(dashboard)/dashboard.tsx(338,67): error TS2345: Argument of type '"/(app)/sales"' is not assignable to parameter of type 'RelativePathString | ExternalPathString | "/" | `/?${string}` | `/#${string}` | "/onboarding" | `/onboarding?${string}` | `/onboarding#${string}` | "/_sitemap" | `/_sitemap?${string}` | ... 131 more ... | { ...; }'.
+src/app/(app)/(dashboard)/dashboard.tsx(343,67): error TS2345: Argument of type '"/(app)/sales"' is not assignable to parameter of type 'RelativePathString | ExternalPathString | "/" | `/?${string}` | `/#${string}` | "/onboarding" | `/onboarding?${string}` | `/onboarding#${string}` | "/_sitemap" | `/_sitemap?${string}` | ... 131 more ... | { ...; }'.
+src/app/(app)/(dashboard)/dashboard.tsx(413,88): error TS2304: Cannot find name 'InventoryItem'.
+src/app/(app)/(dashboard)/reports.tsx(40,66): error TS2339: Property 'sgstAmount' does not exist on type 'SalesInvoice'.
+src/app/(app)/(dashboard)/reports.tsx(41,66): error TS2339: Property 'igstAmount' does not exist on type 'SalesInvoice'.
+src/app/(app)/(dashboard)/reports.tsx(45,66): error TS2339: Property 'sgstAmount' does not exist on type 'PurchaseOrder'.
+src/app/(app)/(dashboard)/reports.tsx(46,66): error TS2339: Property 'igstAmount' does not exist on type 'PurchaseOrder'.
+src/app/(app)/(dashboard)/reports.tsx(88,56): error TS2345: Argument of type '"/(app)/dashboard"' is not assignable to parameter of type 'RelativePathString | ExternalPathString | "/" | `/?${string}` | `/#${string}` | "/onboarding" | `/onboarding?${string}` | `/onboarding#${string}` | "/_sitemap" | `/_sitemap?${string}` | ... 131 more ... | { ...; }'.
+src/app/(app)/(finance)/gst-returns.tsx(28,68): error TS2339: Property 'sgstAmount' does not exist on type 'SalesInvoice'.
+src/app/(app)/(finance)/gst-returns.tsx(28,92): error TS2339: Property 'igstAmount' does not exist on type 'SalesInvoice'.
+src/app/(app)/(finance)/gst-returns.tsx(46,103): error TS2339: Property 'sgstAmount' does not exist on type 'PurchaseOrder'.
+src/app/(app)/(finance)/gst-returns.tsx(46,127): error TS2339: Property 'igstAmount' does not exist on type 'PurchaseOrder'.
+src/app/(app)/(finance)/payment.tsx(29,58): error TS2304: Cannot find name 'PaymentRecord'.
+src/app/(app)/(finance)/payment.tsx(38,60): error TS2304: Cannot find name 'PaymentRecord'.
+src/app/(app)/(finance)/payment.tsx(51,29): error TS2304: Cannot find name 'PaymentRecord'.
+src/app/(app)/(finance)/payment.tsx(69,46): error TS2339: Property 'amountPaise' does not exist on type '{ partyName: string; amount: string; mode: string; type: "in" | "out"; }'.
+src/app/(app)/(finance)/payment.tsx(74,24): error TS2304: Cannot find name 'PaymentRecord'.
+src/app/(app)/(finance)/payment.tsx(78,41): error TS2339: Property 'amountPaise' does not exist on type '{ partyName: string; amount: string; mode: string; type: "in" | "out"; }'.
+src/app/(app)/(finance)/payment.tsx(79,36): error TS2304: Cannot find name 'PaymentRecord'.
+src/app/(app)/(finance)/payment.tsx(170,120): error TS2339: Property 'documentDate' does not exist on type 'PaymentRecord'.
+src/app/(app)/(finance)/payment.tsx(313,49): error TS2339: Property 'amountPaise' does not exist on type '{ partyName: string; amount: string; mode: string; type: "in" | "out"; }'.
+src/app/(app)/(finance)/payment.tsx(324,96): error TS2304: Cannot find name 'PaymentRecord'.
+src/app/(app)/(inventory)/create-stock-adjustment.tsx(15,54): error TS2304: Cannot find name 'InventoryItem'.
+src/app/(app)/(inventory)/create-stock-adjustment.tsx(17,42): error TS2304: Cannot find name 'StockAdjustmentRecord'.
+src/app/(app)/(inventory)/create-stock-adjustment.tsx(40,27): error TS2304: Cannot find name 'StockAdjustmentRecord'.
+src/app/(app)/(inventory)/create-stock-adjustment.tsx(147,67): error TS2304: Cannot find name 'StockAdjustmentRecord'.
+src/app/(app)/(inventory)/products-services.tsx(37,54): error TS2304: Cannot find name 'InventoryItem'.
+src/app/(app)/(inventory)/products-services.tsx(39,52): error TS2304: Cannot find name 'InventoryItem'.
+src/app/(app)/(inventory)/products-services.tsx(40,54): error TS2304: Cannot find name 'InventoryItem'.
+src/app/(app)/(inventory)/products-services.tsx(48,35): error TS2304: Cannot find name 'InventoryItem'.
+src/app/(app)/(inventory)/products-services.tsx(96,25): error TS2304: Cannot find name 'InventoryItem'.
+src/app/(app)/(inventory)/products-services.tsx(105,14): error TS2304: Cannot find name 'InventoryItem'.
+src/app/(app)/(inventory)/products-services.tsx(142,38): error TS2345: Argument of type '"/(app)/create-stock-adjustment"' is not assignable to parameter of type 'RelativePathString | ExternalPathString | "/" | `/?${string}` | `/#${string}` | "/onboarding" | `/onboarding?${string}` | `/onboarding#${string}` | "/_sitemap" | `/_sitemap?${string}` | ... 131 more ... | { ...; }'.
+src/app/(app)/(inventory)/products-services.tsx(291,46): error TS2339: Property 'documentDate' does not exist on type 'StockAdjustmentRecord'.
+src/app/(app)/(inventory)/products-services.tsx(296,83): error TS2339: Property 'quantityDecimal' does not exist on type 'StockAdjustmentRecord'.
+src/app/(app)/(parties)/customers-vendors.tsx(34,56): error TS2304: Cannot find name 'Party'.
+src/app/(app)/(parties)/customers-vendors.tsx(39,54): error TS2304: Cannot find name 'Party'.
+src/app/(app)/(parties)/customers-vendors.tsx(40,54): error TS2304: Cannot find name 'Party'.
+src/app/(app)/(parties)/customers-vendors.tsx(51,16): error TS2339: Property 'type' does not exist on type 'Party'.
+src/app/(app)/(parties)/customers-vendors.tsx(57,38): error TS2304: Cannot find name 'Party'.
+src/app/(app)/(parties)/customers-vendors.tsx(67,36): error TS2304: Cannot find name 'Party'.
+src/app/(app)/(parties)/customers-vendors.tsx(130,26): error TS2304: Cannot find name 'Party'.
+src/app/(app)/(parties)/customers-vendors.tsx(138,14): error TS2304: Cannot find name 'Party'.
+src/app/(app)/(parties)/customers-vendors.tsx(140,30): error TS2304: Cannot find name 'Party'.
+src/app/(app)/(purchases)/create-purchase.tsx(19,127): error TS2339: Property 'partyName' does not exist on type 'PurchaseOrder'.
+src/app/(app)/(purchases)/create-purchase.tsx(19,157): error TS2339: Property 'partyName' does not exist on type 'PurchaseOrder'.
+src/app/(app)/(purchases)/create-purchase.tsx(19,178): error TS2304: Cannot find name 'Party'.
+src/app/(app)/(purchases)/create-purchase.tsx(21,17): error TS2322: Type '{ selectedParty: any; header: { type: any; number: string; date: string; dueDate: string; status: string; }; items: any; payment: { mode: any; terms: any; }; transport: { vehicleNo: any; ewayBill: any; deliveryDate: any; } | undefined; notes: { ...; }; } | undefined' is not assignable to type 'Partial<DocumentData> | undefined'.
+  Type '{ selectedParty: any; header: { type: any; number: string; date: string; dueDate: string; status: string; }; items: any; payment: { mode: any; terms: any; }; transport: { vehicleNo: any; ewayBill: any; deliveryDate: any; } | undefined; notes: { ...; }; }' is not assignable to type 'Partial<DocumentData>'.
+    Types of property 'header' are incompatible.
+      Object literal may only specify known properties, and 'type' does not exist in type '{ documentType: string; documentNumber: string; documentDate: string; dueDate: string; status: string; }'.
+src/app/(app)/(purchases)/create-purchase.tsx(21,40): error TS2339: Property 'type' does not exist on type 'PurchaseOrder'.
+src/app/(app)/(purchases)/create-purchase.tsx(27,37): error TS2339: Property 'items' does not exist on type 'PurchaseOrder'.
+src/app/(app)/(purchases)/create-purchase.tsx(29,40): error TS2339: Property 'paymentMode' does not exist on type 'PurchaseOrder'.
+src/app/(app)/(purchases)/create-purchase.tsx(30,41): error TS2339: Property 'paymentTerms' does not exist on type 'PurchaseOrder'.
+src/app/(app)/(purchases)/create-purchase.tsx(32,41): error TS2339: Property 'transport' does not exist on type 'PurchaseOrder'.
+src/app/(app)/(purchases)/create-purchase.tsx(33,45): error TS2339: Property 'transport' does not exist on type 'PurchaseOrder'.
+src/app/(app)/(purchases)/create-purchase.tsx(34,44): error TS2339: Property 'transport' does not exist on type 'PurchaseOrder'.
+src/app/(app)/(purchases)/create-purchase.tsx(35,48): error TS2339: Property 'transport' does not exist on type 'PurchaseOrder'.
+src/app/(app)/(purchases)/create-purchase.tsx(39,44): error TS2339: Property 'internalNotes' does not exist on type 'PurchaseOrder'.
+src/app/(app)/(purchases)/create-purchase.tsx(50,39): error TS2339: Property 'type' does not exist on type '{ documentType: string; documentNumber: string; documentDate: string; dueDate: string; status: string; }'.
+src/app/(app)/(purchases)/create-purchase.tsx(53,52): error TS2339: Property 'name' does not exist on type 'Party'.
+src/app/(app)/(purchases)/create-purchase.tsx(56,49): error TS2339: Property 'discount' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(purchases)/create-purchase.tsx(57,45): error TS2339: Property 'cgst' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(purchases)/create-purchase.tsx(58,45): error TS2339: Property 'sgst' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(purchases)/create-purchase.tsx(59,45): error TS2339: Property 'igst' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(purchases)/create-purchase.tsx(60,43): error TS2339: Property 'roundOff' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(purchases)/create-purchase.tsx(69,46): error TS2304: Cannot find name 'SalesInvoice'.
+src/app/(app)/(purchases)/create-purchase.tsx(72,43): error TS2304: Cannot find name 'SalesInvoice'.
+src/app/(app)/(purchases)/expenses-purchases.tsx(30,58): error TS2304: Cannot find name 'ExpenseRecord'.
+src/app/(app)/(purchases)/expenses-purchases.tsx(39,60): error TS2304: Cannot find name 'ExpenseRecord'.
+src/app/(app)/(purchases)/expenses-purchases.tsx(40,62): error TS2304: Cannot find name 'SalesInvoice'.
+src/app/(app)/(purchases)/expenses-purchases.tsx(44,28): error TS2339: Property 'partyName' does not exist on type 'ExpenseRecord'.
+src/app/(app)/(purchases)/expenses-purchases.tsx(51,32): error TS2339: Property 'partyName' does not exist on type 'PurchaseOrder'.
+src/app/(app)/(purchases)/expenses-purchases.tsx(51,49): error TS2339: Property 'partyName' does not exist on type 'PurchaseOrder'.
+src/app/(app)/(purchases)/expenses-purchases.tsx(66,36): error TS2304: Cannot find name 'ExpenseRecord'.
+src/app/(app)/(purchases)/expenses-purchases.tsx(84,59): error TS2339: Property 'amountPaise' does not exist on type '{ category: string; amount: string; paymentMode: string; vendorName: string; }'.
+src/app/(app)/(purchases)/expenses-purchases.tsx(89,24): error TS2304: Cannot find name 'ExpenseRecord'.
+src/app/(app)/(purchases)/expenses-purchases.tsx(93,48): error TS2339: Property 'amountPaise' does not exist on type '{ category: string; amount: string; paymentMode: string; vendorName: string; }'.
+src/app/(app)/(purchases)/expenses-purchases.tsx(94,57): error TS2304: Cannot find name 'ExpenseRecord'.
+src/app/(app)/(purchases)/expenses-purchases.tsx(95,41): error TS2339: Property 'partyName' does not exist on type '{ category: string; amount: string; paymentMode: string; vendorName: string; }'.
+src/app/(app)/(purchases)/expenses-purchases.tsx(221,50): error TS2339: Property 'partyName' does not exist on type 'ExpenseRecord'.
+src/app/(app)/(purchases)/expenses-purchases.tsx(222,126): error TS2339: Property 'partyName' does not exist on type 'ExpenseRecord'.
+src/app/(app)/(purchases)/expenses-purchases.tsx(228,118): error TS2339: Property 'documentDate' does not exist on type 'ExpenseRecord'.
+src/app/(app)/(purchases)/expenses-purchases.tsx(265,102): error TS2339: Property 'partyName' does not exist on type 'PurchaseOrder'.
+src/app/(app)/(purchases)/expenses-purchases.tsx(265,119): error TS2339: Property 'partyName' does not exist on type 'PurchaseOrder'.
+src/app/(app)/(purchases)/expenses-purchases.tsx(280,100): error TS2339: Property 'type' does not exist on type 'PurchaseOrder'.
+src/app/(app)/(purchases)/expenses-purchases.tsx(300,68): error TS2345: Argument of type '"/(app)/create-purchase"' is not assignable to parameter of type 'RelativePathString | ExternalPathString | "/" | `/?${string}` | `/#${string}` | "/onboarding" | `/onboarding?${string}` | `/onboarding#${string}` | "/_sitemap" | `/_sitemap?${string}` | ... 131 more ... | { ...; }'.
+src/app/(app)/(purchases)/expenses-purchases.tsx(317,38): error TS2345: Argument of type '"/(app)/create-purchase"' is not assignable to parameter of type 'RelativePathString | ExternalPathString | "/" | `/?${string}` | `/#${string}` | "/onboarding" | `/onboarding?${string}` | `/onboarding#${string}` | "/_sitemap" | `/_sitemap?${string}` | ... 131 more ... | { ...; }'.
+src/app/(app)/(purchases)/expenses-purchases.tsx(487,56): error TS2339: Property 'amountPaise' does not exist on type '{ category: string; amount: string; paymentMode: string; vendorName: string; }'.
+src/app/(app)/(purchases)/expenses-purchases.tsx(507,56): error TS2339: Property 'partyName' does not exist on type '{ category: string; amount: string; paymentMode: string; vendorName: string; }'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(16,9): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(16,28): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(16,48): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(17,50): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(17,69): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(17,89): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(17,110): error TS18048: 'existingChallan' is possibly 'undefined'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(19,44): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(19,63): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(19,83): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(19,104): error TS18048: 'existingChallan' is possibly 'undefined'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(21,23): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(21,42): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(21,62): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(21,83): error TS18048: 'existingChallan' is possibly 'undefined'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(22,25): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(22,44): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(22,64): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(22,85): error TS18048: 'existingChallan' is possibly 'undefined'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(23,23): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(23,42): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(23,62): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(23,83): error TS18048: 'existingChallan' is possibly 'undefined'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(24,26): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(24,45): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(24,65): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(24,86): error TS18048: 'existingChallan' is possibly 'undefined'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(25,25): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(25,44): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(25,64): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(25,85): error TS18048: 'existingChallan' is possibly 'undefined'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(27,20): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(27,39): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(27,59): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(27,80): error TS18048: 'existingChallan' is possibly 'undefined'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(29,23): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(29,42): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(29,62): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(29,83): error TS18048: 'existingChallan' is possibly 'undefined'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(32,24): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(32,43): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(32,63): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(32,84): error TS18048: 'existingChallan' is possibly 'undefined'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(34,27): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(34,46): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(34,66): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(34,87): error TS18048: 'existingChallan' is possibly 'undefined'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(38,27): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(38,46): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(38,66): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(38,87): error TS18048: 'existingChallan' is possibly 'undefined'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(47,13): error TS2322: Type 'DocumentType.DELIVERY_CHALLAN' is not assignable to type 'DocumentType.SALES_INVOICE'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(48,49): error TS2339: Property 'number' does not exist on type '{ documentType: string; documentNumber: string; documentDate: string; dueDate: string; status: string; }'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(49,47): error TS2339: Property 'date' does not exist on type '{ documentType: string; documentNumber: string; documentDate: string; dueDate: string; status: string; }'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(55,48): error TS2339: Property 'subtotal' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(56,53): error TS2339: Property 'discount' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(57,58): error TS2339: Property 'subtotal' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(57,89): error TS2339: Property 'discount' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(58,54): error TS2339: Property 'cgst' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(58,81): error TS2339: Property 'sgst' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(58,108): error TS2339: Property 'igst' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(59,51): error TS2339: Property 'total' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-delivery-challan.tsx(69,50): error TS2339: Property 'total' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-estimate.tsx(17,9): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-estimate.tsx(17,48): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-estimate.tsx(17,69): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-estimate.tsx(18,50): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-estimate.tsx(18,89): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-estimate.tsx(18,110): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-estimate.tsx(20,44): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-estimate.tsx(20,83): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-estimate.tsx(20,104): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-estimate.tsx(22,23): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-estimate.tsx(22,62): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-estimate.tsx(22,83): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-estimate.tsx(23,25): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-estimate.tsx(23,64): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-estimate.tsx(23,85): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-estimate.tsx(24,23): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-estimate.tsx(24,62): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-estimate.tsx(24,83): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-estimate.tsx(25,26): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-estimate.tsx(25,65): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-estimate.tsx(25,86): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-estimate.tsx(26,25): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-estimate.tsx(26,64): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-estimate.tsx(26,85): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-estimate.tsx(28,20): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-estimate.tsx(28,59): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-estimate.tsx(28,80): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-estimate.tsx(30,23): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-estimate.tsx(30,62): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-estimate.tsx(30,83): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-estimate.tsx(33,24): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-estimate.tsx(33,63): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-estimate.tsx(33,84): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-estimate.tsx(35,27): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-estimate.tsx(35,66): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-estimate.tsx(35,87): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-estimate.tsx(39,27): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-estimate.tsx(39,66): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-estimate.tsx(39,87): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-estimate.tsx(48,13): error TS2322: Type 'DocumentType.PROFORMA_INVOICE' is not assignable to type 'DocumentType.SALES_INVOICE'.
+src/app/(app)/(sales)/create-estimate.tsx(49,49): error TS2339: Property 'number' does not exist on type '{ documentType: string; documentNumber: string; documentDate: string; dueDate: string; status: string; }'.
+src/app/(app)/(sales)/create-estimate.tsx(50,47): error TS2339: Property 'date' does not exist on type '{ documentType: string; documentNumber: string; documentDate: string; dueDate: string; status: string; }'.
+src/app/(app)/(sales)/create-estimate.tsx(56,48): error TS2339: Property 'subtotal' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-estimate.tsx(57,53): error TS2339: Property 'discount' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-estimate.tsx(58,58): error TS2339: Property 'subtotal' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-estimate.tsx(58,89): error TS2339: Property 'discount' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-estimate.tsx(59,54): error TS2339: Property 'cgst' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-estimate.tsx(59,81): error TS2339: Property 'sgst' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-estimate.tsx(59,108): error TS2339: Property 'igst' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-estimate.tsx(60,51): error TS2339: Property 'total' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-estimate.tsx(70,50): error TS2339: Property 'total' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-invoice.tsx(18,28): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-invoice.tsx(18,48): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-invoice.tsx(18,69): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-invoice.tsx(19,41): error TS2367: This comparison appears to be unintentional because the types 'string' and 'SalesInvoice | undefined' have no overlap.
+src/app/(app)/(sales)/create-invoice.tsx(19,69): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-invoice.tsx(19,89): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-invoice.tsx(19,110): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-invoice.tsx(21,63): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-invoice.tsx(21,83): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-invoice.tsx(21,104): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-invoice.tsx(23,42): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-invoice.tsx(23,62): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-invoice.tsx(23,83): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-invoice.tsx(24,44): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-invoice.tsx(24,64): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-invoice.tsx(24,85): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-invoice.tsx(25,42): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-invoice.tsx(25,62): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-invoice.tsx(25,83): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-invoice.tsx(26,45): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-invoice.tsx(26,65): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-invoice.tsx(26,86): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-invoice.tsx(27,44): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-invoice.tsx(27,64): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-invoice.tsx(27,85): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-invoice.tsx(29,39): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-invoice.tsx(29,59): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-invoice.tsx(29,80): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-invoice.tsx(31,42): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-invoice.tsx(31,62): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-invoice.tsx(31,83): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-invoice.tsx(34,43): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-invoice.tsx(34,63): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-invoice.tsx(34,84): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-invoice.tsx(36,46): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-invoice.tsx(36,66): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-invoice.tsx(36,87): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-invoice.tsx(40,46): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-invoice.tsx(40,66): error TS2304: Cannot find name 'existingQuotation'.
+src/app/(app)/(sales)/create-invoice.tsx(40,87): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-invoice.tsx(50,49): error TS2339: Property 'number' does not exist on type '{ documentType: string; documentNumber: string; documentDate: string; dueDate: string; status: string; }'.
+src/app/(app)/(sales)/create-invoice.tsx(51,47): error TS2339: Property 'date' does not exist on type '{ documentType: string; documentNumber: string; documentDate: string; dueDate: string; status: string; }'.
+src/app/(app)/(sales)/create-invoice.tsx(57,48): error TS2339: Property 'subtotal' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-invoice.tsx(58,53): error TS2339: Property 'discount' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-invoice.tsx(59,58): error TS2339: Property 'subtotal' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-invoice.tsx(59,89): error TS2339: Property 'discount' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-invoice.tsx(60,54): error TS2339: Property 'cgst' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-invoice.tsx(60,81): error TS2339: Property 'sgst' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-invoice.tsx(60,108): error TS2339: Property 'igst' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-invoice.tsx(61,51): error TS2339: Property 'total' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-invoice.tsx(71,50): error TS2339: Property 'total' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-quotation.tsx(17,9): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-quotation.tsx(17,28): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-quotation.tsx(17,69): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-quotation.tsx(18,50): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-quotation.tsx(18,69): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-quotation.tsx(18,110): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-quotation.tsx(20,44): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-quotation.tsx(20,63): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-quotation.tsx(20,104): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-quotation.tsx(22,23): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-quotation.tsx(22,42): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-quotation.tsx(22,83): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-quotation.tsx(23,25): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-quotation.tsx(23,44): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-quotation.tsx(23,85): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-quotation.tsx(24,23): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-quotation.tsx(24,42): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-quotation.tsx(24,83): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-quotation.tsx(25,26): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-quotation.tsx(25,45): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-quotation.tsx(25,86): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-quotation.tsx(26,25): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-quotation.tsx(26,44): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-quotation.tsx(26,85): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-quotation.tsx(28,20): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-quotation.tsx(28,39): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-quotation.tsx(28,80): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-quotation.tsx(30,23): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-quotation.tsx(30,42): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-quotation.tsx(30,83): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-quotation.tsx(33,24): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-quotation.tsx(33,43): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-quotation.tsx(33,84): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-quotation.tsx(35,27): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-quotation.tsx(35,46): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-quotation.tsx(35,87): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-quotation.tsx(39,27): error TS2304: Cannot find name 'existingInvoice'.
+src/app/(app)/(sales)/create-quotation.tsx(39,46): error TS2304: Cannot find name 'existingEstimate'.
+src/app/(app)/(sales)/create-quotation.tsx(39,87): error TS2304: Cannot find name 'existingChallan'.
+src/app/(app)/(sales)/create-quotation.tsx(48,13): error TS2322: Type 'DocumentType.PROFORMA_INVOICE' is not assignable to type 'DocumentType.SALES_INVOICE'.
+src/app/(app)/(sales)/create-quotation.tsx(49,49): error TS2339: Property 'number' does not exist on type '{ documentType: string; documentNumber: string; documentDate: string; dueDate: string; status: string; }'.
+src/app/(app)/(sales)/create-quotation.tsx(50,47): error TS2339: Property 'date' does not exist on type '{ documentType: string; documentNumber: string; documentDate: string; dueDate: string; status: string; }'.
+src/app/(app)/(sales)/create-quotation.tsx(56,48): error TS2339: Property 'subtotal' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-quotation.tsx(57,53): error TS2339: Property 'discount' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-quotation.tsx(58,58): error TS2339: Property 'subtotal' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-quotation.tsx(58,89): error TS2339: Property 'discount' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-quotation.tsx(59,54): error TS2339: Property 'cgst' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-quotation.tsx(59,81): error TS2339: Property 'sgst' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-quotation.tsx(59,108): error TS2339: Property 'igst' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-quotation.tsx(60,51): error TS2339: Property 'total' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/create-quotation.tsx(70,50): error TS2339: Property 'total' does not exist on type '{ subtotalPaise: number; discountPaise: number; cgstPaise: number; sgstPaise: number; igstPaise: number; totalAmountPaise: number; roundOffPaise: number; }'.
+src/app/(app)/(sales)/sales.tsx(20,60): error TS2304: Cannot find name 'SalesInvoice'.
+src/app/(app)/(sales)/sales.tsx(41,50): error TS2339: Property 'type' does not exist on type 'SalesInvoice'.
+src/app/(app)/(sales)/sales.tsx(41,85): error TS2339: Property 'type' does not exist on type 'SalesInvoice'.
+src/app/(app)/(sales)/sales.tsx(42,56): error TS2339: Property 'type' does not exist on type 'SalesInvoice'.
+src/app/(app)/(sales)/sales.tsx(43,57): error TS2339: Property 'type' does not exist on type 'SalesInvoice'.
+src/app/(app)/(sales)/sales.tsx(44,55): error TS2339: Property 'type' does not exist on type 'SalesInvoice'.
+src/app/(app)/(sales)/sales.tsx(46,35): error TS2339: Property 'partyName' does not exist on type 'SalesInvoice'.
+src/app/(app)/(sales)/sales.tsx(133,94): error TS2339: Property 'partyName' does not exist on type 'SalesInvoice'.
+src/app/(app)/(sales)/sales.tsx(148,92): error TS2339: Property 'items' does not exist on type 'SalesInvoice'.
+src/app/(app)/(sales)/sales.tsx(148,104): error TS2339: Property 'items' does not exist on type 'SalesInvoice'.
+src/app/(auth)/sign-up.tsx(56,9): error TS2353: Object literal may only specify known properties, and 'firstName' does not exist in type 'Business'.

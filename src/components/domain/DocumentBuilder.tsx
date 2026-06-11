@@ -5,6 +5,8 @@ import { Pressable, ScrollView, Text, TextInput, View, KeyboardAvoidingView, Pla
 import { SafeAreaView } from "react-native-safe-area-context";
 import AnimatedModal from "@/components/ui/AnimatedModal";
 import { useAppStore } from "@/store";
+import { Party, LineItem, InventoryItem } from "@/types/entities";
+import { formatINR } from "../../utils/gst";
 
 type SectionProps = {
     title: string;
@@ -36,22 +38,22 @@ const Section = ({ title, isExpanded, onToggle, children, summary }: SectionProp
 
 export interface DocumentData {
     header: {
-        type: string;
-        number: string;
-        date: string;
+        documentType: string;
+        documentNumber: string;
+        documentDate: string;
         dueDate: string;
         status: string;
     };
     selectedParty: Party;
-    items: InvoiceItem[];
+    items: LineItem[];
     totals: {
-        subtotal: number;
-        discount: number;
-        cgst: number;
-        sgst: number;
-        igst: number;
-        total: number;
-        roundOff: number;
+        subtotalPaise: number;
+        discountPaise: number;
+        cgstPaise: number;
+        sgstPaise: number;
+        igstPaise: number;
+        totalAmountPaise: number;
+        roundOffPaise: number;
     };
     payment: {
         mode: string;
@@ -109,9 +111,9 @@ export default function DocumentBuilder({
 
     // Form State
     const [header, setHeader] = useState<DocumentData['header']>(() => initialData?.header || {
-        type: defaultType,
-        number: `${defaultPrefix}${new Date().getFullYear()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
-        date: new Date().toISOString().split('T')[0],
+        documentType: defaultType,
+        documentNumber: `${defaultPrefix}${new Date().getFullYear()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
+        documentDate: new Date().toISOString().split('T')[0],
         dueDate: "",
         status: "Draft",
     });
@@ -119,7 +121,7 @@ export default function DocumentBuilder({
     const [selectedParty, setSelectedParty] = useState<Party | null>(initialData?.selectedParty || null);
     const [partyModalVisible, setPartyModalVisible] = useState(false);
 
-    const [documentItems, setDocumentItems] = useState<InvoiceItem[]>(initialData?.items || []);
+    const [documentItems, setDocumentItems] = useState<LineItem[]>(initialData?.items || []);
     const [itemModalVisible, setItemModalVisible] = useState(false);
 
     const [payment, setPayment] = useState<DocumentData['payment']>(initialData?.payment || { mode: "UPI", terms: "Immediate" });
@@ -128,31 +130,35 @@ export default function DocumentBuilder({
 
     // Computed totals
     const totals = useMemo(() => {
-        let subtotal = 0;
-        let discount = 0;
-        let cgst = 0;
-        let sgst = 0;
-        let igst = 0;
+        let subtotalPaise = 0;
+        let discountPaise = 0;
+        let cgstPaise = 0;
+        let sgstPaise = 0;
+        let igstPaise = 0;
 
         documentItems.forEach(item => {
-            const qty = item.qty || 1;
-            const rate = item.rate || 0;
-            const lineDiscount = item.discount || 0;
+            const qty = item.quantityDecimal || 1;
+            const rate = item.unitPricePaise || 0;
+            const discountPcnt = item.discountPercent || 0;
             
-            const amountBeforeTax = (qty * rate) - lineDiscount;
-            subtotal += amountBeforeTax;
+            const grossAmount = qty * rate;
+            const lineDiscount = grossAmount * (discountPcnt / 100);
+            
+            const amountBeforeTax = grossAmount - lineDiscount;
+            subtotalPaise += amountBeforeTax;
+            discountPaise += lineDiscount;
 
-            const taxRate = item.gst_rate || 0;
+            const taxRate = item.taxRate?.gstComponent?.igstRate || 0;
             const taxAmt = amountBeforeTax * (taxRate / 100);
             
-            cgst += taxAmt / 2;
-            sgst += taxAmt / 2;
+            cgstPaise += taxAmt / 2;
+            sgstPaise += taxAmt / 2;
         });
 
-        const total = subtotal + cgst + sgst + igst;
-        const roundOff = Math.round(total) - total;
+        const totalAmountPaise = subtotalPaise + cgstPaise + sgstPaise + igstPaise;
+        const roundOffPaise = Math.round(totalAmountPaise) - totalAmountPaise;
 
-        return { subtotal, discount, cgst, sgst, igst, total: Math.round(total), roundOff };
+        return { subtotalPaise, discountPaise, cgstPaise, sgstPaise, igstPaise, totalAmountPaise: Math.round(totalAmountPaise), roundOffPaise };
     }, [documentItems]);
 
     const handleSave = () => {
@@ -166,12 +172,12 @@ export default function DocumentBuilder({
             return;
         }
 
-        if (!header.type || !header.number || !header.date) {
+        if (!header.documentType || !header.documentNumber || !header.documentDate) {
             Alert.alert("Validation Error", "Please fill in all required document details (Type, Number, Date).");
             return;
         }
 
-        const invalidItem = documentItems.find(item => !item.qty || item.qty <= 0 || item.rate < 0);
+        const invalidItem = documentItems.find(item => !item.quantityDecimal || item.quantityDecimal <= 0 || item.unitPricePaise < 0);
         if (invalidItem) {
             Alert.alert("Validation Error", "Please ensure all items have a valid quantity (> 0) and rate (>= 0).");
             return;
@@ -213,14 +219,14 @@ export default function DocumentBuilder({
                     title="Document Details" 
                     isExpanded={expandedSections.header} 
                     onToggle={() => toggleSection('header')}
-                    summary={`${header.number} • ${header.date}`}
+                    summary={`${header.documentNumber} • ${header.documentDate}`}
                 >
                     <View className="mb-4">
                         <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Document Type</Text>
                         <TextInput 
                             className="bg-slate-50 border border-border rounded-lg px-3 py-2 font-sans-medium text-primary"
-                            value={header.type}
-                            onChangeText={t => setHeader({...header, type: t})}
+                            value={header.documentType}
+                            onChangeText={t => setHeader({...header, documentType: t})}
                         />
                     </View>
                     <View className="flex-row gap-4 mb-4">
@@ -228,16 +234,16 @@ export default function DocumentBuilder({
                             <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Document No</Text>
                             <TextInput 
                                 className="bg-slate-50 border border-border rounded-lg px-3 py-2 font-sans-medium text-primary"
-                                value={header.number}
-                                onChangeText={t => setHeader({...header, number: t})}
+                                value={header.documentNumber}
+                                onChangeText={t => setHeader({...header, documentNumber: t})}
                             />
                         </View>
                         <View className="flex-1">
                             <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Date</Text>
                             <TextInput 
                                 className="bg-slate-50 border border-border rounded-lg px-3 py-2 font-sans-medium text-primary"
-                                value={header.date}
-                                onChangeText={t => setHeader({...header, date: t})}
+                                value={header.documentDate}
+                                onChangeText={t => setHeader({...header, documentDate: t})}
                             />
                         </View>
                     </View>
@@ -248,12 +254,12 @@ export default function DocumentBuilder({
                     title={`${partyLabel} Details`} 
                     isExpanded={expandedSections.party} 
                     onToggle={() => toggleSection('party')}
-                    summary={selectedParty ? `${selectedParty.name} (${selectedParty.gstin || 'Unregistered'})` : `No ${partyLabel.toLowerCase()} selected`}
+                    summary={selectedParty ? `${selectedParty.legalName} (${selectedParty.gstin || 'Unregistered'})` : `No ${partyLabel.toLowerCase()} selected`}
                 >
                     {selectedParty ? (
                         <View className="bg-slate-50 p-3 rounded-lg border border-border mb-3">
-                            <Text className="font-sans-bold text-primary text-base">{selectedParty.name}</Text>
-                            <Text className="font-sans-medium text-muted-foreground text-sm mt-1">{selectedParty.phone || selectedParty.alternatePhone}</Text>
+                            <Text className="font-sans-bold text-primary text-base">{selectedParty.legalName}</Text>
+                            <Text className="font-sans-medium text-muted-foreground text-sm mt-1">{selectedParty.contactPersons?.[0]?.phone || ''}</Text>
                             {selectedParty.gstin && <Text className="font-sans-bold text-green-700 text-xs mt-1">GSTIN: {selectedParty.gstin}</Text>}
                         </View>
                     ) : null}
@@ -271,14 +277,14 @@ export default function DocumentBuilder({
                     title="Items" 
                     isExpanded={expandedSections.items} 
                     onToggle={() => toggleSection('items')}
-                    summary={`${documentItems.length} items • ₹${totals.total.toLocaleString('en-IN')}`}
+                    summary={`${documentItems.length} items • ${formatINR(totals.totalAmountPaise)}`}
                 >
                     {documentItems.map((item, index) => (
                         <View key={index} className="bg-slate-50 border border-border rounded-lg p-3 mb-3">
                             <View className="flex-row justify-between items-start mb-2">
                                 <View className="flex-1">
-                                    <Text className="font-sans-bold text-primary">{item.name}</Text>
-                                    <Text className="font-sans-medium text-xs text-muted-foreground">HSN/SAC: {item.hsn_sac}</Text>
+                                    <Text className="font-sans-bold text-primary">{item.description}</Text>
+                                    <Text className="font-sans-medium text-xs text-muted-foreground">HSN/SAC: {item.hsnSacCode}</Text>
                                 </View>
                                 <Pressable onPress={() => setDocumentItems(documentItems.filter((_, i) => i !== index))} className="h-11 w-11 items-center justify-center -mr-2 -mt-2">
                                     <Trash2 color="#ef4444" size={18} />
@@ -290,12 +296,12 @@ export default function DocumentBuilder({
                                     <View className="flex-row items-center mt-1">
                                         <TextInput 
                                             style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 4, paddingHorizontal: 8, paddingVertical: 4, width: 64, textAlign: 'center', color: '#0f172a', fontFamily: 'PlusJakartaSans-Bold' }}
-                                            value={item.qty !== undefined ? String(item.qty) : ''}
+                                            value={item.quantityDecimal !== undefined ? String(item.quantityDecimal) : ''}
                                             keyboardType="numeric"
                                             onChangeText={t => {
                                                 const newItems = [...documentItems];
                                                 const parsed = parseFloat(t);
-                                                newItems[index].qty = isNaN(parsed) ? 0 : parsed;
+                                                newItems[index].quantityDecimal = isNaN(parsed) ? 0 : parsed;
                                                 setDocumentItems(newItems);
                                             }}
                                         />
@@ -306,12 +312,12 @@ export default function DocumentBuilder({
                                     <Text className="font-sans-medium text-xs text-muted-foreground">Rate</Text>
                                     <TextInput 
                                         style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 4, paddingHorizontal: 8, paddingVertical: 4, width: 80, marginTop: 4, color: '#0f172a', fontFamily: 'PlusJakartaSans-Bold' }}
-                                        value={item.rate !== undefined ? String(item.rate) : ''}
+                                        value={item.unitPricePaise !== undefined ? String(item.unitPricePaise) : ''}
                                         keyboardType="numeric"
                                         onChangeText={t => {
                                             const newItems = [...documentItems];
                                             const parsed = parseFloat(t);
-                                            newItems[index].rate = isNaN(parsed) ? 0 : parsed;
+                                            newItems[index].unitPricePaise = isNaN(parsed) ? 0 : parsed;
                                             setDocumentItems(newItems);
                                         }}
                                     />
@@ -319,7 +325,7 @@ export default function DocumentBuilder({
                                 <View className="flex-1 min-w-[30%] items-end pb-1">
                                     <Text className="font-sans-medium text-xs text-muted-foreground">Total (incl. GST)</Text>
                                     <Text className="font-sans-bold text-primary mt-1">
-                                        ₹{((item.qty || 0) * (item.rate || 0) * (1 + (item.gst_rate || 0)/100)).toFixed(2)}
+                                        {formatINR(Math.round((item.quantityDecimal || 0) * (item.unitPricePaise || 0) * (1 + (item.taxRate?.gstComponent?.igstRate || 0)/100)))}
                                     </Text>
                                 </View>
                             </View>
@@ -331,7 +337,7 @@ export default function DocumentBuilder({
                         onPress={() => setItemModalVisible(true)}
                     >
                         <Plus color="#0f172a" size={16} className="mr-2" />
-                        <Text className="font-sans-bold text-primary">Add Item from Catalog</Text>
+                        <Text className="font-sans-bold text-primary">Add InventoryItem from Catalog</Text>
                     </Pressable>
 
                     {documentItems.length > 0 && (
@@ -339,35 +345,35 @@ export default function DocumentBuilder({
                             <Text className="font-sans-bold text-primary mb-2">Tax Summary</Text>
                             <View className="flex-row justify-between mb-1">
                                 <Text className="font-sans-medium text-muted-foreground">Subtotal</Text>
-                                <Text className="font-sans-bold text-primary">₹{totals.subtotal.toFixed(2)}</Text>
+                                <Text className="font-sans-bold text-primary">{formatINR(totals.subtotalPaise)}</Text>
                             </View>
                             <View className="flex-row justify-between mb-1">
                                 <Text className="font-sans-medium text-muted-foreground">CGST</Text>
-                                <Text className="font-sans-bold text-primary">₹{totals.cgst.toFixed(2)}</Text>
+                                <Text className="font-sans-bold text-primary">{formatINR(totals.cgstPaise)}</Text>
                             </View>
                             <View className="flex-row justify-between mb-2">
                                 <Text className="font-sans-medium text-muted-foreground">SGST</Text>
-                                <Text className="font-sans-bold text-primary">₹{totals.sgst.toFixed(2)}</Text>
+                                <Text className="font-sans-bold text-primary">{formatINR(totals.sgstPaise)}</Text>
                             </View>
                             <View className="h-[1px] w-full bg-border mb-2" />
                             <View className="flex-row justify-between items-center">
                                 <Text className="font-sans-bold text-lg text-primary">Grand Total</Text>
-                                <Text className="font-sans-bold text-xl text-primary">₹{totals.total.toLocaleString('en-IN')}</Text>
+                                <Text className="font-sans-bold text-xl text-primary">{formatINR(totals.totalAmountPaise)}</Text>
                             </View>
                         </View>
                     )}
                 </Section>
 
-                {/* 4. Payment Info */}
+                {/* 4. PaymentRecord Info */}
                 <Section 
-                    title="Payment Information" 
+                    title="PaymentRecord Information" 
                     isExpanded={expandedSections.payment} 
                     onToggle={() => toggleSection('payment')}
                     summary={`${payment.mode} • ${payment.terms}`}
                 >
                     <View className="flex-row gap-4 mb-4">
                         <View className="flex-1">
-                            <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Payment Mode</Text>
+                            <Text className="font-sans-medium text-sm text-muted-foreground mb-1">PaymentRecord Mode</Text>
                             <TextInput 
                                 className="bg-slate-50 border border-border rounded-lg px-3 py-2 font-sans-medium text-primary"
                                 value={payment.mode}
@@ -375,7 +381,7 @@ export default function DocumentBuilder({
                             />
                         </View>
                         <View className="flex-1">
-                            <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Payment Terms</Text>
+                            <Text className="font-sans-medium text-sm text-muted-foreground mb-1">PaymentRecord Terms</Text>
                             <TextInput 
                                 className="bg-slate-50 border border-border rounded-lg px-3 py-2 font-sans-medium text-primary"
                                 value={payment.terms}
@@ -444,14 +450,14 @@ export default function DocumentBuilder({
                         </Pressable>
                     </View>
                     <ScrollView showsVerticalScrollIndicator={false}>
-                        {parties.filter(p => partyFilter === 'both' || p.type === partyFilter || p.type === 'both').map(party => (
+                        {parties.filter(p => partyFilter === 'both' || p.partyType === partyFilter.toUpperCase() || p.partyType === 'BOTH').map(party => (
                             <Pressable 
                                 key={party.id} 
                                 className="p-4 border-b border-border flex-row justify-between items-center"
                                 onPress={() => { setSelectedParty(party); setPartyModalVisible(false); }}
                             >
                                 <View>
-                                    <Text className="font-sans-bold text-primary">{party.name}</Text>
+                                    <Text className="font-sans-bold text-primary">{party.legalName}</Text>
                                     <Text className="font-sans-medium text-muted-foreground text-xs mt-1">
                                         {party.gstin ? `GST: ${party.gstin}` : 'Unregistered'}
                                     </Text>
@@ -462,11 +468,11 @@ export default function DocumentBuilder({
                 </View>
             </AnimatedModal>
 
-            {/* Item Selector Modal */}
+            {/* InventoryItem Selector Modal */}
             <AnimatedModal visible={itemModalVisible} onClose={() => setItemModalVisible(false)}>
                 <View className="bg-white rounded-t-3xl h-[700px] p-5 shadow-xl">
                     <View className="flex-row justify-between items-center mb-4">
-                        <Text className="font-sans-bold text-xl text-primary">Add Item</Text>
+                        <Text className="font-sans-bold text-xl text-primary">Add InventoryItem</Text>
                         <Pressable onPress={() => setItemModalVisible(false)} className="h-11 w-11 items-center justify-center bg-muted rounded-full">
                             <X color="#64748b" size={20} />
                         </Pressable>
@@ -479,16 +485,16 @@ export default function DocumentBuilder({
                                 onPress={() => { 
                                     setDocumentItems([...documentItems, {
                                         id: `item-${Date.now()}`,
-                                        productId: item.id,
-                                        name: item.name,
-                                        hsn_sac: item.hsn_sac,
-                                        qty: 1,
+                                        description: item.name,
+                                        hsnSacCode: item.hsnSacCode,
+                                        taxRate: item.taxRate,
                                         unit: item.unit || 'pcs',
-                                        rate: item.price,
-                                        gst_rate: item.gst_rate,
-                                        discount: 0,
-                                        tax_amount: item.price * (item.gst_rate / 100),
-                                        line_total: item.price * (1 + item.gst_rate / 100)
+                                        quantityDecimal: 1,
+                                        unitPricePaise: item.unitPricePaise,
+                                        discountPercent: 0,
+                                        taxableAmountPaise: item.unitPricePaise,
+                                        gstAmountPaise: item.unitPricePaise * ((item.taxRate?.gstComponent?.igstRate || 0) / 100),
+                                        totalAmountPaise: item.unitPricePaise * (1 + ((item.taxRate?.gstComponent?.igstRate || 0) / 100))
                                     }]); 
                                     setItemModalVisible(false); 
                                 }}
@@ -496,7 +502,7 @@ export default function DocumentBuilder({
                                 <View>
                                     <Text className="font-sans-bold text-primary">{item.name}</Text>
                                     <Text className="font-sans-medium text-muted-foreground text-xs mt-1">
-                                        ₹{item.price} • Stock: {item.stock || 0}
+                                        {formatINR(item.unitPricePaise)} • Stock: {item.stock || 0}
                                     </Text>
                                 </View>
                                 <View className="bg-primary/10 px-2 py-1 rounded">

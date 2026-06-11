@@ -11,7 +11,7 @@ import "../../../global.css";
 
 export default function SignUpScreen() {
   const router = useRouter();
-  const setBusinessProfile = useAppStore(state => state.setBusinessProfile);
+  const setCurrentBusiness = useAppStore(state => state.setCurrentBusiness);
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -52,15 +52,23 @@ export default function SignUpScreen() {
       }
     }
 
-    setBusinessProfile({
-        firstName: trimmedFirstName,
-        lastName: trimmedLastName,
-        companyName: trimmedCompanyName,
-        phone: trimmedPhone,
-        gstin: sanitizedGst || undefined
-    });
+    setCurrentBusiness({
+            id: "b1",
+            legalName: trimmedCompanyName || (trimmedFirstName + " " + trimmedLastName),
+            tradeName: trimmedCompanyName,
+            gstin: sanitizedGst || "",
+            pan: "",
+            gstType: "REGULAR" as any,
+            address: { line1: "", city: "", state: "", stateCode: "", pincode: "", country: "India" },
+            shippingAddresses: [],
+            phone: trimmedPhone,
+            email: "",
+            bankDetails: [],
+            fiscalYearStart: "APRIL",
+            defaultCurrency: "INR"
+        });
 
-    router.replace("/(app)/dashboard");
+    router.replace("/(app)/(dashboard)/dashboard");
   };
 
   return (

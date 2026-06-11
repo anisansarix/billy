@@ -1,3 +1,4 @@
+import { SalesInvoice, DocumentType } from "@/types/entities";
 import { useRouter } from "expo-router";
 import { useShallow } from 'zustand/react/shallow';
 import { ArrowLeft, Plus, ReceiptText, Search, X, Edit, Trash2, Box } from "lucide-react-native";
@@ -17,7 +18,7 @@ export default function SalesScreen() {
     const [createModalVisible, setCreateModalVisible] = useState(false);
     
     // Details Modal State
-    const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+    const [selectedInvoice, setSelectedInvoice] = useState<SalesInvoice | null>(null);
 
     const {  invoices, deleteInvoice  } = useAppStore(useShallow(state => ({ invoices: state.invoices, deleteInvoice: state.deleteInvoice })));
 
@@ -38,20 +39,20 @@ export default function SalesScreen() {
 
     const filteredInvoices = invoices.filter(inv => {
         let matchesTab = true;
-        if (tab === "Invoices") matchesTab = inv.type === "Tax Invoice" || inv.type === "Proforma Invoice";
-        else if (tab === "Estimates") matchesTab = inv.type === "Estimate";
-        else if (tab === "Quotations") matchesTab = inv.type === "Quotation";
-        else if (tab === "Challans") matchesTab = inv.type === "Delivery Challan";
+        if (tab === "Invoices") matchesTab = inv.documentType === "SALES_INVOICE" || (inv.documentType as any) === "PROFORMA_INVOICE";
+        else if (tab === "Estimates") matchesTab = (inv.documentType as any) === "PROFORMA_INVOICE";
+        else if (tab === "Quotations") matchesTab = (inv.documentType as any) === "PROFORMA_INVOICE";
+        else if (tab === "Challans") matchesTab = (inv.documentType as any) === "DELIVERY_CHALLAN";
 
-        const matchesSearch = inv.customerName.toLowerCase().includes(search.toLowerCase()) || inv.number.toLowerCase().includes(search.toLowerCase());
+        const matchesSearch = inv.partyName.toLowerCase().includes(search.toLowerCase()) || inv.documentNumber.toLowerCase().includes(search.toLowerCase());
         return matchesTab && matchesSearch;
     });
 
     // Summary Calculations
-    const totalInvoicesValue = filteredInvoices.reduce((sum, inv) => sum + inv.total, 0);
+    const totalInvoicesValue = filteredInvoices.reduce((sum, inv) => sum + inv.totalAmountPaise, 0);
 
     const handleDelete = (id: string) => {
-        Alert.alert("Delete Invoice", "Are you sure you want to delete this invoice?", [
+        Alert.alert("Delete SalesInvoice", "Are you sure you want to delete this invoice?", [
             { text: "Cancel", style: "cancel" },
             { 
                 text: "Delete", 
@@ -130,8 +131,8 @@ export default function SalesScreen() {
                     <Card key={inv.id} className="mb-4" isPressable onPress={() => setSelectedInvoice(inv)}>
                         <View className="flex-row justify-between items-start mb-3">
                             <View>
-                                <Text className="font-sans-bold text-base text-primary">{inv.customerName}</Text>
-                                <Text className="font-sans-medium text-xs text-muted-foreground mt-1">{inv.number} • {inv.date}</Text>
+                                <Text className="font-sans-bold text-base text-primary">{inv.partyName}</Text>
+                                <Text className="font-sans-medium text-xs text-muted-foreground mt-1">{inv.documentNumber} • {inv.documentDate}</Text>
                             </View>
                             <View className={`px-2 py-1 rounded-md border ${getStatusColor(inv.status)}`}>
                                 <Text className="font-sans-bold text-[10px] uppercase">
@@ -145,11 +146,11 @@ export default function SalesScreen() {
                         <View className="flex-row justify-between items-center">
                             <View>
                                 <Text className="font-sans-medium text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Items</Text>
-                                <Text className="font-sans-bold text-sm text-primary">{inv.items ? inv.items.length : 0}</Text>
+                                <Text className="font-sans-bold text-sm text-primary">{inv.lineItems ? inv.lineItems.length : 0}</Text>
                             </View>
                             <View className="items-end">
                                 <Text className="font-sans-medium text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Total Amount</Text>
-                                <Text className="font-sans-bold text-lg text-primary">₹ {inv.total.toLocaleString('en-IN')}</Text>
+                                <Text className="font-sans-bold text-lg text-primary">₹ {inv.totalAmountPaise.toLocaleString('en-IN')}</Text>
                             </View>
                         </View>
                     </Card>
@@ -198,8 +199,8 @@ export default function SalesScreen() {
                         <>
                             <View className="flex-row justify-between items-start mb-6">
                                 <View className="flex-1 mr-4">
-                                    <Text className="font-sans-bold text-2xl text-primary mb-1">{selectedInvoice.customerName}</Text>
-                                    <Text className="font-sans-medium text-base text-muted-foreground">{selectedInvoice.number}</Text>
+                                    <Text className="font-sans-bold text-2xl text-primary mb-1">{selectedInvoice.partyName}</Text>
+                                    <Text className="font-sans-medium text-base text-muted-foreground">{selectedInvoice.documentNumber}</Text>
                                 </View>
                                 <Pressable onPress={() => setSelectedInvoice(null)} className="h-11 w-11 items-center justify-center bg-muted rounded-full">
                                     <X color="#64748b" size={20} />
@@ -208,9 +209,9 @@ export default function SalesScreen() {
 
                             <View className="p-4 rounded-2xl bg-slate-50 border border-border flex-row justify-between items-center mb-6">
                                 <View>
-                                    <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Invoice Total</Text>
+                                    <Text className="font-sans-medium text-sm text-muted-foreground mb-1">SalesInvoice Total</Text>
                                     <Text className="font-sans-bold text-2xl text-primary">
-                                        ₹ {selectedInvoice.total.toLocaleString('en-IN')}
+                                        ₹ {selectedInvoice.totalAmountPaise.toLocaleString('en-IN')}
                                     </Text>
                                 </View>
                                 <View className={`px-3 py-1.5 rounded-md border ${getStatusColor(selectedInvoice.status)}`}>
@@ -227,7 +228,7 @@ export default function SalesScreen() {
                                     </View>
                                     <View>
                                         <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Items Included</Text>
-                                        <Text className="font-sans-bold text-base text-primary">{selectedInvoice.items?.length || 0} Products/Services</Text>
+                                        <Text className="font-sans-bold text-base text-primary">{selectedInvoice.lineItems?.length || 0} Products/Services</Text>
                                     </View>
                                 </View>
                                 <View className="flex-row items-center">
@@ -235,8 +236,8 @@ export default function SalesScreen() {
                                         <ReceiptText color="#9333ea" size={20} />
                                     </View>
                                     <View>
-                                        <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Invoice Date</Text>
-                                        <Text className="font-sans-bold text-base text-primary">{selectedInvoice.date}</Text>
+                                        <Text className="font-sans-medium text-sm text-muted-foreground mb-1">SalesInvoice Date</Text>
+                                        <Text className="font-sans-bold text-base text-primary">{selectedInvoice.documentDate}</Text>
                                     </View>
                                 </View>
                             </View>
@@ -245,13 +246,13 @@ export default function SalesScreen() {
                                 <Pressable
                                     onPress={() => {
                                         const id = selectedInvoice.id;
-                                        const type = selectedInvoice.type;
+                                        const type = selectedInvoice.documentType;
                                         setSelectedInvoice(null);
                                         
                                         let route = '/(app)/create-invoice';
-                                        if (type === 'Estimate') route = '/(app)/create-estimate';
-                                        if (type === 'Quotation') route = '/(app)/create-quotation';
-                                        if (type === 'Delivery Challan') route = '/(app)/create-delivery-challan';
+                                        if ((type as any) === 'PROFORMA_INVOICE') route = '/(app)/create-estimate';
+                                        if ((type as any) === 'PROFORMA_INVOICE') route = '/(app)/create-quotation';
+                                        if ((type as any) === 'DELIVERY_CHALLAN') route = '/(app)/create-delivery-challan';
                                         
                                         router.push({ pathname: route, params: { id } } as never);
                                     }}
@@ -284,7 +285,7 @@ export default function SalesScreen() {
                     </View>
                     <View className="space-y-4">
                         {[
-                            { title: "Tax Invoice", route: "/(app)/create-invoice", icon: <ReceiptText color="#208AEF" size={20} />, bg: "bg-blue-50" },
+                            { title: "Tax SalesInvoice", route: "/(app)/create-invoice", icon: <ReceiptText color="#208AEF" size={20} />, bg: "bg-blue-50" },
                             { title: "Estimate", route: "/(app)/create-estimate", icon: <ReceiptText color="#f59e0b" size={20} />, bg: "bg-amber-50" },
                             { title: "Quotation", route: "/(app)/create-quotation", icon: <ReceiptText color="#8b5cf6" size={20} />, bg: "bg-purple-50" },
                             { title: "Delivery Challan", route: "/(app)/create-delivery-challan", icon: <Box color="#10b981" size={20} />, bg: "bg-emerald-50" },

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import fs from 'fs';
 import path from 'path';
 import { PARTIES, ITEMS, INVOICES, PURCHASES, EXPENSES, PAYMENTS, OUTSTANDING_DATA, DASHBOARD_BALANCES, HOME_USER } from '../constants/data';

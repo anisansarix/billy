@@ -56,7 +56,7 @@ filesToProcess.forEach(filePath => {
     content = content.replace(/\.tax_amount\b/g, '.gstAmountPaise');
 
     // party
-    content = content.replace(/\.name\b/g, '.legalName');
+    content = content.replace(/\bparty\.name\b/g, 'party.legalName');
     content = content.replace(/\.balance\b/g, '.openingBalancePaise');
     
     // expense / payment

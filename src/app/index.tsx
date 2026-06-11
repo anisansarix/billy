@@ -7,20 +7,20 @@ import "../../global.css";
 
 export default function SplashScreen() {
   const router = useRouter();
-  const businessProfile = useAppStore(state => state.businessProfile);
+  const currentBusiness = useAppStore(state => state.currentBusiness);
 
   useEffect(() => {
     // Simulate loading/initialization, then navigate based on auth state
     const timer = setTimeout(() => {
-      if (businessProfile) {
-        router.replace("/(app)/dashboard");
+      if (currentBusiness) {
+        router.replace("/(app)/(dashboard)/dashboard");
       } else {
         router.replace("/onboarding");
       }
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [router, businessProfile]);
+  }, [router, currentBusiness]);
 
   return (
     <ImageBackground 

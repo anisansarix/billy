@@ -1,63 +1,73 @@
-# Billy ERP Platform
+# Billy - Modern ERP Platform for Indian MSMEs
 
-Billy is a modern, enterprise-grade accounting and business management platform designed specifically to serve as the operating system for Indian Micro, Small, and Medium Enterprises (MSMEs). 
+Billy is a comprehensive, mobile-first business operating system designed specifically for Micro, Small, and Medium Enterprises (MSMEs) in India. The platform streamlines core business operations including sales, purchases, inventory, party management, and GST compliance.
 
-Built with React Native and Expo, Billy delivers a seamless, cross-platform experience. It prioritizes sophisticated design language, fluid performance, and uncompromising data density, offering a powerful alternative to traditional, legacy ERP software.
+## Mission
+To provide a beautiful, intuitive, and trustworthy ERP system that simplifies complex accounting and operational workflows for Indian business owners. Billy eliminates the cognitive load of traditional accounting software by offering a clear, premium, and fast user experience.
 
-## Platform Features
+## Key Features
 
-- **Financial Command Center**: Real-time aggregation of cash flow, outstanding balances, and inventory metrics visualized through fluid, hardware-accelerated area charts.
-- **Automated GST Compliance**: Enterprise-ready invoicing and quotation workflows with built-in support for Indian HSN/SAC codes and automated CGST, SGST, and IGST calculations.
-- **Intelligent Receivables**: Advanced aging reports and health bars to monitor outstanding customer payments and vendor liabilities.
-- **Inventory & Logistics**: Dynamic product catalog management, complete with low-stock alerts, warehouse batch tracking, and E-Way Bill generation.
-- **Premium User Experience**: Engineered using modern design principles, featuring glassmorphic interfaces, sophisticated typography, and optimized mobile ergonomics with strict adherence to platform accessibility standards.
+### Sales & Invoicing
+- Professional GST-compliant invoicing
+- Quotations and Estimates
+- Credit Notes and Delivery Challans
+- Automated Tax Calculations (CGST, SGST, IGST, CESS)
 
-## Technical Architecture
+### Purchases & Expenses
+- Purchase Order generation and tracking
+- Vendor bill management
+- Expense categorization and receipt capture
 
-The platform is engineered for scale, utilizing a modern frontend stack optimized for offline-first capabilities and high-frequency data mutation.
+### Inventory Management
+- Real-time stock tracking and low-stock alerts
+- Product and Service categorization
+- HSN/SAC code mapping
+- Stock Adjustment records
 
-- **Framework**: React Native and Expo SDK 56
-- **Routing**: File-based routing via Expo Router for modular, scalable navigation
-- **State Management**: Highly optimized Zustand store utilizing shallow rendering to guarantee 60FPS performance on low-tier hardware
-- **Styling**: NativeWind v5 (Tailwind CSS) integrated with global style variables
-- **Animations**: React Native Reanimated for performant, thread-safe micro-interactions
+### Party Management (CRM)
+- Customer and Vendor directories
+- Outstanding balance tracking (Receivables and Payables)
+- Credit limit management
+- GSTIN validation
 
-## Project Structure
+### Compliance & Reporting
+- Built-in GST returns logic
+- E-Way Bill generation readiness
+- Profit and Loss tracking
+- Cashflow visibility
 
-The codebase follows a strict domain-driven architecture to maintain scalability.
+## Technology Stack
+- Core Framework: React Native with Expo SDK 56
+- Language: TypeScript
+- Routing: Expo Router (File-based navigation)
+- Styling: NativeWind v5 (Tailwind CSS)
+- State Management: Zustand with AsyncStorage persistence
+- UI Components: Glassmorphism via expo-blur, Reanimated for fluid interactions, Lucide React Native icons
 
-- `src/app/(app)/` - Protected application routes organized by business domain:
-  - `(dashboard)/` - Analytics and reporting interfaces
-  - `(sales)/` - Document builders for invoices, estimates, and delivery challans
-  - `(purchases)/` - Expense tracking and purchase orders
-  - `(inventory)/` - Product catalogs and stock adjustments
-  - `(finance)/` - GST returns, E-Way bills, and payments
-  - `(parties)/` - Customer and vendor relationship management
-- `src/components/` - Isolated presentation and logic components:
-  - `ui/` - Foundational design system elements
-  - `charts/` - Hardware-accelerated data visualizations
-  - `domain/` - Complex, feature-specific assemblies
+## Architectural Principles
+- Mobile-First Ergonomics: Minimum 44x44 points touch targets, generous spacing, and readable typography.
+- Offline Capability: State is persisted locally via Zustand and AsyncStorage for uninterrupted usage.
+- Scalable Domain Modeling: Data structures strictly mirror real business entities to facilitate future backend synchronization and multi-business support.
+- Mathematical Precision: All monetary values are processed and stored as integer Paise to prevent floating-point inaccuracies.
 
 ## Getting Started
 
 ### Prerequisites
-Ensure Node.js and npm are installed on your local environment.
+- Node.js (v18+)
+- npm or yarn
+- Expo Go application on a mobile device (for physical testing)
 
 ### Installation
+1. Clone the repository
+2. Install dependencies:
+   npm install
+3. Start the Expo development server:
+   npx expo start
 
-1. Install all dependencies:
-```bash
-npm install
-```
-
-2. Start the Metro development server:
-```bash
-npx expo start -c
-```
-
-### Deployment
-Follow the Expo Application Services (EAS) documentation to build production binaries for iOS and Android.
+## Development Standards
+- Component Extraction: UI components are strictly extracted when reused or representing core business concepts.
+- Strict Typing: The codebase strictly adheres to TypeScript interfaces defined in the domain layer.
+- Design System: Adheres to a premium, business-focused aesthetic utilizing curated colors and modern typography without unnecessary clutter.
 
 ## License
-
-This software is proprietary and confidential. Copyright reserved by Omnity Industries.
+Proprietary and Confidential. All rights reserved.
