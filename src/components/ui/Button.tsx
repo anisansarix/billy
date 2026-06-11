@@ -71,6 +71,8 @@ export default function Button({
       onPressOut={handlePressOut}
       className={`${baseClass} ${className}`}
       style={animatedStyle}
+      accessibilityRole="button"
+      accessibilityLabel={title}
       {...props}
     >
       {icon && <React.Fragment>{icon}</React.Fragment>}

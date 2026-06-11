@@ -24,6 +24,7 @@ export default function AuthInput({ label, required, isPassword, ...props }: Aut
           className="flex-1 h-full text-base font-sans-regular text-primary"
           placeholderTextColor="#9ca3af"
           secureTextEntry={isPassword && !showPassword}
+          accessibilityLabel={label}
           {...props}
         />
 
@@ -31,6 +32,8 @@ export default function AuthInput({ label, required, isPassword, ...props }: Aut
           <Pressable
             onPress={() => setShowPassword(!showPassword)}
             className="p-3"
+            accessibilityRole="button"
+            accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
           >
             {showPassword ? (
               <EyeOff size={20} color="#9ca3af" />

@@ -138,7 +138,12 @@ export default function SignUpScreen() {
           />
 
           <View className="flex-row justify-center mb-12">
-            <Pressable onPress={() => router.push("/(auth)/sign-in")} className="min-h-[44px] justify-center">
+            <Pressable 
+              onPress={() => router.push("/(auth)/sign-in")} 
+              className="min-h-[44px] justify-center"
+              accessibilityRole="button"
+              accessibilityLabel="Already registered?"
+            >
               <Text className="text-base font-sans-regular text-muted-foreground">
                 Already registered?
               </Text>

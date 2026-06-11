@@ -64,7 +64,11 @@ export default function SignInScreen() {
             <Text className="text-sm font-sans-regular text-muted-foreground">
               Forgot your password?{" "}
             </Text>
-            <Pressable className="min-h-[44px] justify-center">
+            <Pressable 
+              className="min-h-[44px] justify-center"
+              accessibilityRole="button"
+              accessibilityLabel="Reset your password"
+            >
               <Text className="text-sm font-sans-medium text-primary underline">
                 Reset your password
               </Text>
@@ -81,7 +85,12 @@ export default function SignInScreen() {
             <Text className="text-sm font-sans-regular text-muted-foreground">
               {"Don't have an account? "}
             </Text>
-            <Pressable onPress={() => router.push("/(auth)/sign-up")} className="min-h-[44px] justify-center">
+            <Pressable 
+              onPress={() => router.push("/(auth)/sign-up")} 
+              className="min-h-[44px] justify-center"
+              accessibilityRole="button"
+              accessibilityLabel="Join"
+            >
               <Text className="text-sm font-sans-medium text-primary underline">
                 Join
               </Text>
@@ -94,7 +103,11 @@ export default function SignInScreen() {
             <View className="flex-1 h-[1px] bg-border" />
           </View>
 
-          <Pressable className="w-full h-14 bg-white border border-border items-center justify-center rounded-xl flex-row">
+          <Pressable 
+            className="w-full h-14 bg-white border border-border items-center justify-center rounded-xl flex-row"
+            accessibilityRole="button"
+            accessibilityLabel="Sign Up with Google"
+          >
             <Image 
               source={icons.google} 
               style={{ width: 24, height: 24, marginRight: 12 }} 
