@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { View, Text, Dimensions } from 'react-native';
 import Svg, { Defs, LinearGradient, Stop, Text as SvgText, G, Line, Path } from 'react-native-svg';
 import Animated, { useAnimatedProps, useSharedValue, withTiming, Easing } from 'react-native-reanimated';

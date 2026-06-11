@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Text, TouchableOpacity, ScrollView } from 'react-native';
 
 interface SegmentedTabsProps {

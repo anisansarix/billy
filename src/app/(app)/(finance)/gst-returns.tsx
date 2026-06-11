@@ -6,6 +6,7 @@ import { useState, useMemo } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppStore } from "@/store";
+import { formatINR } from "@/utils/money";
 
 export default function GSTReturnsScreen() {
     const router = useRouter();
@@ -26,7 +27,7 @@ export default function GSTReturnsScreen() {
 
         activeInvoices.forEach(inv => {
             const customer = parties.find(p => p.id === inv.partyId);
-            const totalTax = (inv.totalGSTAmountPaise || 0) + ((inv as any).sgstAmount || 0) + ((inv as any).igstAmount || 0);
+            const totalTax = (inv.totalGSTAmountPaise || 0);
             
             // If customer has GSTIN, it's B2B, else B2C
             if (customer && customer.gstin && customer.gstin.trim() !== '') {
@@ -44,7 +45,7 @@ export default function GSTReturnsScreen() {
     // GSTR-3B Calculations (Summary)
     const gstr3bData = useMemo(() => {
         const outputTax = gstr1Data.totalTax;
-        const itc = activePurchases.reduce((acc, pur) => acc + ((pur.totalGSTAmountPaise || 0) + ((pur as any).sgstAmount || 0) + ((pur as any).igstAmount || 0)), 0);
+        const itc = activePurchases.reduce((acc, pur) => acc + (pur.totalGSTAmountPaise || 0), 0);
         const liability = outputTax - itc;
 
         return { outputTax, itc, liability };
@@ -89,11 +90,11 @@ export default function GSTReturnsScreen() {
                             <View className="flex-row justify-between mb-4">
                                 <View>
                                     <Text className="font-sans-medium text-xs text-muted-foreground uppercase mb-1">Total Taxable Value</Text>
-                                    <Text className="font-sans-bold text-xl text-primary">₹ {gstr1Data.totalSales.toLocaleString('en-IN')}</Text>
+                                    <Text className="font-sans-bold text-xl text-primary">{formatINR(gstr1Data.totalSales)}</Text>
                                 </View>
                                 <View className="items-end">
                                     <Text className="font-sans-medium text-xs text-muted-foreground uppercase mb-1">Total Tax</Text>
-                                    <Text className="font-sans-bold text-xl text-primary">₹ {gstr1Data.totalTax.toLocaleString('en-IN')}</Text>
+                                    <Text className="font-sans-bold text-xl text-primary">{formatINR(gstr1Data.totalTax)}</Text>
                                 </View>
                             </View>
 
@@ -102,21 +103,21 @@ export default function GSTReturnsScreen() {
                             <Text className="font-sans-bold text-sm text-primary mb-3">B2B Invoices (Registered)</Text>
                             <View className="flex-row justify-between mb-2">
                                 <Text className="font-sans-medium text-muted-foreground">Taxable Value</Text>
-                                <Text className="font-sans-bold text-primary">₹ {gstr1Data.b2bSales.toLocaleString('en-IN')}</Text>
+                                <Text className="font-sans-bold text-primary">{formatINR(gstr1Data.b2bSales)}</Text>
                             </View>
                             <View className="flex-row justify-between mb-4">
                                 <Text className="font-sans-medium text-muted-foreground">Tax Amount</Text>
-                                <Text className="font-sans-bold text-primary">₹ {gstr1Data.b2bTax.toLocaleString('en-IN')}</Text>
+                                <Text className="font-sans-bold text-primary">{formatINR(gstr1Data.b2bTax)}</Text>
                             </View>
 
                             <Text className="font-sans-bold text-sm text-primary mb-3">B2C Invoices (Unregistered)</Text>
                             <View className="flex-row justify-between mb-2">
                                 <Text className="font-sans-medium text-muted-foreground">Taxable Value</Text>
-                                <Text className="font-sans-bold text-primary">₹ {gstr1Data.b2cSales.toLocaleString('en-IN')}</Text>
+                                <Text className="font-sans-bold text-primary">{formatINR(gstr1Data.b2cSales)}</Text>
                             </View>
                             <View className="flex-row justify-between">
                                 <Text className="font-sans-medium text-muted-foreground">Tax Amount</Text>
-                                <Text className="font-sans-bold text-primary">₹ {gstr1Data.b2cTax.toLocaleString('en-IN')}</Text>
+                                <Text className="font-sans-bold text-primary">{formatINR(gstr1Data.b2cTax)}</Text>
                             </View>
                         </View>
                     </View>
@@ -130,11 +131,11 @@ export default function GSTReturnsScreen() {
                             <View className="flex-row justify-between mb-4">
                                 <View>
                                     <Text className="font-sans-medium text-xs text-muted-foreground uppercase mb-1">Output Tax</Text>
-                                    <Text className="font-sans-bold text-xl text-primary">₹ {gstr3bData.outputTax.toLocaleString('en-IN')}</Text>
+                                    <Text className="font-sans-bold text-xl text-primary">{formatINR(gstr3bData.outputTax)}</Text>
                                 </View>
                                 <View className="items-end">
                                     <Text className="font-sans-medium text-xs text-muted-foreground uppercase mb-1">Eligible ITC</Text>
-                                    <Text className="font-sans-bold text-xl text-green-600">₹ {gstr3bData.itc.toLocaleString('en-IN')}</Text>
+                                    <Text className="font-sans-bold text-xl text-green-600">{formatINR(gstr3bData.itc)}</Text>
                                 </View>
                             </View>
 
@@ -143,7 +144,7 @@ export default function GSTReturnsScreen() {
                             <View className="flex-row justify-between items-center bg-slate-50 p-4 rounded-xl border border-border">
                                 <Text className="font-sans-bold text-base text-primary">Net Tax Liability</Text>
                                 <Text className={`font-sans-bold text-xl ${gstr3bData.liability > 0 ? 'text-red-600' : 'text-green-600'}`}>
-                                    {gstr3bData.liability > 0 ? `Payable ₹ ${gstr3bData.liability.toLocaleString('en-IN')}` : `Refund ₹ ${Math.abs(gstr3bData.liability).toLocaleString('en-IN')}`}
+                                    {gstr3bData.liability > 0 ? `Payable ${formatINR(gstr3bData.liability)}` : `Refund ${formatINR(Math.abs(gstr3bData.liability))}`}
                                 </Text>
                             </View>
                         </View>

@@ -1,11 +1,8 @@
 import fs from 'fs';
 import path from 'path';
-
 // --- DATA DICTIONARIES ---
-
 const BUSINESS_NAMES_FIRST = ['Tata', 'Patel', 'Reliance', 'Jain', 'Mehta', 'Ramesh', 'Suresh', 'Gupta', 'Singh', 'Shree', 'Om', 'Balaji', 'Saraswati', 'Ganesh', 'Laxmi', 'Maruti', 'Shiv', 'Kisan'];
 const BUSINESS_NAMES_LAST = ['Traders', 'Enterprise', 'Hardware', 'Industries', 'Steels', 'Electronics', 'Suppliers', 'Agencies', 'Brothers', 'Sons', 'Corporation', 'Distributors', 'Mart', 'Solutions', 'Plastics', 'Cement'];
-
 const ITEM_DATA = [
     { name: "TMT Bar 12mm", hsn: "7214", rate: 18, basePrice: 65 },
     { name: "TMT Bar 16mm", hsn: "7214", rate: 18, basePrice: 68 },
@@ -48,7 +45,6 @@ const ITEM_DATA = [
     { name: "MCB 32 Amp", hsn: "8536", rate: 18, basePrice: 180 },
     { name: "Distribution Board", hsn: "8537", rate: 18, basePrice: 1200 }
 ];
-
 const INDIAN_STATES = [
     { name: 'Maharashtra', code: '27' },
     { name: 'Gujarat', code: '24' },
@@ -56,35 +52,30 @@ const INDIAN_STATES = [
     { name: 'Delhi', code: '07' },
     { name: 'Tamil Nadu', code: '33' }
 ];
-
 const CATEGORIES = ["Raw Material", "Finished Goods", "Hardware", "Electricals", "Plumbing", "Paint"];
 const EXPENSE_CATEGORIES = ["Office Supplies", "Fuel", "Rent", "Salaries", "Maintenance", "Travel", "Marketing", "Electricity"];
-
 // --- UTILS ---
-
-const randomInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
-const randomPick = (arr: any[]) => arr[Math.floor(Math.random() * arr.length)];
-const randomDate = (start: Date, end: Date) => new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-
-const generateGSTIN = (stateCode: string) => {
+const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const randomPick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const randomDate = (start, end) => new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+const generateGSTIN = (stateCode) => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const nums = '0123456789';
     let gstin = stateCode;
-    for (let i=0; i<5; i++) gstin += chars.charAt(Math.floor(Math.random() * chars.length));
-    for (let i=0; i<4; i++) gstin += nums.charAt(Math.floor(Math.random() * nums.length));
+    for (let i = 0; i < 5; i++)
+        gstin += chars.charAt(Math.floor(Math.random() * chars.length));
+    for (let i = 0; i < 4; i++)
+        gstin += nums.charAt(Math.floor(Math.random() * nums.length));
     gstin += chars.charAt(Math.floor(Math.random() * chars.length));
     gstin += '1Z';
     gstin += nums.charAt(Math.floor(Math.random() * nums.length));
     return gstin;
 };
-
 // --- GENERATORS ---
-
-const parties: any[] = [];
+const parties = [];
 for (let i = 1; i <= 60; i++) {
     const state = randomInt(1, 100) < 60 ? INDIAN_STATES[0] : randomPick(INDIAN_STATES); // 60% chance of same state (Maharashtra 27)
-    const partyType = randomInt(1, 100) < 60 ? 'CUSTOMER' : (randomInt(1, 100) < 50 ? 'VENDOR' : 'BOTH');
-    
+    const partyType = randomInt(1, 100) < 60 ? PartyType.CUSTOMER : (randomInt(1, 100) < 50 ? PartyType.VENDOR : PartyType.BOTH);
     parties.push({
         id: `p${i}`,
         partyType: partyType,
@@ -92,7 +83,7 @@ for (let i = 1; i <= 60; i++) {
         gstin: generateGSTIN(state.code),
         phone: `98${randomInt(10000000, 99999999)}`,
         email: `contact@${randomPick(BUSINESS_NAMES_FIRST).toLowerCase()}business.com`,
-        gstType: 'REGULAR',
+        gstType: GSTType.REGULAR,
         openingBalancePaise: randomInt(-5000000, 15000000), // Random opening balances
         billingAddress: {
             line1: `Plot ${randomInt(1, 200)}, MIDC`,
@@ -106,16 +97,15 @@ for (let i = 1; i <= 60; i++) {
         contactPersons: []
     });
 }
-
-const items: any[] = [];
+const items = [];
 for (let i = 0; i < ITEM_DATA.length; i++) {
     const d = ITEM_DATA[i];
     items.push({
-        id: `i${i+1}`,
+        id: `i${i + 1}`,
         name: d.name,
         type: 'goods',
         hsn: d.hsn,
-        taxRate: { id: "tr_" + d.rate, hsnSacCode: d.hsn, description: d.rate + "% Rate", isService: false, isActive: true, gstComponent: { cgstRate: d.rate/2, sgstRate: d.rate/2, igstRate: d.rate, cessRate: 0 } },
+        taxRate: { id: "tr_" + d.rate, hsnSacCode: d.hsn, description: d.rate + "% Rate", isService: false, isActive: true, gstComponent: { cgstRate: d.rate / 2, sgstRate: d.rate / 2, igstRate: d.rate, cessRate: 0 } },
         unitPricePaise: d.basePrice * 100,
         purchasePricePaise: Math.floor((d.basePrice * 100) * 0.8), // 20% margin
         stock: randomInt(0, 500),
@@ -124,44 +114,35 @@ for (let i = 0; i < ITEM_DATA.length; i++) {
         category: randomPick(CATEGORIES)
     });
 }
-
-const invoices: any[] = [];
-const purchases: any[] = [];
-const payments: any[] = [];
-const expenses: any[] = [];
-
+const invoices = [];
+const purchases = [];
+const payments = [];
+const expenses = [];
 const startDate = new Date('2026-01-01T00:00:00Z');
 const endDate = new Date('2026-06-30T23:59:59Z');
-
 let invCounter = 1;
 let purCounter = 1;
 let payCounter = 1;
 let expCounter = 1;
-
 // Generate 150 Invoices
 for (let i = 0; i < 150; i++) {
-    const customer = randomPick(parties.filter(p => p.partyType === 'CUSTOMER' || p.partyType === 'BOTH'));
+    const customer = randomPick(parties.filter(p => p.partyType === PartyType.CUSTOMER || p.partyType === PartyType.BOTH));
     const isSameState = customer.billingAddress.stateCode === '27';
-    
     const lineItemsCount = randomInt(1, 6);
-    const lineItems: any[] = [];
+    const lineItems = [];
     let taxableAmountPaise = 0;
     let totalTaxPaise = 0;
-
-    for(let j=0; j<lineItemsCount; j++) {
+    for (let j = 0; j < lineItemsCount; j++) {
         const item = randomPick(items);
         const qty = randomInt(1, 50);
-        const rate = item.unitPricePaise;
+        const rate = item.salesPricePaise;
         const total = qty * rate;
         const taxRate = item.intraStateTaxRate;
         const tax = Math.round(total * (taxRate / 100));
-
         taxableAmountPaise += total;
         totalTaxPaise += tax;
-
         lineItems.push({
             id: `li_${invCounter}_${j}`,
-            
             description: item.name,
             unit: item.unit,
             discountPercent: 0,
@@ -172,37 +153,32 @@ for (let i = 0; i < 150; i++) {
             taxRate: item.taxRate,
             gstAmountPaise: tax,
             totalAmountPaise: total + tax,
-            
-            
-            
         });
     }
-
     const totalAmountPaise = taxableAmountPaise + totalTaxPaise;
-    
     // Determine status and balance
     const date = randomDate(startDate, endDate);
     const msSince = endDate.getTime() - date.getTime();
     const daysSince = msSince / (1000 * 3600 * 24);
-    
     let status = 'Pending';
     let balanceDuePaise = totalAmountPaise;
-
     if (daysSince > 45) {
         status = randomInt(1, 10) > 2 ? 'Paid' : 'Overdue'; // Older invoices are likely paid
-    } else if (daysSince > 15) {
+    }
+    else if (daysSince > 15) {
         status = randomInt(1, 10) > 5 ? 'Paid' : 'Pending';
-    } else {
+    }
+    else {
         status = randomInt(1, 10) > 8 ? 'Paid' : 'Pending';
     }
-
-    if (status === 'Paid') balanceDuePaise = 0;
-    if (status === 'Overdue' && balanceDuePaise === 0) balanceDuePaise = totalAmountPaise; // safety
-
+    if (status === 'Paid')
+        balanceDuePaise = 0;
+    if (status === 'Overdue' && balanceDuePaise === 0)
+        balanceDuePaise = totalAmountPaise; // safety
     if (status === 'Paid') {
         payments.push({
             id: `pay${payCounter++}`,
-            date: new Date(date.getTime() + randomInt(1, 10)*24*3600*1000).toISOString(),
+            date: new Date(date.getTime() + randomInt(1, 10) * 24 * 3600 * 1000).toISOString(),
             amountPaise: totalAmountPaise,
             mode: randomPick(['UPI', 'Bank Transfer', 'Cash']),
             type: 'in',
@@ -210,13 +186,12 @@ for (let i = 0; i < 150; i++) {
             partyName: customer.legalName
         });
     }
-
     invoices.push({
         id: `inv${invCounter}`,
-        documentType: 'SALES_INVOICE',
+        documentType: DocumentType.SALES_INVOICE,
         documentNumber: `INV-26-${invCounter.toString().padStart(4, '0')}`,
         documentDate: date.toISOString(),
-        dueDate: new Date(date.getTime() + 15*24*3600*1000).toISOString(),
+        dueDate: new Date(date.getTime() + 15 * 24 * 3600 * 1000).toISOString(),
         partyId: customer.id,
         partyName: customer.legalName,
         businessId: "bus1",
@@ -240,31 +215,25 @@ for (let i = 0; i < 150; i++) {
     });
     invCounter++;
 }
-
 // Generate 80 Purchases
 for (let i = 0; i < 80; i++) {
-    const vendor = randomPick(parties.filter(p => p.partyType === 'VENDOR' || p.partyType === 'BOTH'));
+    const vendor = randomPick(parties.filter(p => p.partyType === PartyType.VENDOR || p.partyType === PartyType.BOTH));
     const isSameState = vendor.billingAddress.stateCode === '27';
-    
     const lineItemsCount = randomInt(1, 8);
-    const lineItems: any[] = [];
+    const lineItems = [];
     let taxableAmountPaise = 0;
     let totalTaxPaise = 0;
-
-    for(let j=0; j<lineItemsCount; j++) {
+    for (let j = 0; j < lineItemsCount; j++) {
         const item = randomPick(items);
         const qty = randomInt(50, 500); // wholesale quantities
         const rate = item.purchasePricePaise;
         const total = qty * rate;
         const taxRate = item.intraStateTaxRate;
         const tax = Math.round(total * (taxRate / 100));
-
         taxableAmountPaise += total;
         totalTaxPaise += tax;
-
         lineItems.push({
             id: `pli_${purCounter}_${j}`,
-            
             description: item.name,
             unit: item.unit,
             discountPercent: 0,
@@ -275,40 +244,34 @@ for (let i = 0; i < 80; i++) {
             taxRate: item.taxRate,
             gstAmountPaise: tax,
             totalAmountPaise: total + tax,
-            
-            
-            
         });
     }
-
     const totalAmountPaise = taxableAmountPaise + totalTaxPaise;
     const date = randomDate(startDate, endDate);
-    
     let status = 'Pending';
     let balanceDuePaise = totalAmountPaise;
     if (randomInt(1, 10) > 4) {
         status = 'Paid';
         balanceDuePaise = 0;
-        
         payments.push({
             id: `pay${payCounter++}`,
-            date: new Date(date.getTime() + randomInt(1, 10)*24*3600*1000).toISOString(),
+            date: new Date(date.getTime() + randomInt(1, 10) * 24 * 3600 * 1000).toISOString(),
             amountPaise: totalAmountPaise,
             mode: randomPick(['UPI', 'Bank Transfer']),
             type: 'out',
             partyId: vendor.id,
             partyName: vendor.legalName
         });
-    } else if (randomInt(1, 10) > 8) {
+    }
+    else if (randomInt(1, 10) > 8) {
         status = 'Overdue';
     }
-
     purchases.push({
         id: `pur${purCounter}`,
-        documentType: 'PURCHASE_ORDER',
+        documentType: DocumentType.PURCHASE_ORDER,
         documentNumber: `PO-26-${purCounter.toString().padStart(4, '0')}`,
         documentDate: date.toISOString(),
-        dueDate: new Date(date.getTime() + 30*24*3600*1000).toISOString(),
+        dueDate: new Date(date.getTime() + 30 * 24 * 3600 * 1000).toISOString(),
         partyId: vendor.id,
         partyName: vendor.legalName,
         businessId: "bus1",
@@ -320,17 +283,15 @@ for (let i = 0; i < 80; i++) {
         placeOfSupply: "27",
         createdAt: date.toISOString(),
         updatedAt: date.toISOString(),
-        expectedDeliveryDate: new Date(date.getTime() + 7*24*3600*1000).toISOString(),
+        expectedDeliveryDate: new Date(date.getTime() + 7 * 24 * 3600 * 1000).toISOString(),
         status: status,
         lineItems: lineItems,
         totalTaxableAmountPaise: taxableAmountPaise,
         totalGSTAmountPaise: totalTaxPaise,
         totalAmountPaise: totalAmountPaise,
-        balanceDuePaise: balanceDuePaise
     });
     purCounter++;
 }
-
 // Generate 50 Expenses
 for (let i = 0; i < 50; i++) {
     const date = randomDate(startDate, endDate);
@@ -344,7 +305,6 @@ for (let i = 0; i < 50; i++) {
         notes: "Monthly recurring"
     });
 }
-
 // Business Info
 const DEFAULT_BUSINESS = {
     id: "bus1",
@@ -363,11 +323,10 @@ const DEFAULT_BUSINESS = {
     },
     financialYear: "2026-2027"
 };
-
 const fileContent = `// THIS FILE IS AUTO-GENERATED BY scripts/generate-mock.ts
 // DO NOT EDIT MANUALLY - This contains a massive dataset for testing.
 
-import { Party, InventoryItem, SalesInvoice, PurchaseOrder, ExpenseRecord, PaymentRecord, Business } from '../src/types/entities';
+import { Party, InventoryItem, SalesInvoice, PurchaseOrder, ExpenseRecord, PaymentRecord, Business, PartyType, GSTType, DocumentType } from '../src/types/entities';
 
 export const DEFAULT_BUSINESS: Business = ${JSON.stringify(DEFAULT_BUSINESS, null, 4)};
 
@@ -385,6 +344,5 @@ export const PAYMENTS: PaymentRecord[] = ${JSON.stringify(payments, null, 4)};
 
 export const DEFAULT_TAX_RATES = [0, 0.1, 0.25, 3, 5, 12, 18, 28];
 `;
-
 fs.writeFileSync(path.join(__dirname, '../constants/data.ts'), fileContent, 'utf-8');
 console.log("Mock data successfully generated and written to constants/data.ts");

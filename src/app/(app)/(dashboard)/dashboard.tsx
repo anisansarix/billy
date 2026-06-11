@@ -15,6 +15,15 @@ import OutstandingList from "@/components/domain/OutstandingList";
 import StatCard from "@/components/ui/StatCard";
 import AnimatedModal from "@/components/ui/AnimatedModal";
 import "../../../../global.css";
+import { SalesInvoice, PurchaseOrder, InventoryItem } from "@/types/entities";
+import { formatINR } from "@/utils/money";
+
+interface BalanceCardData {
+  title: string;
+  amount: number;
+  gstAmount: number;
+  currency: string;
+}
 
 const QUICK_ACTIONS = [
     { label: "SalesInvoice", icon: Receipt, route: "/(app)/sales" },
@@ -60,10 +69,10 @@ export default function App() {
 
   const dashboardBalances = useMemo(() => {
     const totalSales = invoices.reduce((acc, inv) => acc + (inv.totalAmountPaise || 0), 0);
-    const totalSalesGST = invoices.reduce((acc, inv) => acc + ((inv.totalGSTAmountPaise || 0) + ((inv as any).sgstAmount || 0) + ((inv as any).igstAmount || 0)), 0);
+    const totalSalesGST = invoices.reduce((acc, inv) => acc + (inv.totalGSTAmountPaise || 0), 0);
 
     const totalPurchases = purchases.reduce((acc, pur) => acc + (pur.totalAmountPaise || 0), 0);
-    const totalPurchasesGST = purchases.reduce((acc, pur) => acc + ((pur.totalGSTAmountPaise || 0) + ((pur as any).sgstAmount || 0) + ((pur as any).igstAmount || 0)), 0);
+    const totalPurchasesGST = purchases.reduce((acc, pur) => acc + (pur.totalGSTAmountPaise || 0), 0);
 
     return [
       {
@@ -128,8 +137,12 @@ export default function App() {
 
   const activeMonthsToDisplay = useMemo(() => {
       const uniqueMonths = new Set<string>();
-      [...invoices, ...purchases, ...payments].forEach(doc => {
+      [...invoices, ...purchases].forEach(doc => {
           const monthStr = getMonthStr(doc.documentDate);
+          if (monthStr !== "Unknown") uniqueMonths.add(monthStr);
+      });
+      payments.forEach(doc => {
+          const monthStr = getMonthStr(doc.date);
           if (monthStr !== "Unknown") uniqueMonths.add(monthStr);
       });
       const activeMonths = ALL_MONTHS.filter(m => uniqueMonths.has(m));
@@ -162,7 +175,7 @@ export default function App() {
     const aggregated = activeMonthsToDisplay.map(m => ({ label: m, value1: 0, value2: 0, value3: 0 }));
 
     payments.forEach(pay => {
-        const monthStr = getMonthStr(pay.documentDate);
+        const monthStr = getMonthStr(pay.date);
         const target = aggregated.find(a => a.label === monthStr);
         if (target) {
             if (pay.type === 'in') target.value1 += pay.amountPaise;
@@ -175,7 +188,7 @@ export default function App() {
         const monthStr = getMonthStr(inv.documentDate);
         const target = aggregated.find(a => a.label === monthStr);
         if (target) {
-            target.value3 += ((inv.totalGSTAmountPaise || 0) + ((inv as any).sgstAmount || 0) + ((inv as any).igstAmount || 0));
+            target.value3 += (inv.totalGSTAmountPaise || 0);
         }
     });
 
@@ -183,7 +196,7 @@ export default function App() {
         const monthStr = getMonthStr(pur.documentDate);
         const target = aggregated.find(a => a.label === monthStr);
         if (target) {
-            target.value3 -= ((pur.totalGSTAmountPaise || 0) + ((pur as any).sgstAmount || 0) + ((pur as any).igstAmount || 0));
+            target.value3 -= (pur.totalGSTAmountPaise || 0);
         }
     });
 
@@ -192,8 +205,8 @@ export default function App() {
 
   // GST Liability Calculation
   const estimatedLiability = useMemo(() => {
-    const outputGST = invoices.filter(i => i.status !== 'Draft' && i.status !== 'Cancelled').reduce((acc, inv) => acc + ((inv.totalGSTAmountPaise || 0) + ((inv as any).sgstAmount || 0) + ((inv as any).igstAmount || 0)), 0);
-    const inputGST = purchases.filter(p => p.status !== 'Draft' && p.status !== 'Cancelled').reduce((acc, pur) => acc + ((pur.totalGSTAmountPaise || 0) + ((pur as any).sgstAmount || 0) + ((pur as any).igstAmount || 0)), 0);
+    const outputGST = invoices.filter(i => i.status !== 'Draft' && i.status !== 'Cancelled').reduce((acc, inv) => acc + (inv.totalGSTAmountPaise || 0), 0);
+    const inputGST = purchases.filter(p => p.status !== 'Draft' && p.status !== 'Cancelled').reduce((acc, pur) => acc + (pur.totalGSTAmountPaise || 0), 0);
     return outputGST - inputGST;
   }, [invoices, purchases]);
 
@@ -267,7 +280,7 @@ export default function App() {
                 <View>
                     <Text className="font-sans-medium text-xs text-muted-foreground uppercase tracking-wider mb-1">Est. GST Liability</Text>
                     <Text className={`font-sans-bold text-2xl ${estimatedLiability > 0 ? 'text-red-600' : 'text-green-600'}`}>
-                        {estimatedLiability > 0 ? `Payable ₹ ${estimatedLiability.toLocaleString('en-IN')}` : `Refund ₹ ${Math.abs(estimatedLiability).toLocaleString('en-IN')}`}
+                        {estimatedLiability > 0 ? `Payable ${formatINR(estimatedLiability)}` : `Refund ${formatINR(Math.abs(estimatedLiability))}`}
                     </Text>
                 </View>
                 <View className="h-10 w-10 bg-primary/10 rounded-full items-center justify-center">
@@ -336,7 +349,7 @@ export default function App() {
                         {unpaidInvoices.slice(0, 3).map((inv, idx) => (
                             <View key={inv.id} className={`flex-row justify-between items-center py-2 ${idx !== Math.min(unpaidInvoices.length, 3) - 1 ? 'border-b border-red-200/50' : ''}`}>
                                 <Text className="font-sans-medium text-red-900 flex-1 mr-2" numberOfLines={1}>{inv.partyName}</Text>
-                                <Text className="font-sans-bold text-red-700">₹ {(inv.totalAmountPaise || 0).toLocaleString('en-IN')}</Text>
+                                <Text className="font-sans-bold text-red-700">{formatINR(inv.totalAmountPaise || 0)}</Text>
                             </View>
                         ))}
                         {unpaidInvoices.length > 3 && (

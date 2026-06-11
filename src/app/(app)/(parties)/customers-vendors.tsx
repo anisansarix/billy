@@ -10,6 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Card from "@/components/ui/Card";
 import { useAppStore } from "@/store";
 import "../../../../global.css";
+import { formatINR } from "@/utils/money";
 
 
 
@@ -43,7 +44,7 @@ export default function CustomersVendorsScreen() {
         gstin: "",
         // phone: "",
         balanceString: "0",
-        type: "customer",
+        partyType: "CUSTOMER" as any,
         balanceType: "receivable"
     });
     const [showMoreDetails, setShowMoreDetails] = useState(false);
@@ -70,9 +71,9 @@ export default function CustomersVendorsScreen() {
             setEditingParty(party);
             setFormData({
                 ...party,
-                balanceString: Math.abs(party.openingBalancePaise).toString(),
+                balanceString: (Math.abs(party.openingBalancePaise) / 100).toString(),
                 balanceType: party.openingBalancePaise > 0 ? "receivable" : "payable",
-                type: party.partyType
+                partyType: party.partyType
             });
             setShowMoreDetails(false); // Default to quick view even on edit, user can expand if needed
         } else {
@@ -82,7 +83,7 @@ export default function CustomersVendorsScreen() {
                 gstin: "",
                 // phone: "",
                 balanceString: "0",
-                type: tab,
+                partyType: tab as any,
                 balanceType: "receivable"
             });
             setShowMoreDetails(false);
@@ -126,7 +127,7 @@ export default function CustomersVendorsScreen() {
         }
 
         const numericBalance = parseFloat(formData.balanceString) || 0;
-        const finalBalance = formData.balanceType === "payable" ? -Math.abs(numericBalance) : Math.abs(numericBalance);
+        const finalBalance = Math.round((formData.balanceType === "payable" ? -Math.abs(numericBalance) : Math.abs(numericBalance)) * 100);
 
         const partyData: Party = {
             ...formData,
@@ -135,7 +136,7 @@ export default function CustomersVendorsScreen() {
             gstin: formData.gstin,
             phone: formData.phone,
             openingBalancePaise: finalBalance,
-            type: formData.partyType || "customer",
+            partyType: formData.partyType || ("CUSTOMER" as any),
         } as Party;
 
         delete (partyData as Party & { balanceString?: string }).balanceString;
@@ -173,8 +174,8 @@ export default function CustomersVendorsScreen() {
     };
 
     const handleCall = () => {
-        if (phone) {
-            Linking.openURL(`tel:${phone}`);
+        if (selectedParty?.phone) {
+            Linking.openURL(`tel:${selectedParty.phone}`);
         } else {
             Alert.alert("No Phone Number", "This party does not have a phone number saved.");
         }
@@ -219,16 +220,16 @@ export default function CustomersVendorsScreen() {
                 <View className="bg-white rounded-2xl p-4 flex-row border border-border shadow-sm">
                     <View className="flex-1 border-r border-border pl-2">
                         <Text className="font-sans-medium text-[10px] text-muted-foreground mb-1 uppercase tracking-wider">Total Receivable</Text>
-                        <Text className="font-sans-bold text-lg text-green-600">₹ {totalReceivable.toLocaleString('en-IN')}</Text>
+                        <Text className="font-sans-bold text-lg text-green-600">{formatINR(totalReceivable)}</Text>
                         {tab === 'vendor' && totalReceivable > 0 && (
-                            <Text className="font-sans-medium text-[10px] text-muted-foreground mt-1">(Advance: ₹{totalReceivable.toLocaleString('en-IN')})</Text>
+                            <Text className="font-sans-medium text-[10px] text-muted-foreground mt-1">(Advance: {formatINR(totalReceivable)})</Text>
                         )}
                     </View>
                     <View className="flex-1 pl-4">
                         <Text className="font-sans-medium text-[10px] text-muted-foreground mb-1 uppercase tracking-wider">Total Payable</Text>
-                        <Text className="font-sans-bold text-lg text-red-500">₹ {totalPayable.toLocaleString('en-IN')}</Text>
+                        <Text className="font-sans-bold text-lg text-red-500">{formatINR(totalPayable)}</Text>
                         {tab === 'customer' && totalPayable > 0 && (
-                            <Text className="font-sans-medium text-[10px] text-muted-foreground mt-1">(Advance: ₹{totalPayable.toLocaleString('en-IN')})</Text>
+                            <Text className="font-sans-medium text-[10px] text-muted-foreground mt-1">(Advance: {formatINR(totalPayable)})</Text>
                         )}
                     </View>
                 </View>
@@ -266,7 +267,7 @@ export default function CustomersVendorsScreen() {
                         </View>
                         <View className="items-end flex-shrink-0">
                             <Text className={`font-sans-bold text-base ${party.openingBalancePaise > 0 ? (tab === 'customer' ? 'text-green-600' : 'text-red-500') : 'text-primary'}`} numberOfLines={1} adjustsFontSizeToFit>
-                                ₹ {Math.abs(party.openingBalancePaise).toLocaleString('en-IN')}
+                                {formatINR(Math.abs(party.openingBalancePaise))}
                             </Text>
                             <Text className="font-sans-medium text-xs text-muted-foreground">
                                 {party.openingBalancePaise > 0 ? (tab === 'customer' ? 'To Receive' : 'To Pay') : 'Advance'}
@@ -299,7 +300,7 @@ export default function CustomersVendorsScreen() {
                             <View className="bg-muted p-4 rounded-2xl mb-6">
                                 <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Current Balance</Text>
                                 <Text className={`font-sans-bold text-3xl ${selectedParty.openingBalancePaise > 0 ? (selectedParty.partyType === 'customer' ? 'text-green-600' : 'text-red-500') : 'text-primary'}`}>
-                                    ₹ {Math.abs(selectedParty.openingBalancePaise).toLocaleString('en-IN')}
+                                    {formatINR(Math.abs(selectedParty.openingBalancePaise))}
                                 </Text>
                                 <Text className="font-sans-medium text-sm mt-1 text-muted-foreground">
                                     {selectedParty.openingBalancePaise > 0 ? (selectedParty.partyType === 'customer' ? 'To Receive' : 'To Pay') : 'Advance'}
@@ -313,7 +314,7 @@ export default function CustomersVendorsScreen() {
                                     </View>
                                     <View>
                                         <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Phone Number</Text>
-                                        <Text className="font-sans-bold text-base text-primary">{'N/A'}</Text>
+                                        <Text className="font-sans-bold text-base text-primary">{selectedParty.phone || 'N/A'}</Text>
                                     </View>
                                 </View>
 

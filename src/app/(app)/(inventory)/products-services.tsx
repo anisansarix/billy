@@ -10,6 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Card from "@/components/ui/Card";
 import { useAppStore } from "@/store";
 import "../../../../global.css";
+import { formatINR } from "@/utils/money";
 
 export default function ProductsServicesScreen() {
     const router = useRouter();
@@ -253,7 +254,7 @@ export default function ProductsServicesScreen() {
                     {tab === 'product' ? (
                         <View className="flex-1 border-r border-border pl-2">
                             <Text className="font-sans-medium text-[10px] text-muted-foreground mb-1 uppercase tracking-wider">Inventory Value</Text>
-                            <Text className="font-sans-bold text-lg text-primary">₹ {totalInventoryValue.toLocaleString('en-IN')}</Text>
+                            <Text className="font-sans-bold text-lg text-primary">{formatINR(totalInventoryValue)}</Text>
                         </View>
                     ) : (
                         <View className="flex-1 border-r border-border pl-2">
@@ -264,7 +265,7 @@ export default function ProductsServicesScreen() {
                     <View className="flex-1 pl-4 justify-center">
                         <Text className="font-sans-medium text-[10px] text-muted-foreground mb-1 uppercase tracking-wider">Top Valued</Text>
                         <Text className="font-sans-bold text-sm text-primary" numberOfLines={1}>{topItem?.name || "None"}</Text>
-                        {topItem && <Text className="font-sans-medium text-[10px] text-green-600">₹{topItem.unitPricePaise.toLocaleString('en-IN')}</Text>}
+                        {topItem && <Text className="font-sans-medium text-[10px] text-green-600">{formatINR(topItem.unitPricePaise)}</Text>}
                     </View>
                 </View>
             </View>
@@ -312,7 +313,7 @@ export default function ProductsServicesScreen() {
                             </View>
                             <View className="items-end flex-shrink-0">
                                 <Text className="font-sans-bold text-base text-primary" numberOfLines={1} adjustsFontSizeToFit>
-                                    ₹ {item.unitPricePaise.toLocaleString('en-IN')}
+                                    {formatINR(item.unitPricePaise)}
                                 </Text>
                                 {tab === "product" && (
                                     <Text className="font-sans-medium text-xs text-muted-foreground mt-1">
@@ -387,7 +388,7 @@ export default function ProductsServicesScreen() {
                             <View>
                                 <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Selling Price</Text>
                                 <Text className="font-sans-bold text-2xl text-primary">
-                                    ₹ {selectedItem.unitPricePaise.toLocaleString('en-IN')}
+                                    {formatINR(selectedItem.unitPricePaise)}
                                 </Text>
                             </View>
                             {selectedItem.type === 'product' && (
@@ -486,8 +487,8 @@ export default function ProductsServicesScreen() {
                                     className="bg-white border border-border rounded-xl px-4 py-4 font-sans-regular text-primary text-base"
                                     placeholder="0"
                                     keyboardType="numeric"
-                                    value={formData.unitPricePaise?.toString() || ""}
-                                    onChangeText={(text) => setFormData({ ...formData, unitPricePaise: text ? parseFloat(text) : 0 })}
+                                    value={formData.unitPricePaise ? (formData.unitPricePaise / 100).toString() : ""}
+                                    onChangeText={(text) => setFormData({ ...formData, unitPricePaise: text ? Math.round(parseFloat(text) * 100) : 0 })}
                                 />
                             </View>
                             {formData.type === 'product' && (
@@ -521,8 +522,8 @@ export default function ProductsServicesScreen() {
                                         className="bg-white border border-border rounded-xl px-4 py-4 font-sans-regular text-primary text-base"
                                         placeholder="0"
                                         keyboardType="numeric"
-                                        value={formData.purchasePricePaise?.toString() || ""}
-                                        onChangeText={(text) => setFormData({ ...formData, purchasePricePaise: text ? parseFloat(text) : undefined })}
+                                        value={formData.purchasePricePaise ? (formData.purchasePricePaise / 100).toString() : ""}
+                                        onChangeText={(text) => setFormData({ ...formData, purchasePricePaise: text ? Math.round(parseFloat(text) * 100) : undefined })}
                                     />
                                 </View>
 

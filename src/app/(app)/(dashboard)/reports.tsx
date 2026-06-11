@@ -10,6 +10,7 @@ import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import { useAppStore } from "@/store";
 import "../../../../global.css";
+import { formatINR } from "@/utils/money";
 
 
 
@@ -37,15 +38,15 @@ export default function ReportsScreen() {
     const netProfit = grossProfit - operatingExpenses;
 
     // --- GST CALCULATIONS ---
-    const outputCGST = activeInvoices.reduce((sum, i) => sum + i.totalGSTAmountPaise, 0);
-    const outputSGST = activeInvoices.reduce((sum, i) => sum + i.sgstAmount, 0);
-    const outputIGST = activeInvoices.reduce((sum, i) => sum + i.igstAmount, 0);
-    const totalOutputTax = outputCGST + outputSGST + outputIGST;
+    const outputCGST = activeInvoices.reduce((sum, i) => sum + Object.values(i.gstSummary?.slabs || {}).reduce((s, slab) => s + (slab.cgstAmountPaise || 0), 0), 0);
+    const outputSGST = activeInvoices.reduce((sum, i) => sum + Object.values(i.gstSummary?.slabs || {}).reduce((s, slab) => s + (slab.sgstAmountPaise || 0), 0), 0);
+    const outputIGST = activeInvoices.reduce((sum, i) => sum + Object.values(i.gstSummary?.slabs || {}).reduce((s, slab) => s + (slab.igstAmountPaise || 0), 0), 0);
+    const totalOutputTax = activeInvoices.reduce((sum, i) => sum + (i.totalGSTAmountPaise || 0), 0);
 
-    const inputCGST = activePurchases.reduce((sum, p) => sum + p.totalGSTAmountPaise, 0);
-    const inputSGST = activePurchases.reduce((sum, p) => sum + p.sgstAmount, 0);
-    const inputIGST = activePurchases.reduce((sum, p) => sum + p.igstAmount, 0);
-    const totalInputTax = inputCGST + inputSGST + inputIGST;
+    const inputCGST = activePurchases.reduce((sum, p) => sum + Object.values(p.gstSummary?.slabs || {}).reduce((s, slab) => s + (slab.cgstAmountPaise || 0), 0), 0);
+    const inputSGST = activePurchases.reduce((sum, p) => sum + Object.values(p.gstSummary?.slabs || {}).reduce((s, slab) => s + (slab.sgstAmountPaise || 0), 0), 0);
+    const inputIGST = activePurchases.reduce((sum, p) => sum + Object.values(p.gstSummary?.slabs || {}).reduce((s, slab) => s + (slab.igstAmountPaise || 0), 0), 0);
+    const totalInputTax = activePurchases.reduce((sum, p) => sum + (p.totalGSTAmountPaise || 0), 0);
 
     const estimatedLiability = totalOutputTax - totalInputTax;
 
@@ -106,13 +107,13 @@ export default function ReportsScreen() {
                             <View className="flex-row justify-between mb-2">
                                 <Text className="font-sans-medium text-muted-foreground">Gross Profit</Text>
                                 <Text className={`font-sans-bold ${grossProfit >= 0 ? 'text-primary' : 'text-red-500'}`}>
-                                    ₹ {Math.abs(grossProfit).toLocaleString('en-IN')}
+                                    {formatINR(Math.abs(grossProfit))}
                                 </Text>
                             </View>
                             <View className="flex-row justify-between mb-4">
                                 <Text className="font-sans-medium text-muted-foreground">Net Profit</Text>
                                 <Text className={`font-sans-bold ${netProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                    {netProfit < 0 ? '- ' : ''}₹ {Math.abs(netProfit).toLocaleString('en-IN')}
+                                    {netProfit < 0 ? '- ' : ''}{formatINR(Math.abs(netProfit))}
                                 </Text>
                             </View>
                             <Button
@@ -134,17 +135,17 @@ export default function ReportsScreen() {
                             
                             <View className="flex-row justify-between mb-2">
                                 <Text className="font-sans-medium text-muted-foreground">Output Tax (Collected)</Text>
-                                <Text className="font-sans-bold text-primary">₹ {totalOutputTax.toLocaleString('en-IN')}</Text>
+                                <Text className="font-sans-bold text-primary">{formatINR(totalOutputTax)}</Text>
                             </View>
                             <View className="flex-row justify-between mb-4">
                                 <Text className="font-sans-medium text-muted-foreground">Input Tax (ITC)</Text>
-                                <Text className="font-sans-bold text-primary">₹ {totalInputTax.toLocaleString('en-IN')}</Text>
+                                <Text className="font-sans-bold text-primary">{formatINR(totalInputTax)}</Text>
                             </View>
                             <View className="h-[1px] bg-border mb-3" />
                             <View className="flex-row justify-between items-center">
                                 <Text className="font-sans-bold text-primary">Est. Liability</Text>
                                 <Text className={`font-sans-bold ${estimatedLiability > 0 ? 'text-red-500' : 'text-green-600'}`}>
-                                    {estimatedLiability > 0 ? `Payable ₹ ${estimatedLiability.toLocaleString('en-IN')}` : `Refund ₹ ${Math.abs(estimatedLiability).toLocaleString('en-IN')}`}
+                                    {estimatedLiability > 0 ? `Payable ${formatINR(estimatedLiability)}` : `Refund ${formatINR(Math.abs(estimatedLiability))}`}
                                 </Text>
                             </View>
                         </Card>
@@ -156,18 +157,18 @@ export default function ReportsScreen() {
                                 <View className="flex-1 mr-2 bg-green-50 p-4 rounded-xl border border-green-100">
                                     <TrendingUp color="#16a34a" size={24} className="mb-2" />
                                     <Text className="font-sans-medium text-xs text-muted-foreground mb-1">Cash In</Text>
-                                    <Text className="font-sans-bold text-base text-green-700">₹ {cashIn.toLocaleString('en-IN')}</Text>
+                                    <Text className="font-sans-bold text-base text-green-700">{formatINR(cashIn)}</Text>
                                 </View>
                                 <View className="flex-1 ml-2 bg-red-50 p-4 rounded-xl border border-red-100">
                                     <TrendingDown color="#dc2626" size={24} className="mb-2" />
                                     <Text className="font-sans-medium text-xs text-muted-foreground mb-1">Cash Out</Text>
-                                    <Text className="font-sans-bold text-base text-red-700">₹ {cashOut.toLocaleString('en-IN')}</Text>
+                                    <Text className="font-sans-bold text-base text-red-700">{formatINR(cashOut)}</Text>
                                 </View>
                             </View>
                             <View className="flex-row justify-between items-center bg-slate-50 p-3 rounded-lg border border-border">
                                 <Text className="font-sans-bold text-primary">Net Cashflow</Text>
                                 <Text className={`font-sans-bold ${netCashflow >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                    {netCashflow < 0 ? '- ' : ''}₹ {Math.abs(netCashflow).toLocaleString('en-IN')}
+                                    {netCashflow < 0 ? '- ' : ''}{formatINR(Math.abs(netCashflow))}
                                 </Text>
                             </View>
                         </Card>
@@ -190,12 +191,12 @@ export default function ReportsScreen() {
                             <Text className="font-sans-bold text-lg text-primary mb-3">Operating Income</Text>
                             <View className="flex-row justify-between mb-2">
                                 <Text className="font-sans-medium text-muted-foreground">Total Sales Revenue</Text>
-                                <Text className="font-sans-bold text-primary">₹ {revenue.toLocaleString('en-IN')}</Text>
+                                <Text className="font-sans-bold text-primary">{formatINR(revenue)}</Text>
                             </View>
                             <View className="h-[1px] bg-border my-2" />
                             <View className="flex-row justify-between">
                                 <Text className="font-sans-bold text-primary">Total Income</Text>
-                                <Text className="font-sans-bold text-primary">₹ {revenue.toLocaleString('en-IN')}</Text>
+                                <Text className="font-sans-bold text-primary">{formatINR(revenue)}</Text>
                             </View>
                         </View>
 
@@ -203,37 +204,37 @@ export default function ReportsScreen() {
                             <Text className="font-sans-bold text-lg text-primary mb-3">Cost of Goods Sold (COGS)</Text>
                             <View className="flex-row justify-between mb-2">
                                 <Text className="font-sans-medium text-muted-foreground">Purchases / Bills</Text>
-                                <Text className="font-sans-bold text-primary">₹ {cogs.toLocaleString('en-IN')}</Text>
+                                <Text className="font-sans-bold text-primary">{formatINR(cogs)}</Text>
                             </View>
                             <View className="h-[1px] bg-border my-2" />
                             <View className="flex-row justify-between">
                                 <Text className="font-sans-bold text-primary">Total COGS</Text>
-                                <Text className="font-sans-bold text-primary">₹ {cogs.toLocaleString('en-IN')}</Text>
+                                <Text className="font-sans-bold text-primary">{formatINR(cogs)}</Text>
                             </View>
                         </View>
 
                         <View className="bg-slate-50 p-4 rounded-xl border border-border mb-6 flex-row justify-between">
                             <Text className="font-sans-bold text-primary text-base">Gross Profit</Text>
-                            <Text className="font-sans-bold text-primary text-base">₹ {grossProfit.toLocaleString('en-IN')}</Text>
+                            <Text className="font-sans-bold text-primary text-base">{formatINR(grossProfit)}</Text>
                         </View>
 
                         <View className="mb-6">
                             <Text className="font-sans-bold text-lg text-primary mb-3">Operating Expenses</Text>
                             <View className="flex-row justify-between mb-2">
                                 <Text className="font-sans-medium text-muted-foreground">Indirect Expenses</Text>
-                                <Text className="font-sans-bold text-primary">₹ {operatingExpenses.toLocaleString('en-IN')}</Text>
+                                <Text className="font-sans-bold text-primary">{formatINR(operatingExpenses)}</Text>
                             </View>
                             <View className="h-[1px] bg-border my-2" />
                             <View className="flex-row justify-between">
                                 <Text className="font-sans-bold text-primary">Total Expenses</Text>
-                                <Text className="font-sans-bold text-primary">₹ {operatingExpenses.toLocaleString('en-IN')}</Text>
+                                <Text className="font-sans-bold text-primary">{formatINR(operatingExpenses)}</Text>
                             </View>
                         </View>
 
                         <View className={`p-4 rounded-xl border mb-8 flex-row justify-between ${netProfit >= 0 ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
                             <Text className={`font-sans-bold text-lg ${netProfit >= 0 ? 'text-green-700' : 'text-red-700'}`}>Net Profit</Text>
                             <Text className={`font-sans-bold text-lg ${netProfit >= 0 ? 'text-green-700' : 'text-red-700'}`}>
-                                {netProfit < 0 ? '- ' : ''}₹ {Math.abs(netProfit).toLocaleString('en-IN')}
+                                {netProfit < 0 ? '- ' : ''}{formatINR(Math.abs(netProfit))}
                             </Text>
                         </View>
                     </ScrollView>
@@ -255,20 +256,20 @@ export default function ReportsScreen() {
                             <Text className="font-sans-bold text-lg text-primary mb-4">Output Tax (Sales)</Text>
                             <View className="flex-row justify-between mb-2">
                                 <Text className="font-sans-medium text-muted-foreground">CGST Collected</Text>
-                                <Text className="font-sans-bold text-primary">₹ {outputCGST.toLocaleString('en-IN')}</Text>
+                                <Text className="font-sans-bold text-primary">{formatINR(outputCGST)}</Text>
                             </View>
                             <View className="flex-row justify-between mb-2">
                                 <Text className="font-sans-medium text-muted-foreground">SGST Collected</Text>
-                                <Text className="font-sans-bold text-primary">₹ {outputSGST.toLocaleString('en-IN')}</Text>
+                                <Text className="font-sans-bold text-primary">{formatINR(outputSGST)}</Text>
                             </View>
                             <View className="flex-row justify-between mb-2">
                                 <Text className="font-sans-medium text-muted-foreground">IGST Collected</Text>
-                                <Text className="font-sans-bold text-primary">₹ {outputIGST.toLocaleString('en-IN')}</Text>
+                                <Text className="font-sans-bold text-primary">{formatINR(outputIGST)}</Text>
                             </View>
                             <View className="h-[1px] bg-border my-2" />
                             <View className="flex-row justify-between">
                                 <Text className="font-sans-bold text-primary">Total Output Tax</Text>
-                                <Text className="font-sans-bold text-primary">₹ {totalOutputTax.toLocaleString('en-IN')}</Text>
+                                <Text className="font-sans-bold text-primary">{formatINR(totalOutputTax)}</Text>
                             </View>
                         </View>
 
@@ -276,27 +277,27 @@ export default function ReportsScreen() {
                             <Text className="font-sans-bold text-lg text-primary mb-4">Input Tax Credit (Purchases)</Text>
                             <View className="flex-row justify-between mb-2">
                                 <Text className="font-sans-medium text-muted-foreground">CGST Paid</Text>
-                                <Text className="font-sans-bold text-primary">₹ {inputCGST.toLocaleString('en-IN')}</Text>
+                                <Text className="font-sans-bold text-primary">{formatINR(inputCGST)}</Text>
                             </View>
                             <View className="flex-row justify-between mb-2">
                                 <Text className="font-sans-medium text-muted-foreground">SGST Paid</Text>
-                                <Text className="font-sans-bold text-primary">₹ {inputSGST.toLocaleString('en-IN')}</Text>
+                                <Text className="font-sans-bold text-primary">{formatINR(inputSGST)}</Text>
                             </View>
                             <View className="flex-row justify-between mb-2">
                                 <Text className="font-sans-medium text-muted-foreground">IGST Paid</Text>
-                                <Text className="font-sans-bold text-primary">₹ {inputIGST.toLocaleString('en-IN')}</Text>
+                                <Text className="font-sans-bold text-primary">{formatINR(inputIGST)}</Text>
                             </View>
                             <View className="h-[1px] bg-border my-2" />
                             <View className="flex-row justify-between">
                                 <Text className="font-sans-bold text-primary">Total Input Tax</Text>
-                                <Text className="font-sans-bold text-primary">₹ {totalInputTax.toLocaleString('en-IN')}</Text>
+                                <Text className="font-sans-bold text-primary">{formatINR(totalInputTax)}</Text>
                             </View>
                         </View>
 
                         <View className={`p-4 rounded-xl border mb-8 flex-row justify-between ${estimatedLiability > 0 ? 'bg-red-50 border-red-200' : 'bg-green-50 border-green-200'}`}>
                             <Text className={`font-sans-bold text-lg ${estimatedLiability > 0 ? 'text-red-700' : 'text-green-700'}`}>Estimated Liability</Text>
                             <Text className={`font-sans-bold text-lg ${estimatedLiability > 0 ? 'text-red-700' : 'text-green-700'}`}>
-                                {estimatedLiability > 0 ? `Payable ₹ ${estimatedLiability.toLocaleString('en-IN')}` : `Refund ₹ ${Math.abs(estimatedLiability).toLocaleString('en-IN')}`}
+                                {estimatedLiability > 0 ? `Payable ${formatINR(estimatedLiability)}` : `Refund ${formatINR(Math.abs(estimatedLiability))}`}
                             </Text>
                         </View>
                     </ScrollView>
@@ -323,7 +324,7 @@ export default function ReportsScreen() {
                                     </View>
                                     <Text className="font-sans-bold text-green-800">Total Money In</Text>
                                 </View>
-                                <Text className="font-sans-bold text-lg text-green-700">₹ {cashIn.toLocaleString('en-IN')}</Text>
+                                <Text className="font-sans-bold text-lg text-green-700">{formatINR(cashIn)}</Text>
                             </View>
 
                             <View className="flex-row items-center justify-between mb-3 bg-red-50 p-4 rounded-xl border border-red-100">
@@ -333,14 +334,14 @@ export default function ReportsScreen() {
                                     </View>
                                     <Text className="font-sans-bold text-red-800">Total Money Out</Text>
                                 </View>
-                                <Text className="font-sans-bold text-lg text-red-700">₹ {cashOut.toLocaleString('en-IN')}</Text>
+                                <Text className="font-sans-bold text-lg text-red-700">{formatINR(cashOut)}</Text>
                             </View>
                         </View>
 
                         <View className="bg-slate-50 p-4 rounded-xl border border-border mb-8">
                             <Text className="font-sans-bold text-primary mb-2">Net Cash Movement</Text>
                             <Text className={`font-sans-bold text-3xl ${netCashflow >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                {netCashflow < 0 ? '- ' : ''}₹ {Math.abs(netCashflow).toLocaleString('en-IN')}
+                                {netCashflow < 0 ? '- ' : ''}{formatINR(Math.abs(netCashflow))}
                             </Text>
                             <Text className="font-sans-medium text-xs text-muted-foreground mt-2">
                                 {netCashflow >= 0 ? 'You have generated positive cash flow.' : 'You have burned more cash than you generated.'}

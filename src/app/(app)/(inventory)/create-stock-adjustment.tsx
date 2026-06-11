@@ -7,7 +7,10 @@ import { useState, useMemo } from "react";
 import { Pressable, ScrollView, Text, TextInput, View, Alert, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppStore } from "@/store";
+import { InventoryItem, StockAdjustmentRecord } from "@/types/entities";
+import "../../../../global.css";
 import AnimatedModal from "@/components/ui/AnimatedModal";
+import { formatINR } from "@/utils/money";
 
 export default function CreateStockAdjustmentScreen() {
     const router = useRouter();
@@ -25,7 +28,7 @@ export default function CreateStockAdjustmentScreen() {
     const [search, setSearch] = useState("");
 
     const filteredItems = useMemo(() => 
-        items.filter(i => i.partyType === 'product' && i.name.toLowerCase().includes(search.toLowerCase())),
+        items.filter(i => i.type === 'product' && i.name.toLowerCase().includes(search.toLowerCase())),
     [items, search]);
 
     const handleSave = () => {
@@ -212,7 +215,7 @@ export default function CreateStockAdjustmentScreen() {
                                 >
                                     <View>
                                         <Text className="font-sans-bold text-base text-primary mb-1">{item.name}</Text>
-                                        <Text className="font-sans-medium text-xs text-muted-foreground">₹ {item.unitPricePaise}</Text>
+                                        <Text className="font-sans-medium text-xs text-muted-foreground">{formatINR(item.unitPricePaise)}</Text>
                                     </View>
                                     <View className="bg-slate-100 px-3 py-1.5 rounded-md">
                                         <Text className="font-sans-medium text-xs text-primary">Stock: {item.stock || 0}</Text>

@@ -9,6 +9,7 @@ import { useAppStore } from "@/store";
 import { useShallow } from 'zustand/react/shallow';
 import { ExpenseRecord, PurchaseOrder } from "@/types/entities";
 import "../../../../global.css";
+import { formatINR } from "@/utils/money";
 
 
 export default function ExpenseRecordsPurchasesScreen() {
@@ -182,13 +183,13 @@ export default function ExpenseRecordsPurchasesScreen() {
                     {mainTab === 'expenses' ? (
                         <View className="flex-1 pl-2">
                             <Text className="font-sans-medium text-[10px] text-muted-foreground mb-1 uppercase tracking-wider">Total ExpenseRecords</Text>
-                            <Text className="font-sans-bold text-lg text-primary">₹ {totalExpenseRecords.toLocaleString('en-IN')}</Text>
+                            <Text className="font-sans-bold text-lg text-primary">{formatINR(totalExpenseRecords)}</Text>
                             <Text className="font-sans-medium text-[10px] text-muted-foreground mt-1">Based on current filters</Text>
                         </View>
                     ) : (
                         <View className="flex-1 pl-2">
                             <Text className="font-sans-medium text-[10px] text-muted-foreground mb-1 uppercase tracking-wider">Total Outstanding Bills</Text>
-                            <Text className="font-sans-bold text-lg text-red-500">₹ {totalPurchasesOutstanding.toLocaleString('en-IN')}</Text>
+                            <Text className="font-sans-bold text-lg text-red-500">{formatINR(totalPurchasesOutstanding)}</Text>
                             <Text className="font-sans-medium text-[10px] text-muted-foreground mt-1">Based on current filters</Text>
                         </View>
                     )}
@@ -234,7 +235,7 @@ export default function ExpenseRecordsPurchasesScreen() {
                                     </View>
                                 </View>
                                 <View className="items-end flex-shrink-0">
-                                    <Text className="font-sans-bold text-lg text-primary" numberOfLines={1} adjustsFontSizeToFit>₹ {(exp.amountPaise || 0).toLocaleString('en-IN')}</Text>
+                                    <Text className="font-sans-bold text-lg text-primary" numberOfLines={1} adjustsFontSizeToFit>{formatINR(exp.amountPaise || 0)}</Text>
                                     <Text className="font-sans-medium text-xs text-muted-foreground mt-0.5">{exp.date}</Text>
                                 </View>
                             </View>
@@ -299,7 +300,7 @@ export default function ExpenseRecordsPurchasesScreen() {
                                 </View>
                                 <View className="items-end flex-shrink">
                                     <Text className="font-sans-medium text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Total Amount</Text>
-                                    <Text className="font-sans-bold text-lg text-primary" numberOfLines={1} adjustsFontSizeToFit>₹ {pur.totalAmountPaise.toLocaleString('en-IN')}</Text>
+                                    <Text className="font-sans-bold text-lg text-primary" numberOfLines={1} adjustsFontSizeToFit>{formatINR(pur.totalAmountPaise)}</Text>
                                 </View>
                             </View>
                         </Card>
@@ -363,7 +364,7 @@ export default function ExpenseRecordsPurchasesScreen() {
                             <View className="bg-muted p-4 rounded-2xl mb-6">
                                 <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Amount</Text>
                                 <Text className="font-sans-bold text-3xl text-primary">
-                                    ₹ {selectedExpenseRecord.amountPaise.toLocaleString('en-IN')}
+                                    {formatINR(selectedExpenseRecord.amountPaise)}
                                 </Text>
                             </View>
 
@@ -429,7 +430,7 @@ export default function ExpenseRecordsPurchasesScreen() {
                                 <View>
                                     <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Total Amount</Text>
                                     <Text className="font-sans-bold text-3xl text-primary">
-                                        ₹ {selectedPurchase.totalAmountPaise.toLocaleString('en-IN')}
+                                        {formatINR(selectedPurchase.totalAmountPaise)}
                                     </Text>
                                 </View>
                                 <View className={`px-3 py-1.5 rounded-md ${getStatusColor(selectedPurchase.status).split(' ')[0]}`}>

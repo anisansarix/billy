@@ -1,9 +1,9 @@
 // @ts-nocheck
 import fs from 'fs';
 import path from 'path';
-import { PARTIES, ITEMS, INVOICES, PURCHASES, EXPENSES, PAYMENTS, OUTSTANDING_DATA, DASHBOARD_BALANCES, HOME_USER } from '../constants/data';
-import { DocumentType, GSTType, PartyType, TaxRate } from '../src/types/entities';
-import { computeLineItem, buildGSTSummary } from '../src/utils/gst';
+import { PARTIES, ITEMS, INVOICES, PURCHASES, EXPENSES, PAYMENTS } from '../constants/data.ts';
+import { DocumentType, GSTType, PartyType, TaxRate } from '../src/types/entities.ts';
+import { computeLineItem, buildGSTSummary } from '../src/utils/gst.ts';
 
 console.log("Transforming data...");
 
@@ -141,24 +141,7 @@ const newPayments = PAYMENTS.map(p => ({
     partyName: p.partyName
 }));
 
-const dashboardBalances = DASHBOARD_BALANCES.map(d => ({
-    title: d.title,
-    amountPaise: Math.round(d.amount * 100),
-    gstAmountPaise: Math.round(d.gstAmount * 100),
-    currency: d.currency
-}));
-
-const newOutstanding = OUTSTANDING_DATA.map(o => ({
-    title: o.title,
-    totalReceivablesPaise: Math.round(o.totalReceivables * 100),
-    currency: o.currency,
-    items: o.items.map(i => ({
-        label: i.label,
-        amountPaise: Math.round(i.amount * 100),
-        subtitle: i.subtitle,
-        status: i.status
-    }))
-}));
+// Removed dashboardBalances and newOutstanding since they don't exist in data.ts
 
 // Build output string
 let out = `import { icons } from "./icons";\n`;
@@ -170,9 +153,7 @@ out += `export const tabs: AppTab[] = [
     { name: "settings", title: "Settings", icon: icons.setting },
 ];\n\n`;
 
-out += `export const HOME_USER = ${JSON.stringify(HOME_USER, null, 4)};\n\n`;
-out += `export const DASHBOARD_BALANCES = ${JSON.stringify(dashboardBalances, null, 4)};\n\n`;
-out += `export const OUTSTANDING_DATA = ${JSON.stringify(newOutstanding, null, 4)};\n\n`;
+// Export removed for home user and dashboard balances
 out += `export const PARTIES: Party[] = ${JSON.stringify(newParties, null, 4)};\n\n`;
 out += `export const ITEMS: InventoryItem[] = ${JSON.stringify(newItems, null, 4)};\n\n`;
 out += `export const INVOICES: SalesInvoice[] = ${JSON.stringify(newInvoices, null, 4)};\n\n`;

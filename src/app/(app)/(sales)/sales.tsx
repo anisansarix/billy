@@ -11,6 +11,7 @@ import { useAppStore } from "@/store";
 import { SegmentedTabs } from "@/components/ui/SegmentedTabs";
 import { SearchBar } from "@/components/ui/SearchBar";
 import "../../../../global.css";
+import { formatINR } from "@/utils/money";
 
 export default function SalesScreen() {
     const router = useRouter();
@@ -93,7 +94,7 @@ export default function SalesScreen() {
                         <Text className="font-sans-medium text-[10px] text-muted-foreground mb-1 uppercase tracking-wider">
                             {tab === 'All' ? 'Total Sales' : `${tab} Value`}
                         </Text>
-                        <Text className="font-sans-bold text-lg text-primary">₹ {totalInvoicesValue.toLocaleString('en-IN')}</Text>
+                        <Text className="font-sans-bold text-lg text-primary">{formatINR(totalInvoicesValue)}</Text>
                     </View>
                     <View className="flex-1 pl-4 justify-center">
                         <Text className="font-sans-medium text-[10px] text-muted-foreground mb-1 uppercase tracking-wider">Documents Count</Text>
@@ -143,7 +144,7 @@ export default function SalesScreen() {
                             </View>
                             <View className="items-end flex-shrink">
                                 <Text className="font-sans-medium text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Total Amount</Text>
-                                <Text className="font-sans-bold text-lg text-primary" numberOfLines={1} adjustsFontSizeToFit>₹ {inv.totalAmountPaise.toLocaleString('en-IN')}</Text>
+                                <Text className="font-sans-bold text-lg text-primary" numberOfLines={1} adjustsFontSizeToFit>{formatINR(inv.totalAmountPaise)}</Text>
                             </View>
                         </View>
                     </Card>
@@ -204,7 +205,7 @@ export default function SalesScreen() {
                                 <View>
                                     <Text className="font-sans-medium text-sm text-muted-foreground mb-1">SalesInvoice Total</Text>
                                     <Text className="font-sans-bold text-2xl text-primary">
-                                        ₹ {selectedInvoice.totalAmountPaise.toLocaleString('en-IN')}
+                                        {formatINR(selectedInvoice.totalAmountPaise)}
                                     </Text>
                                 </View>
                                 <View className={`px-3 py-1.5 rounded-md border ${getStatusColor(selectedInvoice.status)}`}>

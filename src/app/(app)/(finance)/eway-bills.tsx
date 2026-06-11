@@ -6,6 +6,7 @@ import { useMemo } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppStore } from "@/store";
+import { formatINR } from "@/utils/money";
 
 export default function EWayBillsScreen() {
     const router = useRouter();
@@ -45,7 +46,7 @@ export default function EWayBillsScreen() {
                     <View key={inv.id} className="bg-white rounded-2xl p-4 mb-4 border border-amber-200 shadow-sm flex-row items-center justify-between">
                         <View>
                             <Text className="font-sans-bold text-base text-primary">{inv.documentNumber}</Text>
-                            <Text className="font-sans-medium text-xs text-muted-foreground">{inv.documentDate} • ₹ {inv.totalAmountPaise?.toLocaleString('en-IN')}</Text>
+                            <Text className="font-sans-medium text-xs text-muted-foreground">{inv.documentDate} • {formatINR(inv.totalAmountPaise || 0)}</Text>
                         </View>
                         <Pressable className="bg-amber-100 px-4 py-2 rounded-lg border border-amber-200">
                             <Text className="font-sans-bold text-amber-800 text-xs uppercase tracking-wider">Generate</Text>

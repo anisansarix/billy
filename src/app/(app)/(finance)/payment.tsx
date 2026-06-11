@@ -11,6 +11,7 @@ import AnimatedModal from "@/components/ui/AnimatedModal";
 import Card from "@/components/ui/Card";
 import { useAppStore } from "@/store";
 import "../../../../global.css";
+import { formatINR } from "@/utils/money";
 
 
 
@@ -42,13 +43,13 @@ export default function PaymentScreen() {
 
     // Filters & Computations
     const filteredPayments = payments.filter(pay => {
-        const matchesTab = pay === tab;
+        const matchesTab = pay.type === tab;
         const matchesSearch = pay.partyName.toLowerCase().includes(search.toLowerCase());
         return matchesTab && matchesSearch;
     });
 
-    const totalMoneyIn = payments.filter(p => p === 'in').reduce((sum, p) => sum + p.amountPaise, 0);
-    const totalMoneyOut = payments.filter(p => p === 'out').reduce((sum, p) => sum + p.amountPaise, 0);
+    const totalMoneyIn = payments.filter(p => p.type === 'in').reduce((sum, p) => sum + p.amountPaise, 0);
+    const totalMoneyOut = payments.filter(p => p.type === 'out').reduce((sum, p) => sum + p.amountPaise, 0);
 
     // Handlers
     const openForm = (pay?: PaymentRecord) => {
@@ -56,9 +57,9 @@ export default function PaymentScreen() {
             setEditingPayment(pay);
             setFormData({
                 partyName: pay.partyName,
-                amount: pay.amountPaise.toString(),
+                amount: (pay.amountPaise / 100).toString(),
                 mode: pay.mode,
-                type: pay,
+                type: pay.type,
             });
         } else {
             setEditingPayment(null);
@@ -69,7 +70,7 @@ export default function PaymentScreen() {
     };
 
     const handleSave = () => {
-        if (!formData.partyName || !formData.amountPaise) {
+        if (!formData.partyName || !formData.amount) {
             Alert.alert("Error", "Please fill party name and amount.");
             return;
         }
@@ -78,9 +79,10 @@ export default function PaymentScreen() {
             id: editingPayment ? editingPayment.id : `pay-${Date.now()}`,
             date: editingPayment ? editingPayment.date : new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
             partyName: formData.partyName,
-            amountPaise: parseFloat(formData.amountPaise),
+            amountPaise: Math.round(parseFloat(formData.amount) * 100),
             mode: formData.mode as PaymentRecord["mode"],
-            type: formData,
+            type: formData.type,
+            partyId: editingPayment ? editingPayment.partyId : `party-${Date.now()}`
         };
 
         if (editingPayment) updatePayment(payData);
@@ -129,11 +131,11 @@ export default function PaymentScreen() {
                 <View className="bg-white rounded-2xl p-4 flex-row border border-border shadow-sm">
                     <View className="flex-1 border-r border-border pl-2">
                         <Text className="font-sans-medium text-[10px] text-muted-foreground mb-1 uppercase tracking-wider">Total Received</Text>
-                        <Text className="font-sans-bold text-lg text-green-600">₹ {totalMoneyIn.toLocaleString('en-IN')}</Text>
+                        <Text className="font-sans-bold text-lg text-green-600">{formatINR(totalMoneyIn)}</Text>
                     </View>
                     <View className="flex-1 pl-4">
                         <Text className="font-sans-medium text-[10px] text-muted-foreground mb-1 uppercase tracking-wider">Total Paid</Text>
-                        <Text className="font-sans-bold text-lg text-red-500">₹ {totalMoneyOut.toLocaleString('en-IN')}</Text>
+                        <Text className="font-sans-bold text-lg text-red-500">{formatINR(totalMoneyOut)}</Text>
                     </View>
                 </View>
             </View>
@@ -161,8 +163,8 @@ export default function PaymentScreen() {
             >
                 {filteredPayments.map((payment) => (
                     <Card key={payment.id} className="flex-row items-center mb-4" isPressable onPress={() => setSelectedPayment(payment)}>
-                        <View className={`size-12 rounded-full items-center justify-center mr-4 ${payment === 'in' ? 'bg-green-100' : 'bg-red-100'}`}>
-                            {payment === 'in' ? (
+                        <View className={`size-12 rounded-full items-center justify-center mr-4 ${payment.type === 'in' ? 'bg-green-100' : 'bg-red-100'}`}>
+                            {payment.type === 'in' ? (
                                 <ArrowDownLeft color="#16a34a" size={24} />
                             ) : (
                                 <ArrowUpRight color="#dc2626" size={24} />
@@ -173,8 +175,8 @@ export default function PaymentScreen() {
                             <Text className="font-sans-medium text-xs text-muted-foreground">{payment.mode} • {payment.date}</Text>
                         </View>
                         <View className="items-end">
-                            <Text className={`font-sans-bold text-lg ${payment === 'in' ? 'text-green-600' : 'text-primary'}`}>
-                                {payment === 'in' ? '+' : '-'} ₹ {payment.amountPaise.toLocaleString('en-IN')}
+                            <Text className={`font-sans-bold text-lg ${payment.type === 'in' ? 'text-green-600' : 'text-primary'}`}>
+                                {payment.type === 'in' ? '+' : '-'} {formatINR(payment.amountPaise)}
                             </Text>
                         </View>
                     </Card>
@@ -216,12 +218,12 @@ export default function PaymentScreen() {
                                 </Pressable>
                             </View>
 
-                            <View className={`p-4 rounded-2xl mb-6 ${selectedPayment === 'in' ? 'bg-green-50' : 'bg-red-50'}`}>
+                            <View className={`p-4 rounded-2xl mb-6 ${selectedPayment.type === 'in' ? 'bg-green-50' : 'bg-red-50'}`}>
                                 <Text className="font-sans-medium text-sm text-muted-foreground mb-1">
-                                    {selectedPayment === 'in' ? 'Amount Received' : 'Amount Paid'}
+                                    {selectedPayment.type === 'in' ? 'Amount Received' : 'Amount Paid'}
                                 </Text>
-                                <Text className={`font-sans-bold text-3xl ${selectedPayment === 'in' ? 'text-green-600' : 'text-red-500'}`}>
-                                    ₹ {selectedPayment.amountPaise.toLocaleString('en-IN')}
+                                <Text className={`font-sans-bold text-3xl ${selectedPayment.type === 'in' ? 'text-green-600' : 'text-red-500'}`}>
+                                    {formatINR(selectedPayment.amountPaise)}
                                 </Text>
                             </View>
 
@@ -285,15 +287,15 @@ export default function PaymentScreen() {
                         <View className="flex-row mb-6 bg-muted p-1 rounded-xl">
                             <Pressable
                                 onPress={() => setFormData({ ...formData, type: "in" })}
-                                className={`flex-1 py-3 items-center rounded-lg ${formData === "in" ? "bg-white shadow-sm" : ""}`}
+                                className={`flex-1 py-3 items-center rounded-lg ${formData.type === "in" ? "bg-white shadow-sm" : ""}`}
                             >
-                                <Text className={`font-sans-bold ${formData === "in" ? "text-primary" : "text-muted-foreground"}`}>Money In</Text>
+                                <Text className={`font-sans-bold ${formData.type === "in" ? "text-primary" : "text-muted-foreground"}`}>Money In</Text>
                             </Pressable>
                             <Pressable
                                 onPress={() => setFormData({ ...formData, type: "out" })}
-                                className={`flex-1 py-3 items-center rounded-lg ${formData === "out" ? "bg-white shadow-sm" : ""}`}
+                                className={`flex-1 py-3 items-center rounded-lg ${formData.type === "out" ? "bg-white shadow-sm" : ""}`}
                             >
-                                <Text className={`font-sans-bold ${formData === "out" ? "text-primary" : "text-muted-foreground"}`}>Money Out</Text>
+                                <Text className={`font-sans-bold ${formData.type === "out" ? "text-primary" : "text-muted-foreground"}`}>Money Out</Text>
                             </Pressable>
                         </View>
 
@@ -313,7 +315,7 @@ export default function PaymentScreen() {
                                 className="bg-slate-50 border border-border rounded-lg px-4 py-3 font-sans-bold text-lg text-primary"
                                 keyboardType="numeric"
                                 placeholder="0.00"
-                                value={formData.amountPaise}
+                                value={formData.amount}
                                 onChangeText={t => setFormData({...formData, amount: t})}
                             />
                         </View>
