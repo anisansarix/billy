@@ -1,4 +1,5 @@
 import { icons } from "./icons";
+import { DocumentType, GSTType, PartyType, SalesInvoice, PurchaseOrder, Party, InventoryItem, PaymentRecord, ExpenseRecord } from '../src/types/entities';
 
 export const tabs: AppTab[] = [
     { name: "index", title: "Home", icon: icons.home },
@@ -8,1572 +9,3543 @@ export const tabs: AppTab[] = [
 ];
 
 export const HOME_USER = {
-    name: "Anees | Axanees",
+    "name": "Anees | Axanees"
 };
 
-export const DASHBOARD_BALANCES: BalanceCardData[] = [
+export const DASHBOARD_BALANCES = [
     {
-        title: "Sales",
-        amount: 360600,
-        gstAmount: 64908,
-        currency: "₹",
+        "title": "Sales",
+        "amountPaise": 36060000,
+        "gstAmountPaise": 6490800,
+        "currency": "₹"
     },
     {
-        title: "Purchase",
-        amount: 57500,
-        gstAmount: 0,
-        currency: "₹",
+        "title": "Purchase",
+        "amountPaise": 5750000,
+        "gstAmountPaise": 0,
+        "currency": "₹"
     }
 ];
 
-export const OUTSTANDING_DATA: OutstandingSummary[] = [
+export const OUTSTANDING_DATA = [
     {
-        title: "Sales Outstanding",
-        totalReceivables: 425508.00,
-        currency: "₹",
-        items: [
+        "title": "Sales Outstanding",
+        "totalReceivablesPaise": 42550800,
+        "currency": "₹",
+        "items": [
             {
-                label: "CURRENT",
-                amount: 425508.00,
-                status: "current"
+                "label": "CURRENT",
+                "amountPaise": 42550800,
+                "status": "current"
             },
             {
-                label: "OVERDUE",
-                amount: 0.00,
-                subtitle: "30+ Days",
-                status: "overdue"
+                "label": "OVERDUE",
+                "amountPaise": 0,
+                "subtitle": "30+ Days",
+                "status": "overdue"
             }
         ]
     },
     {
-        title: "Purchase Outstanding",
-        totalReceivables: 57500.00,
-        currency: "₹",
-        items: [
+        "title": "Purchase Outstanding",
+        "totalReceivablesPaise": 5750000,
+        "currency": "₹",
+        "items": [
             {
-                label: "CURRENT",
-                amount: 57500.00,
-                status: "current"
+                "label": "CURRENT",
+                "amountPaise": 5750000,
+                "status": "current"
             },
             {
-                label: "OVERDUE",
-                amount: 0.00,
-                subtitle: "1-15 Days",
-                status: "overdue"
+                "label": "OVERDUE",
+                "amountPaise": 0,
+                "subtitle": "1-15 Days",
+                "status": "overdue"
             }
         ]
     }
 ];
-
 
 export const PARTIES: Party[] = [
     {
         "id": "p1",
-        "name": "Ramesh Traders",
+        "partyType": "CUSTOMER",
+        "legalName": "Ramesh Traders",
+        "tradeName": "Ramesh Traders",
         "gstin": "27AADCB2230M1Z2",
-        "phone": "+91 9876543000",
-        "balance": 69444,
-        "type": "customer"
+        "gstType": "REGULAR",
+        "billingAddress": {
+            "line1": "Unknown",
+            "city": "Unknown",
+            "state": "Maharashtra",
+            "stateCode": "27",
+            "pincode": "000000",
+            "country": "India"
+        },
+        "shippingAddresses": [],
+        "contactPersons": [],
+        "paymentTermsDays": 30,
+        "creditLimitPaise": 0,
+        "openingBalancePaise": 6944400,
+        "openingBalanceType": "DEBIT"
     },
     {
         "id": "p2",
-        "name": "Tata Steel Wholesale",
+        "partyType": "CUSTOMER",
+        "legalName": "Tata Steel Wholesale",
+        "tradeName": "Tata Steel Wholesale",
         "gstin": "29AAACT2233L1Z6",
-        "phone": "+91 9876543001",
-        "balance": 19839,
-        "type": "customer"
+        "gstType": "REGULAR",
+        "billingAddress": {
+            "line1": "Unknown",
+            "city": "Unknown",
+            "state": "Maharashtra",
+            "stateCode": "27",
+            "pincode": "000000",
+            "country": "India"
+        },
+        "shippingAddresses": [],
+        "contactPersons": [],
+        "paymentTermsDays": 30,
+        "creditLimitPaise": 0,
+        "openingBalancePaise": 1983900,
+        "openingBalanceType": "DEBIT"
     },
     {
         "id": "p3",
-        "name": "Patel Hardware",
+        "partyType": "CUSTOMER",
+        "legalName": "Patel Hardware",
+        "tradeName": "Patel Hardware",
         "gstin": "24AABCP4455N1Z7",
-        "phone": "+91 9876543002",
-        "balance": 2426,
-        "type": "customer"
+        "gstType": "REGULAR",
+        "billingAddress": {
+            "line1": "Unknown",
+            "city": "Unknown",
+            "state": "Maharashtra",
+            "stateCode": "27",
+            "pincode": "000000",
+            "country": "India"
+        },
+        "shippingAddresses": [],
+        "contactPersons": [],
+        "paymentTermsDays": 30,
+        "creditLimitPaise": 0,
+        "openingBalancePaise": 242600,
+        "openingBalanceType": "DEBIT"
     },
     {
         "id": "p4",
-        "name": "Sharma & Sons",
+        "partyType": "CUSTOMER",
+        "legalName": "Sharma & Sons",
+        "tradeName": "Sharma & Sons",
         "gstin": "09AAECS8899K1Z4",
-        "phone": "+91 9876543003",
-        "balance": 24537,
-        "type": "customer"
+        "gstType": "REGULAR",
+        "billingAddress": {
+            "line1": "Unknown",
+            "city": "Unknown",
+            "state": "Maharashtra",
+            "stateCode": "27",
+            "pincode": "000000",
+            "country": "India"
+        },
+        "shippingAddresses": [],
+        "contactPersons": [],
+        "paymentTermsDays": 30,
+        "creditLimitPaise": 0,
+        "openingBalancePaise": 2453700,
+        "openingBalanceType": "DEBIT"
     },
     {
         "id": "p5",
-        "name": "Party 5 Traders",
+        "partyType": "CUSTOMER",
+        "legalName": "Party 5 Traders",
+        "tradeName": "Party 5 Traders",
         "gstin": "07AAACJ5566R1Z9",
-        "phone": "+91 9876543004",
-        "balance": 50916,
-        "type": "customer"
+        "gstType": "REGULAR",
+        "billingAddress": {
+            "line1": "Unknown",
+            "city": "Unknown",
+            "state": "Maharashtra",
+            "stateCode": "27",
+            "pincode": "000000",
+            "country": "India"
+        },
+        "shippingAddresses": [],
+        "contactPersons": [],
+        "paymentTermsDays": 30,
+        "creditLimitPaise": 0,
+        "openingBalancePaise": 5091600,
+        "openingBalanceType": "DEBIT"
     },
     {
         "id": "p6",
-        "name": "Party 6 Traders",
+        "partyType": "CUSTOMER",
+        "legalName": "Party 6 Traders",
+        "tradeName": "Party 6 Traders",
         "gstin": "24AACCP1122A1Z4",
-        "phone": "+91 9876543005",
-        "balance": 85951,
-        "type": "customer"
+        "gstType": "REGULAR",
+        "billingAddress": {
+            "line1": "Unknown",
+            "city": "Unknown",
+            "state": "Maharashtra",
+            "stateCode": "27",
+            "pincode": "000000",
+            "country": "India"
+        },
+        "shippingAddresses": [],
+        "contactPersons": [],
+        "paymentTermsDays": 30,
+        "creditLimitPaise": 0,
+        "openingBalancePaise": 8595100,
+        "openingBalanceType": "DEBIT"
     },
     {
         "id": "p7",
-        "name": "Party 7 Traders",
+        "partyType": "CUSTOMER",
+        "legalName": "Party 7 Traders",
+        "tradeName": "Party 7 Traders",
         "gstin": "19AACCN5566B1Z8",
-        "phone": "+91 9876543006",
-        "balance": 34027,
-        "type": "customer"
+        "gstType": "REGULAR",
+        "billingAddress": {
+            "line1": "Unknown",
+            "city": "Unknown",
+            "state": "Maharashtra",
+            "stateCode": "27",
+            "pincode": "000000",
+            "country": "India"
+        },
+        "shippingAddresses": [],
+        "contactPersons": [],
+        "paymentTermsDays": 30,
+        "creditLimitPaise": 0,
+        "openingBalancePaise": 3402700,
+        "openingBalanceType": "DEBIT"
     },
     {
         "id": "p8",
-        "name": "Party 8 Traders",
+        "partyType": "CUSTOMER",
+        "legalName": "Party 8 Traders",
+        "tradeName": "Party 8 Traders",
         "gstin": "27AACCU8899T1Z5",
-        "phone": "+91 9876543007",
-        "balance": 66990,
-        "type": "customer"
+        "gstType": "REGULAR",
+        "billingAddress": {
+            "line1": "Unknown",
+            "city": "Unknown",
+            "state": "Maharashtra",
+            "stateCode": "27",
+            "pincode": "000000",
+            "country": "India"
+        },
+        "shippingAddresses": [],
+        "contactPersons": [],
+        "paymentTermsDays": 30,
+        "creditLimitPaise": 0,
+        "openingBalancePaise": 6699000,
+        "openingBalanceType": "DEBIT"
     },
     {
         "id": "p9",
-        "name": "Ultra Cement Depot",
+        "partyType": "VENDOR",
+        "legalName": "Ultra Cement Depot",
+        "tradeName": "Ultra Cement Depot",
         "gstin": "03AABCV1234E1Z1",
-        "phone": "+91 9876543008",
-        "balance": 39627,
-        "type": "vendor"
+        "gstType": "REGULAR",
+        "billingAddress": {
+            "line1": "Unknown",
+            "city": "Unknown",
+            "state": "Maharashtra",
+            "stateCode": "27",
+            "pincode": "000000",
+            "country": "India"
+        },
+        "shippingAddresses": [],
+        "contactPersons": [],
+        "paymentTermsDays": 30,
+        "creditLimitPaise": 0,
+        "openingBalancePaise": 3962700,
+        "openingBalanceType": "DEBIT"
     },
     {
         "id": "p10",
-        "name": "Prime Logistics",
+        "partyType": "VENDOR",
+        "legalName": "Prime Logistics",
+        "tradeName": "Prime Logistics",
         "gstin": "06AACCK5678F1Z2",
-        "phone": "+91 9876543009",
-        "balance": 45427,
-        "type": "vendor"
+        "gstType": "REGULAR",
+        "billingAddress": {
+            "line1": "Unknown",
+            "city": "Unknown",
+            "state": "Maharashtra",
+            "stateCode": "27",
+            "pincode": "000000",
+            "country": "India"
+        },
+        "shippingAddresses": [],
+        "contactPersons": [],
+        "paymentTermsDays": 30,
+        "creditLimitPaise": 0,
+        "openingBalancePaise": 4542700,
+        "openingBalanceType": "DEBIT"
     },
     {
         "id": "p11",
-        "name": "National Metals",
+        "partyType": "VENDOR",
+        "legalName": "National Metals",
+        "tradeName": "National Metals",
         "gstin": "09AABCP3456H1Z4",
-        "phone": "+91 9876543010",
-        "balance": 87438,
-        "type": "vendor"
+        "gstType": "REGULAR",
+        "billingAddress": {
+            "line1": "Unknown",
+            "city": "Unknown",
+            "state": "Maharashtra",
+            "stateCode": "27",
+            "pincode": "000000",
+            "country": "India"
+        },
+        "shippingAddresses": [],
+        "contactPersons": [],
+        "paymentTermsDays": 30,
+        "creditLimitPaise": 0,
+        "openingBalancePaise": 8743800,
+        "openingBalanceType": "DEBIT"
     },
     {
         "id": "p12",
-        "name": "Party 12 Suppliers",
+        "partyType": "VENDOR",
+        "legalName": "Party 12 Suppliers",
+        "tradeName": "Party 12 Suppliers",
         "gstin": "24AACCG7890I1Z5",
-        "phone": "+91 9876543011",
-        "balance": 68180,
-        "type": "vendor"
+        "gstType": "REGULAR",
+        "billingAddress": {
+            "line1": "Unknown",
+            "city": "Unknown",
+            "state": "Maharashtra",
+            "stateCode": "27",
+            "pincode": "000000",
+            "country": "India"
+        },
+        "shippingAddresses": [],
+        "contactPersons": [],
+        "paymentTermsDays": 30,
+        "creditLimitPaise": 0,
+        "openingBalancePaise": 6818000,
+        "openingBalanceType": "DEBIT"
     },
     {
         "id": "p13",
-        "name": "Party 13 Suppliers",
+        "partyType": "VENDOR",
+        "legalName": "Party 13 Suppliers",
+        "tradeName": "Party 13 Suppliers",
         "gstin": "27AABCM9012G1Z3",
-        "phone": "+91 9876543012",
-        "balance": 77552,
-        "type": "vendor"
+        "gstType": "REGULAR",
+        "billingAddress": {
+            "line1": "Unknown",
+            "city": "Unknown",
+            "state": "Maharashtra",
+            "stateCode": "27",
+            "pincode": "000000",
+            "country": "India"
+        },
+        "shippingAddresses": [],
+        "contactPersons": [],
+        "paymentTermsDays": 30,
+        "creditLimitPaise": 0,
+        "openingBalancePaise": 7755200,
+        "openingBalanceType": "DEBIT"
     },
     {
         "id": "p14",
-        "name": "Party 14 Suppliers",
+        "partyType": "VENDOR",
+        "legalName": "Party 14 Suppliers",
+        "tradeName": "Party 14 Suppliers",
         "gstin": "08AAACM2233K1Z1",
-        "phone": "+91 9876543013",
-        "balance": 316,
-        "type": "vendor"
+        "gstType": "REGULAR",
+        "billingAddress": {
+            "line1": "Unknown",
+            "city": "Unknown",
+            "state": "Maharashtra",
+            "stateCode": "27",
+            "pincode": "000000",
+            "country": "India"
+        },
+        "shippingAddresses": [],
+        "contactPersons": [],
+        "paymentTermsDays": 30,
+        "creditLimitPaise": 0,
+        "openingBalancePaise": 31600,
+        "openingBalanceType": "DEBIT"
     },
     {
         "id": "p15",
-        "name": "Party 15 Suppliers",
+        "partyType": "VENDOR",
+        "legalName": "Party 15 Suppliers",
+        "tradeName": "Party 15 Suppliers",
         "gstin": "24AADCO9988Q1Z3",
-        "phone": "+91 9876543014",
-        "balance": 30640,
-        "type": "vendor"
+        "gstType": "REGULAR",
+        "billingAddress": {
+            "line1": "Unknown",
+            "city": "Unknown",
+            "state": "Maharashtra",
+            "stateCode": "27",
+            "pincode": "000000",
+            "country": "India"
+        },
+        "shippingAddresses": [],
+        "contactPersons": [],
+        "paymentTermsDays": 30,
+        "creditLimitPaise": 0,
+        "openingBalancePaise": 3064000,
+        "openingBalanceType": "DEBIT"
     }
 ];
 
-export const ITEMS: Item[] = [
+export const ITEMS: InventoryItem[] = [
     {
         "id": "i1",
         "name": "TMT Bars 12mm",
         "type": "product",
-        "price": 450,
-        "hsn_sac": "7214",
+        "unitPricePaise": 45000,
+        "hsnSacCode": "7214",
+        "taxRate": {
+            "id": "tr_18",
+            "hsnSacCode": "7214",
+            "description": "18% Rate",
+            "isService": false,
+            "isActive": true,
+            "gstComponent": {
+                "cgstRate": 9,
+                "sgstRate": 9,
+                "igstRate": 18,
+                "cessRate": 0
+            }
+        },
+        "unit": "PCS",
         "stock": 500,
-        "minimumStock": 200,
-        "gst_rate": 18
+        "minimumStock": 200
     },
     {
         "id": "i2",
         "name": "Ambuja Cement 50kg",
         "type": "product",
-        "price": 380,
-        "hsn_sac": "2523",
+        "unitPricePaise": 38000,
+        "hsnSacCode": "2523",
+        "taxRate": {
+            "id": "tr_28",
+            "hsnSacCode": "2523",
+            "description": "28% Rate",
+            "isService": false,
+            "isActive": true,
+            "gstComponent": {
+                "cgstRate": 14,
+                "sgstRate": 14,
+                "igstRate": 28,
+                "cessRate": 0
+            }
+        },
+        "unit": "PCS",
         "stock": 10,
-        "minimumStock": 50,
-        "gst_rate": 28
+        "minimumStock": 50
     },
     {
         "id": "i3",
         "name": "Office Chair Ergonomic",
         "type": "product",
-        "price": 4500,
-        "hsn_sac": "9401",
+        "unitPricePaise": 450000,
+        "hsnSacCode": "9401",
+        "taxRate": {
+            "id": "tr_18",
+            "hsnSacCode": "9401",
+            "description": "18% Rate",
+            "isService": false,
+            "isActive": true,
+            "gstComponent": {
+                "cgstRate": 9,
+                "sgstRate": 9,
+                "igstRate": 18,
+                "cessRate": 0
+            }
+        },
+        "unit": "PCS",
         "stock": 45,
-        "minimumStock": 20,
-        "gst_rate": 18
+        "minimumStock": 20
     },
     {
         "id": "i4",
         "name": "Accounting Software License",
         "type": "service",
-        "price": 15000,
-        "hsn_sac": "9984",
-        "gst_rate": 18
+        "unitPricePaise": 1500000,
+        "hsnSacCode": "9984",
+        "taxRate": {
+            "id": "tr_18",
+            "hsnSacCode": "9984",
+            "description": "18% Rate",
+            "isService": true,
+            "isActive": true,
+            "gstComponent": {
+                "cgstRate": 9,
+                "sgstRate": 9,
+                "igstRate": 18,
+                "cessRate": 0
+            }
+        },
+        "unit": "PCS",
+        "stock": 0
     },
     {
         "id": "i5",
         "name": "Consulting Fees",
         "type": "service",
-        "price": 5000,
-        "hsn_sac": "9983",
-        "gst_rate": 18
+        "unitPricePaise": 500000,
+        "hsnSacCode": "9983",
+        "taxRate": {
+            "id": "tr_18",
+            "hsnSacCode": "9983",
+            "description": "18% Rate",
+            "isService": true,
+            "isActive": true,
+            "gstComponent": {
+                "cgstRate": 9,
+                "sgstRate": 9,
+                "igstRate": 18,
+                "cessRate": 0
+            }
+        },
+        "unit": "PCS",
+        "stock": 0
     },
     {
         "id": "i6",
         "name": "TMT Bars 16mm",
         "type": "product",
-        "price": 620,
-        "hsn_sac": "7214",
+        "unitPricePaise": 62000,
+        "hsnSacCode": "7214",
+        "taxRate": {
+            "id": "tr_18",
+            "hsnSacCode": "7214",
+            "description": "18% Rate",
+            "isService": false,
+            "isActive": true,
+            "gstComponent": {
+                "cgstRate": 9,
+                "sgstRate": 9,
+                "igstRate": 18,
+                "cessRate": 0
+            }
+        },
+        "unit": "PCS",
         "stock": 35,
-        "minimumStock": 50,
-        "gst_rate": 18
+        "minimumStock": 50
     },
     {
         "id": "i7",
         "name": "ACC Cement 50kg",
         "type": "product",
-        "price": 395,
-        "hsn_sac": "2523",
+        "unitPricePaise": 39500,
+        "hsnSacCode": "2523",
+        "taxRate": {
+            "id": "tr_28",
+            "hsnSacCode": "2523",
+            "description": "28% Rate",
+            "isService": false,
+            "isActive": true,
+            "gstComponent": {
+                "cgstRate": 14,
+                "sgstRate": 14,
+                "igstRate": 28,
+                "cessRate": 0
+            }
+        },
+        "unit": "PCS",
         "stock": 980,
-        "minimumStock": 100,
-        "gst_rate": 28
+        "minimumStock": 100
     },
     {
         "id": "i8",
         "name": "PVC Pipe 4 Inch",
         "type": "product",
-        "price": 1250,
-        "hsn_sac": "3917",
+        "unitPricePaise": 125000,
+        "hsnSacCode": "3917",
+        "taxRate": {
+            "id": "tr_18",
+            "hsnSacCode": "3917",
+            "description": "18% Rate",
+            "isService": false,
+            "isActive": true,
+            "gstComponent": {
+                "cgstRate": 9,
+                "sgstRate": 9,
+                "igstRate": 18,
+                "cessRate": 0
+            }
+        },
+        "unit": "PCS",
         "stock": 200,
-        "minimumStock": 50,
-        "gst_rate": 18
+        "minimumStock": 50
     },
     {
         "id": "i9",
         "name": "Copper Wire Bundle",
         "type": "product",
-        "price": 2850,
-        "hsn_sac": "7408",
+        "unitPricePaise": 285000,
+        "hsnSacCode": "7408",
+        "taxRate": {
+            "id": "tr_18",
+            "hsnSacCode": "7408",
+            "description": "18% Rate",
+            "isService": false,
+            "isActive": true,
+            "gstComponent": {
+                "cgstRate": 9,
+                "sgstRate": 9,
+                "igstRate": 18,
+                "cessRate": 0
+            }
+        },
+        "unit": "PCS",
         "stock": 160,
-        "minimumStock": 100,
-        "gst_rate": 18
+        "minimumStock": 100
     },
     {
         "id": "i10",
         "name": "LED Panel Light",
         "type": "product",
-        "price": 950,
-        "hsn_sac": "9405",
+        "unitPricePaise": 95000,
+        "hsnSacCode": "9405",
+        "taxRate": {
+            "id": "tr_12",
+            "hsnSacCode": "9405",
+            "description": "12% Rate",
+            "isService": false,
+            "isActive": true,
+            "gstComponent": {
+                "cgstRate": 6,
+                "sgstRate": 6,
+                "igstRate": 12,
+                "cessRate": 0
+            }
+        },
+        "unit": "PCS",
         "stock": 5,
-        "minimumStock": 20,
-        "gst_rate": 12
+        "minimumStock": 20
     },
     {
         "id": "i11",
         "name": "Desktop Computer",
         "type": "product",
-        "price": 42000,
-        "hsn_sac": "8471",
+        "unitPricePaise": 4200000,
+        "hsnSacCode": "8471",
+        "taxRate": {
+            "id": "tr_18",
+            "hsnSacCode": "8471",
+            "description": "18% Rate",
+            "isService": false,
+            "isActive": true,
+            "gstComponent": {
+                "cgstRate": 9,
+                "sgstRate": 9,
+                "igstRate": 18,
+                "cessRate": 0
+            }
+        },
+        "unit": "PCS",
         "stock": 20,
-        "minimumStock": 10,
-        "gst_rate": 18
+        "minimumStock": 10
     },
     {
         "id": "i12",
         "name": "Laser Printer",
         "type": "product",
-        "price": 18500,
-        "hsn_sac": "8443",
+        "unitPricePaise": 1850000,
+        "hsnSacCode": "8443",
+        "taxRate": {
+            "id": "tr_18",
+            "hsnSacCode": "8443",
+            "description": "18% Rate",
+            "isService": false,
+            "isActive": true,
+            "gstComponent": {
+                "cgstRate": 9,
+                "sgstRate": 9,
+                "igstRate": 18,
+                "cessRate": 0
+            }
+        },
+        "unit": "PCS",
         "stock": 15,
-        "minimumStock": 5,
-        "gst_rate": 18
+        "minimumStock": 5
     },
     {
         "id": "i13",
         "name": "GST Filing Service",
         "type": "service",
-        "price": 3000,
-        "hsn_sac": "9982",
-        "gst_rate": 18
+        "unitPricePaise": 300000,
+        "hsnSacCode": "9982",
+        "taxRate": {
+            "id": "tr_18",
+            "hsnSacCode": "9982",
+            "description": "18% Rate",
+            "isService": true,
+            "isActive": true,
+            "gstComponent": {
+                "cgstRate": 9,
+                "sgstRate": 9,
+                "igstRate": 18,
+                "cessRate": 0
+            }
+        },
+        "unit": "PCS",
+        "stock": 0
     },
     {
         "id": "i14",
         "name": "Annual Maintenance Contract",
         "type": "service",
-        "price": 25000,
-        "hsn_sac": "9987",
-        "gst_rate": 18
+        "unitPricePaise": 2500000,
+        "hsnSacCode": "9987",
+        "taxRate": {
+            "id": "tr_18",
+            "hsnSacCode": "9987",
+            "description": "18% Rate",
+            "isService": true,
+            "isActive": true,
+            "gstComponent": {
+                "cgstRate": 9,
+                "sgstRate": 9,
+                "igstRate": 18,
+                "cessRate": 0
+            }
+        },
+        "unit": "PCS",
+        "stock": 0
     },
     {
         "id": "i15",
         "name": "Business Advisory",
         "type": "service",
-        "price": 12000,
-        "hsn_sac": "9983",
-        "gst_rate": 18
+        "unitPricePaise": 1200000,
+        "hsnSacCode": "9983",
+        "taxRate": {
+            "id": "tr_18",
+            "hsnSacCode": "9983",
+            "description": "18% Rate",
+            "isService": true,
+            "isActive": true,
+            "gstComponent": {
+                "cgstRate": 9,
+                "sgstRate": 9,
+                "igstRate": 18,
+                "cessRate": 0
+            }
+        },
+        "unit": "PCS",
+        "stock": 0
     }
 ];
 
-export const INVOICES: Invoice[] = [
+export const INVOICES: SalesInvoice[] = [
     {
         "id": "inv1",
-        "number": "INV-2026-001",
-        "date": "16 Feb 2026",
-        "type": "Tax Invoice",
-        "status": "Overdue",
-        "customerId": "p1",
-        "customerName": "Ramesh Traders",
-        "items": [
+        "documentType": "SALES_INVOICE",
+        "documentNumber": "INV-2026-001",
+        "documentDate": "2026-02-15T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p1",
+        "partyName": "Ramesh Traders",
+        "lineItems": [
             {
                 "id": "i1-inv1",
-                "productId": "i1",
-                "name": "TMT Bars 12mm",
-                "hsn_sac": "7214",
-                "qty": 5,
+                "description": "TMT Bars 12mm",
+                "hsnSacCode": "7214",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "7214",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 450,
-                "gst_rate": 18,
-                "tax_amount": 405,
-                "line_total": 2250
+                "quantityDecimal": 5,
+                "unitPricePaise": 45000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 225000,
+                "gstAmountPaise": 40500,
+                "totalAmountPaise": 265500
             }
         ],
-        "subtotal": 2250,
-        "discountAmount": 0,
-        "cgstAmount": 202.5,
-        "sgstAmount": 202.5,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 2655
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 225000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 20250,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 20250,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 225000,
+            "totalGSTAmountPaise": 40500,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 225000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 225000,
+        "totalGSTAmountPaise": 40500,
+        "totalAmountPaise": 265500,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "OVERDUE",
+        "createdAt": "2026-06-11T08:45:07.779Z",
+        "updatedAt": "2026-06-11T08:45:07.779Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 0,
+        "balanceDuePaise": 265500,
+        "expectedDeliveryDate": "2026-02-15T18:30:00.000Z"
     },
     {
         "id": "inv2",
-        "number": "INV-2026-002",
-        "date": "13 Apr 2026",
-        "type": "Tax Invoice",
-        "status": "Overdue",
-        "customerId": "p3",
-        "customerName": "Patel Hardware",
-        "items": [
+        "documentType": "SALES_INVOICE",
+        "documentNumber": "INV-2026-002",
+        "documentDate": "2026-04-12T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p3",
+        "partyName": "Patel Hardware",
+        "lineItems": [
             {
                 "id": "i1-inv2",
-                "productId": "i1",
-                "name": "TMT Bars 12mm",
-                "hsn_sac": "7214",
-                "qty": 3,
+                "description": "TMT Bars 12mm",
+                "hsnSacCode": "7214",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "7214",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 450,
-                "gst_rate": 18,
-                "tax_amount": 243,
-                "line_total": 1350
+                "quantityDecimal": 3,
+                "unitPricePaise": 45000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 135000,
+                "gstAmountPaise": 24300,
+                "totalAmountPaise": 159300
             }
         ],
-        "subtotal": 1350,
-        "discountAmount": 0,
-        "cgstAmount": 121.5,
-        "sgstAmount": 121.5,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 1593
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 135000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 12150,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 12150,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 135000,
+            "totalGSTAmountPaise": 24300,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 135000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 135000,
+        "totalGSTAmountPaise": 24300,
+        "totalAmountPaise": 159300,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "OVERDUE",
+        "createdAt": "2026-06-11T08:45:07.779Z",
+        "updatedAt": "2026-06-11T08:45:07.779Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 0,
+        "balanceDuePaise": 159300,
+        "expectedDeliveryDate": "2026-04-12T18:30:00.000Z"
     },
     {
         "id": "inv3",
-        "number": "INV-2026-003",
-        "date": "14 Mar 2026",
-        "type": "Tax Invoice",
-        "status": "Overdue",
-        "customerId": "p6",
-        "customerName": "Party 6 Traders",
-        "items": [
+        "documentType": "SALES_INVOICE",
+        "documentNumber": "INV-2026-003",
+        "documentDate": "2026-03-13T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p6",
+        "partyName": "Party 6 Traders",
+        "lineItems": [
             {
                 "id": "i8-inv3",
-                "productId": "i8",
-                "name": "PVC Pipe 4 Inch",
-                "hsn_sac": "3917",
-                "qty": 7,
+                "description": "PVC Pipe 4 Inch",
+                "hsnSacCode": "3917",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "3917",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 1250,
-                "gst_rate": 18,
-                "tax_amount": 1575,
-                "line_total": 8750
+                "quantityDecimal": 7,
+                "unitPricePaise": 125000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 875000,
+                "gstAmountPaise": 157500,
+                "totalAmountPaise": 1032500
             }
         ],
-        "subtotal": 8750,
-        "discountAmount": 0,
-        "cgstAmount": 787.5,
-        "sgstAmount": 787.5,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 10325
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 875000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 78750,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 78750,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 875000,
+            "totalGSTAmountPaise": 157500,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 875000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 875000,
+        "totalGSTAmountPaise": 157500,
+        "totalAmountPaise": 1032500,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "OVERDUE",
+        "createdAt": "2026-06-11T08:45:07.779Z",
+        "updatedAt": "2026-06-11T08:45:07.779Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 0,
+        "balanceDuePaise": 1032500,
+        "expectedDeliveryDate": "2026-03-13T18:30:00.000Z"
     },
     {
         "id": "inv4",
-        "number": "INV-2026-004",
-        "date": "07 Jan 2026",
-        "type": "Tax Invoice",
-        "status": "Pending",
-        "customerId": "p7",
-        "customerName": "Party 7 Traders",
-        "items": [
+        "documentType": "SALES_INVOICE",
+        "documentNumber": "INV-2026-004",
+        "documentDate": "2026-01-06T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p7",
+        "partyName": "Party 7 Traders",
+        "lineItems": [
             {
                 "id": "i5-inv4",
-                "productId": "i5",
-                "name": "Consulting Fees",
-                "hsn_sac": "9983",
-                "qty": 8,
+                "description": "Consulting Fees",
+                "hsnSacCode": "9983",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "9983",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 5000,
-                "gst_rate": 18,
-                "tax_amount": 7200,
-                "line_total": 40000
+                "quantityDecimal": 8,
+                "unitPricePaise": 500000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 4000000,
+                "gstAmountPaise": 720000,
+                "totalAmountPaise": 4720000
             }
         ],
-        "subtotal": 40000,
-        "discountAmount": 0,
-        "cgstAmount": 3600,
-        "sgstAmount": 3600,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 47200
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 4000000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 360000,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 360000,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 4000000,
+            "totalGSTAmountPaise": 720000,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 4000000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 4000000,
+        "totalGSTAmountPaise": 720000,
+        "totalAmountPaise": 4720000,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PENDING",
+        "createdAt": "2026-06-11T08:45:07.779Z",
+        "updatedAt": "2026-06-11T08:45:07.779Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 0,
+        "balanceDuePaise": 4720000,
+        "expectedDeliveryDate": "2026-01-06T18:30:00.000Z"
     },
     {
         "id": "inv5",
-        "number": "INV-2026-005",
-        "date": "02 Apr 2026",
-        "type": "Tax Invoice",
-        "status": "Paid",
-        "customerId": "p7",
-        "customerName": "Party 7 Traders",
-        "items": [
+        "documentType": "SALES_INVOICE",
+        "documentNumber": "INV-2026-005",
+        "documentDate": "2026-04-01T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p7",
+        "partyName": "Party 7 Traders",
+        "lineItems": [
             {
                 "id": "i11-inv5",
-                "productId": "i11",
-                "name": "Desktop Computer",
-                "hsn_sac": "8471",
-                "qty": 5,
+                "description": "Desktop Computer",
+                "hsnSacCode": "8471",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "8471",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 42000,
-                "gst_rate": 18,
-                "tax_amount": 37800,
-                "line_total": 210000
+                "quantityDecimal": 5,
+                "unitPricePaise": 4200000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 21000000,
+                "gstAmountPaise": 3780000,
+                "totalAmountPaise": 24780000
             }
         ],
-        "subtotal": 210000,
-        "discountAmount": 0,
-        "cgstAmount": 18900,
-        "sgstAmount": 18900,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 247800
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 21000000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 1890000,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 1890000,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 21000000,
+            "totalGSTAmountPaise": 3780000,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 21000000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 21000000,
+        "totalGSTAmountPaise": 3780000,
+        "totalAmountPaise": 24780000,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PAID",
+        "createdAt": "2026-06-11T08:45:07.779Z",
+        "updatedAt": "2026-06-11T08:45:07.779Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 24780000,
+        "balanceDuePaise": 0,
+        "expectedDeliveryDate": "2026-04-01T18:30:00.000Z"
     },
     {
         "id": "inv6",
-        "number": "INV-2026-006",
-        "date": "01 Jan 2026",
-        "type": "Tax Invoice",
-        "status": "Draft",
-        "customerId": "p2",
-        "customerName": "Tata Steel Wholesale",
-        "items": [
+        "documentType": "SALES_INVOICE",
+        "documentNumber": "INV-2026-006",
+        "documentDate": "2025-12-31T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p2",
+        "partyName": "Tata Steel Wholesale",
+        "lineItems": [
             {
                 "id": "i12-inv6",
-                "productId": "i12",
-                "name": "Laser Printer",
-                "hsn_sac": "8443",
-                "qty": 6,
+                "description": "Laser Printer",
+                "hsnSacCode": "8443",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "8443",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 18500,
-                "gst_rate": 18,
-                "tax_amount": 19980,
-                "line_total": 111000
+                "quantityDecimal": 6,
+                "unitPricePaise": 1850000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 11100000,
+                "gstAmountPaise": 1998000,
+                "totalAmountPaise": 13098000
             }
         ],
-        "subtotal": 111000,
-        "discountAmount": 0,
-        "cgstAmount": 9990,
-        "sgstAmount": 9990,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 130980
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 11100000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 999000,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 999000,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 11100000,
+            "totalGSTAmountPaise": 1998000,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 11100000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 11100000,
+        "totalGSTAmountPaise": 1998000,
+        "totalAmountPaise": 13098000,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "DRAFT",
+        "createdAt": "2026-06-11T08:45:07.779Z",
+        "updatedAt": "2026-06-11T08:45:07.779Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 0,
+        "balanceDuePaise": 13098000,
+        "expectedDeliveryDate": "2025-12-31T18:30:00.000Z"
     },
     {
         "id": "inv7",
-        "number": "INV-2026-007",
-        "date": "06 Jan 2026",
-        "type": "Tax Invoice",
-        "status": "Paid",
-        "customerId": "p2",
-        "customerName": "Tata Steel Wholesale",
-        "items": [
+        "documentType": "SALES_INVOICE",
+        "documentNumber": "INV-2026-007",
+        "documentDate": "2026-01-05T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p2",
+        "partyName": "Tata Steel Wholesale",
+        "lineItems": [
             {
                 "id": "i14-inv7",
-                "productId": "i14",
-                "name": "Annual Maintenance Contract",
-                "hsn_sac": "9987",
-                "qty": 4,
+                "description": "Annual Maintenance Contract",
+                "hsnSacCode": "9987",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "9987",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 25000,
-                "gst_rate": 18,
-                "tax_amount": 18000,
-                "line_total": 100000
+                "quantityDecimal": 4,
+                "unitPricePaise": 2500000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 10000000,
+                "gstAmountPaise": 1800000,
+                "totalAmountPaise": 11800000
             }
         ],
-        "subtotal": 100000,
-        "discountAmount": 0,
-        "cgstAmount": 9000,
-        "sgstAmount": 9000,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 118000
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 10000000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 900000,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 900000,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 10000000,
+            "totalGSTAmountPaise": 1800000,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 10000000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 10000000,
+        "totalGSTAmountPaise": 1800000,
+        "totalAmountPaise": 11800000,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PAID",
+        "createdAt": "2026-06-11T08:45:07.779Z",
+        "updatedAt": "2026-06-11T08:45:07.779Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 11800000,
+        "balanceDuePaise": 0,
+        "expectedDeliveryDate": "2026-01-05T18:30:00.000Z"
     },
     {
         "id": "inv8",
-        "number": "INV-2026-008",
-        "date": "26 Jun 2026",
-        "type": "Tax Invoice",
-        "status": "Overdue",
-        "customerId": "p1",
-        "customerName": "Ramesh Traders",
-        "items": [
+        "documentType": "SALES_INVOICE",
+        "documentNumber": "INV-2026-008",
+        "documentDate": "2026-06-25T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p1",
+        "partyName": "Ramesh Traders",
+        "lineItems": [
             {
                 "id": "i13-inv8",
-                "productId": "i13",
-                "name": "GST Filing Service",
-                "hsn_sac": "9982",
-                "qty": 3,
+                "description": "GST Filing Service",
+                "hsnSacCode": "9982",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "9982",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 3000,
-                "gst_rate": 18,
-                "tax_amount": 1620,
-                "line_total": 9000
+                "quantityDecimal": 3,
+                "unitPricePaise": 300000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 900000,
+                "gstAmountPaise": 162000,
+                "totalAmountPaise": 1062000
             }
         ],
-        "subtotal": 9000,
-        "discountAmount": 0,
-        "cgstAmount": 810,
-        "sgstAmount": 810,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 10620
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 900000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 81000,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 81000,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 900000,
+            "totalGSTAmountPaise": 162000,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 900000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 900000,
+        "totalGSTAmountPaise": 162000,
+        "totalAmountPaise": 1062000,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "OVERDUE",
+        "createdAt": "2026-06-11T08:45:07.779Z",
+        "updatedAt": "2026-06-11T08:45:07.779Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 0,
+        "balanceDuePaise": 1062000,
+        "expectedDeliveryDate": "2026-06-25T18:30:00.000Z"
     },
     {
         "id": "inv9",
-        "number": "INV-2026-009",
-        "date": "21 Apr 2026",
-        "type": "Tax Invoice",
-        "status": "Pending",
-        "customerId": "p3",
-        "customerName": "Patel Hardware",
-        "items": [
+        "documentType": "SALES_INVOICE",
+        "documentNumber": "INV-2026-009",
+        "documentDate": "2026-04-20T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p3",
+        "partyName": "Patel Hardware",
+        "lineItems": [
             {
                 "id": "i14-inv9",
-                "productId": "i14",
-                "name": "Annual Maintenance Contract",
-                "hsn_sac": "9987",
-                "qty": 2,
+                "description": "Annual Maintenance Contract",
+                "hsnSacCode": "9987",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "9987",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 25000,
-                "gst_rate": 18,
-                "tax_amount": 9000,
-                "line_total": 50000
+                "quantityDecimal": 2,
+                "unitPricePaise": 2500000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 5000000,
+                "gstAmountPaise": 900000,
+                "totalAmountPaise": 5900000
             }
         ],
-        "subtotal": 50000,
-        "discountAmount": 0,
-        "cgstAmount": 4500,
-        "sgstAmount": 4500,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 59000
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 5000000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 450000,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 450000,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 5000000,
+            "totalGSTAmountPaise": 900000,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 5000000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 5000000,
+        "totalGSTAmountPaise": 900000,
+        "totalAmountPaise": 5900000,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PENDING",
+        "createdAt": "2026-06-11T08:45:07.779Z",
+        "updatedAt": "2026-06-11T08:45:07.779Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 0,
+        "balanceDuePaise": 5900000,
+        "expectedDeliveryDate": "2026-04-20T18:30:00.000Z"
     },
     {
         "id": "inv10",
-        "number": "INV-2026-010",
-        "date": "19 May 2026",
-        "type": "Tax Invoice",
-        "status": "Paid",
-        "customerId": "p2",
-        "customerName": "Tata Steel Wholesale",
-        "items": [
+        "documentType": "SALES_INVOICE",
+        "documentNumber": "INV-2026-010",
+        "documentDate": "2026-05-18T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p2",
+        "partyName": "Tata Steel Wholesale",
+        "lineItems": [
             {
                 "id": "i5-inv10",
-                "productId": "i5",
-                "name": "Consulting Fees",
-                "hsn_sac": "9983",
-                "qty": 6,
+                "description": "Consulting Fees",
+                "hsnSacCode": "9983",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "9983",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 5000,
-                "gst_rate": 18,
-                "tax_amount": 5400,
-                "line_total": 30000
+                "quantityDecimal": 6,
+                "unitPricePaise": 500000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 3000000,
+                "gstAmountPaise": 540000,
+                "totalAmountPaise": 3540000
             }
         ],
-        "subtotal": 30000,
-        "discountAmount": 0,
-        "cgstAmount": 2700,
-        "sgstAmount": 2700,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 35400
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 3000000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 270000,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 270000,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 3000000,
+            "totalGSTAmountPaise": 540000,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 3000000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 3000000,
+        "totalGSTAmountPaise": 540000,
+        "totalAmountPaise": 3540000,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PAID",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 3540000,
+        "balanceDuePaise": 0,
+        "expectedDeliveryDate": "2026-05-18T18:30:00.000Z"
     },
     {
         "id": "inv11",
-        "number": "INV-2026-011",
-        "date": "27 Apr 2026",
-        "type": "Tax Invoice",
-        "status": "Paid",
-        "customerId": "p1",
-        "customerName": "Ramesh Traders",
-        "items": [
+        "documentType": "SALES_INVOICE",
+        "documentNumber": "INV-2026-011",
+        "documentDate": "2026-04-26T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p1",
+        "partyName": "Ramesh Traders",
+        "lineItems": [
             {
                 "id": "i11-inv11",
-                "productId": "i11",
-                "name": "Desktop Computer",
-                "hsn_sac": "8471",
-                "qty": 5,
+                "description": "Desktop Computer",
+                "hsnSacCode": "8471",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "8471",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 42000,
-                "gst_rate": 18,
-                "tax_amount": 37800,
-                "line_total": 210000
+                "quantityDecimal": 5,
+                "unitPricePaise": 4200000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 21000000,
+                "gstAmountPaise": 3780000,
+                "totalAmountPaise": 24780000
             }
         ],
-        "subtotal": 210000,
-        "discountAmount": 0,
-        "cgstAmount": 18900,
-        "sgstAmount": 18900,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 247800
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 21000000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 1890000,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 1890000,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 21000000,
+            "totalGSTAmountPaise": 3780000,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 21000000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 21000000,
+        "totalGSTAmountPaise": 3780000,
+        "totalAmountPaise": 24780000,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PAID",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 24780000,
+        "balanceDuePaise": 0,
+        "expectedDeliveryDate": "2026-04-26T18:30:00.000Z"
     },
     {
         "id": "inv12",
-        "number": "INV-2026-012",
-        "date": "02 Mar 2026",
-        "type": "Tax Invoice",
-        "status": "Paid",
-        "customerId": "p3",
-        "customerName": "Patel Hardware",
-        "items": [
+        "documentType": "SALES_INVOICE",
+        "documentNumber": "INV-2026-012",
+        "documentDate": "2026-03-01T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p3",
+        "partyName": "Patel Hardware",
+        "lineItems": [
             {
                 "id": "i7-inv12",
-                "productId": "i7",
-                "name": "ACC Cement 50kg",
-                "hsn_sac": "2523",
-                "qty": 1,
+                "description": "ACC Cement 50kg",
+                "hsnSacCode": "2523",
+                "taxRate": {
+                    "id": "tr_28",
+                    "hsnSacCode": "2523",
+                    "description": "28% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 14,
+                        "sgstRate": 14,
+                        "igstRate": 28,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 395,
-                "gst_rate": 28,
-                "tax_amount": 110.6,
-                "line_total": 395
+                "quantityDecimal": 1,
+                "unitPricePaise": 39500,
+                "discountPercent": 0,
+                "taxableAmountPaise": 39500,
+                "gstAmountPaise": 11060,
+                "totalAmountPaise": 50560
             }
         ],
-        "subtotal": 395,
-        "discountAmount": 0,
-        "cgstAmount": 55.3,
-        "sgstAmount": 55.3,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 505.6
+        "gstSummary": {
+            "slabs": {
+                "28": {
+                    "taxableValuePaise": 39500,
+                    "cgstRate": 14,
+                    "cgstAmountPaise": 5530,
+                    "sgstRate": 14,
+                    "sgstAmountPaise": 5530,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 39500,
+            "totalGSTAmountPaise": 11060,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 39500,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 39500,
+        "totalGSTAmountPaise": 11060,
+        "totalAmountPaise": 50560,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PAID",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 50560,
+        "balanceDuePaise": 0,
+        "expectedDeliveryDate": "2026-03-01T18:30:00.000Z"
     },
     {
         "id": "inv13",
-        "number": "INV-2026-013",
-        "date": "19 Apr 2026",
-        "type": "Tax Invoice",
-        "status": "Overdue",
-        "customerId": "p1",
-        "customerName": "Ramesh Traders",
-        "items": [
+        "documentType": "SALES_INVOICE",
+        "documentNumber": "INV-2026-013",
+        "documentDate": "2026-04-18T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p1",
+        "partyName": "Ramesh Traders",
+        "lineItems": [
             {
                 "id": "i10-inv13",
-                "productId": "i10",
-                "name": "LED Panel Light",
-                "hsn_sac": "9405",
-                "qty": 3,
+                "description": "LED Panel Light",
+                "hsnSacCode": "9405",
+                "taxRate": {
+                    "id": "tr_12",
+                    "hsnSacCode": "9405",
+                    "description": "12% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 6,
+                        "sgstRate": 6,
+                        "igstRate": 12,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 950,
-                "gst_rate": 12,
-                "tax_amount": 342,
-                "line_total": 2850
+                "quantityDecimal": 3,
+                "unitPricePaise": 95000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 285000,
+                "gstAmountPaise": 34200,
+                "totalAmountPaise": 319200
             }
         ],
-        "subtotal": 2850,
-        "discountAmount": 0,
-        "cgstAmount": 171,
-        "sgstAmount": 171,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 3192
+        "gstSummary": {
+            "slabs": {
+                "12": {
+                    "taxableValuePaise": 285000,
+                    "cgstRate": 6,
+                    "cgstAmountPaise": 17100,
+                    "sgstRate": 6,
+                    "sgstAmountPaise": 17100,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 285000,
+            "totalGSTAmountPaise": 34200,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 285000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 285000,
+        "totalGSTAmountPaise": 34200,
+        "totalAmountPaise": 319200,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "OVERDUE",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 0,
+        "balanceDuePaise": 319200,
+        "expectedDeliveryDate": "2026-04-18T18:30:00.000Z"
     },
     {
         "id": "inv14",
-        "number": "INV-2026-014",
-        "date": "10 Apr 2026",
-        "type": "Tax Invoice",
-        "status": "Pending",
-        "customerId": "p1",
-        "customerName": "Ramesh Traders",
-        "items": [
+        "documentType": "SALES_INVOICE",
+        "documentNumber": "INV-2026-014",
+        "documentDate": "2026-04-09T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p1",
+        "partyName": "Ramesh Traders",
+        "lineItems": [
             {
                 "id": "i1-inv14",
-                "productId": "i1",
-                "name": "TMT Bars 12mm",
-                "hsn_sac": "7214",
-                "qty": 9,
+                "description": "TMT Bars 12mm",
+                "hsnSacCode": "7214",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "7214",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 450,
-                "gst_rate": 18,
-                "tax_amount": 729,
-                "line_total": 4050
+                "quantityDecimal": 9,
+                "unitPricePaise": 45000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 405000,
+                "gstAmountPaise": 72900,
+                "totalAmountPaise": 477900
             }
         ],
-        "subtotal": 4050,
-        "discountAmount": 0,
-        "cgstAmount": 364.5,
-        "sgstAmount": 364.5,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 4779
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 405000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 36450,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 36450,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 405000,
+            "totalGSTAmountPaise": 72900,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 405000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 405000,
+        "totalGSTAmountPaise": 72900,
+        "totalAmountPaise": 477900,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PENDING",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 0,
+        "balanceDuePaise": 477900,
+        "expectedDeliveryDate": "2026-04-09T18:30:00.000Z"
     },
     {
         "id": "inv15",
-        "number": "INV-2026-015",
-        "date": "06 Jun 2026",
-        "type": "Tax Invoice",
-        "status": "Paid",
-        "customerId": "p6",
-        "customerName": "Party 6 Traders",
-        "items": [
+        "documentType": "SALES_INVOICE",
+        "documentNumber": "INV-2026-015",
+        "documentDate": "2026-06-05T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p6",
+        "partyName": "Party 6 Traders",
+        "lineItems": [
             {
                 "id": "i14-inv15",
-                "productId": "i14",
-                "name": "Annual Maintenance Contract",
-                "hsn_sac": "9987",
-                "qty": 10,
+                "description": "Annual Maintenance Contract",
+                "hsnSacCode": "9987",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "9987",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 25000,
-                "gst_rate": 18,
-                "tax_amount": 45000,
-                "line_total": 250000
+                "quantityDecimal": 10,
+                "unitPricePaise": 2500000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 25000000,
+                "gstAmountPaise": 4500000,
+                "totalAmountPaise": 29500000
             }
         ],
-        "subtotal": 250000,
-        "discountAmount": 0,
-        "cgstAmount": 22500,
-        "sgstAmount": 22500,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 295000
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 25000000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 2250000,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 2250000,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 25000000,
+            "totalGSTAmountPaise": 4500000,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 25000000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 25000000,
+        "totalGSTAmountPaise": 4500000,
+        "totalAmountPaise": 29500000,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PAID",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 29500000,
+        "balanceDuePaise": 0,
+        "expectedDeliveryDate": "2026-06-05T18:30:00.000Z"
     },
     {
         "id": "inv16",
-        "number": "INV-2026-016",
-        "date": "19 Mar 2026",
-        "type": "Tax Invoice",
-        "status": "Pending",
-        "customerId": "p5",
-        "customerName": "Party 5 Traders",
-        "items": [
+        "documentType": "SALES_INVOICE",
+        "documentNumber": "INV-2026-016",
+        "documentDate": "2026-03-18T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p5",
+        "partyName": "Party 5 Traders",
+        "lineItems": [
             {
                 "id": "i4-inv16",
-                "productId": "i4",
-                "name": "Accounting Software License",
-                "hsn_sac": "9984",
-                "qty": 4,
+                "description": "Accounting Software License",
+                "hsnSacCode": "9984",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "9984",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 15000,
-                "gst_rate": 18,
-                "tax_amount": 10800,
-                "line_total": 60000
+                "quantityDecimal": 4,
+                "unitPricePaise": 1500000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 6000000,
+                "gstAmountPaise": 1080000,
+                "totalAmountPaise": 7080000
             }
         ],
-        "subtotal": 60000,
-        "discountAmount": 0,
-        "cgstAmount": 5400,
-        "sgstAmount": 5400,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 70800
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 6000000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 540000,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 540000,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 6000000,
+            "totalGSTAmountPaise": 1080000,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 6000000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 6000000,
+        "totalGSTAmountPaise": 1080000,
+        "totalAmountPaise": 7080000,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PENDING",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 0,
+        "balanceDuePaise": 7080000,
+        "expectedDeliveryDate": "2026-03-18T18:30:00.000Z"
     },
     {
         "id": "inv17",
-        "number": "INV-2026-017",
-        "date": "04 May 2026",
-        "type": "Tax Invoice",
-        "status": "Paid",
-        "customerId": "p5",
-        "customerName": "Party 5 Traders",
-        "items": [
+        "documentType": "SALES_INVOICE",
+        "documentNumber": "INV-2026-017",
+        "documentDate": "2026-05-03T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p5",
+        "partyName": "Party 5 Traders",
+        "lineItems": [
             {
                 "id": "i15-inv17",
-                "productId": "i15",
-                "name": "Business Advisory",
-                "hsn_sac": "9983",
-                "qty": 8,
+                "description": "Business Advisory",
+                "hsnSacCode": "9983",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "9983",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 12000,
-                "gst_rate": 18,
-                "tax_amount": 17280,
-                "line_total": 96000
+                "quantityDecimal": 8,
+                "unitPricePaise": 1200000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 9600000,
+                "gstAmountPaise": 1728000,
+                "totalAmountPaise": 11328000
             }
         ],
-        "subtotal": 96000,
-        "discountAmount": 0,
-        "cgstAmount": 8640,
-        "sgstAmount": 8640,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 113280
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 9600000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 864000,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 864000,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 9600000,
+            "totalGSTAmountPaise": 1728000,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 9600000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 9600000,
+        "totalGSTAmountPaise": 1728000,
+        "totalAmountPaise": 11328000,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PAID",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 11328000,
+        "balanceDuePaise": 0,
+        "expectedDeliveryDate": "2026-05-03T18:30:00.000Z"
     },
     {
         "id": "inv18",
-        "number": "INV-2026-018",
-        "date": "05 May 2026",
-        "type": "Tax Invoice",
-        "status": "Overdue",
-        "customerId": "p5",
-        "customerName": "Party 5 Traders",
-        "items": [
+        "documentType": "SALES_INVOICE",
+        "documentNumber": "INV-2026-018",
+        "documentDate": "2026-05-04T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p5",
+        "partyName": "Party 5 Traders",
+        "lineItems": [
             {
                 "id": "i11-inv18",
-                "productId": "i11",
-                "name": "Desktop Computer",
-                "hsn_sac": "8471",
-                "qty": 4,
+                "description": "Desktop Computer",
+                "hsnSacCode": "8471",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "8471",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 42000,
-                "gst_rate": 18,
-                "tax_amount": 30240,
-                "line_total": 168000
+                "quantityDecimal": 4,
+                "unitPricePaise": 4200000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 16800000,
+                "gstAmountPaise": 3024000,
+                "totalAmountPaise": 19824000
             }
         ],
-        "subtotal": 168000,
-        "discountAmount": 0,
-        "cgstAmount": 15120,
-        "sgstAmount": 15120,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 198240
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 16800000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 1512000,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 1512000,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 16800000,
+            "totalGSTAmountPaise": 3024000,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 16800000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 16800000,
+        "totalGSTAmountPaise": 3024000,
+        "totalAmountPaise": 19824000,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "OVERDUE",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 0,
+        "balanceDuePaise": 19824000,
+        "expectedDeliveryDate": "2026-05-04T18:30:00.000Z"
     },
     {
         "id": "inv19",
-        "number": "INV-2026-019",
-        "date": "21 May 2026",
-        "type": "Tax Invoice",
-        "status": "Pending",
-        "customerId": "p1",
-        "customerName": "Ramesh Traders",
-        "items": [
+        "documentType": "SALES_INVOICE",
+        "documentNumber": "INV-2026-019",
+        "documentDate": "2026-05-20T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p1",
+        "partyName": "Ramesh Traders",
+        "lineItems": [
             {
                 "id": "i12-inv19",
-                "productId": "i12",
-                "name": "Laser Printer",
-                "hsn_sac": "8443",
-                "qty": 10,
+                "description": "Laser Printer",
+                "hsnSacCode": "8443",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "8443",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 18500,
-                "gst_rate": 18,
-                "tax_amount": 33300,
-                "line_total": 185000
+                "quantityDecimal": 10,
+                "unitPricePaise": 1850000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 18500000,
+                "gstAmountPaise": 3330000,
+                "totalAmountPaise": 21830000
             }
         ],
-        "subtotal": 185000,
-        "discountAmount": 0,
-        "cgstAmount": 16650,
-        "sgstAmount": 16650,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 218300
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 18500000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 1665000,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 1665000,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 18500000,
+            "totalGSTAmountPaise": 3330000,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 18500000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 18500000,
+        "totalGSTAmountPaise": 3330000,
+        "totalAmountPaise": 21830000,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PENDING",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 0,
+        "balanceDuePaise": 21830000,
+        "expectedDeliveryDate": "2026-05-20T18:30:00.000Z"
     },
     {
         "id": "inv20",
-        "number": "INV-2026-020",
-        "date": "10 Apr 2026",
-        "type": "Tax Invoice",
-        "status": "Paid",
-        "customerId": "p1",
-        "customerName": "Ramesh Traders",
-        "items": [
+        "documentType": "SALES_INVOICE",
+        "documentNumber": "INV-2026-020",
+        "documentDate": "2026-04-09T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p1",
+        "partyName": "Ramesh Traders",
+        "lineItems": [
             {
                 "id": "i9-inv20",
-                "productId": "i9",
-                "name": "Copper Wire Bundle",
-                "hsn_sac": "7408",
-                "qty": 9,
+                "description": "Copper Wire Bundle",
+                "hsnSacCode": "7408",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "7408",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 2850,
-                "gst_rate": 18,
-                "tax_amount": 4617,
-                "line_total": 25650
+                "quantityDecimal": 9,
+                "unitPricePaise": 285000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 2565000,
+                "gstAmountPaise": 461700,
+                "totalAmountPaise": 3026700
             }
         ],
-        "subtotal": 25650,
-        "discountAmount": 0,
-        "cgstAmount": 2308.5,
-        "sgstAmount": 2308.5,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 30267
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 2565000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 230850,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 230850,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 2565000,
+            "totalGSTAmountPaise": 461700,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 2565000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 2565000,
+        "totalGSTAmountPaise": 461700,
+        "totalAmountPaise": 3026700,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PAID",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 3026700,
+        "balanceDuePaise": 0,
+        "expectedDeliveryDate": "2026-04-09T18:30:00.000Z"
     },
     {
         "id": "inv21",
-        "number": "INV-2026-021",
-        "date": "14 Mar 2026",
-        "type": "Tax Invoice",
-        "status": "Pending",
-        "customerId": "p5",
-        "customerName": "Party 5 Traders",
-        "items": [
+        "documentType": "SALES_INVOICE",
+        "documentNumber": "INV-2026-021",
+        "documentDate": "2026-03-13T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p5",
+        "partyName": "Party 5 Traders",
+        "lineItems": [
             {
                 "id": "i10-inv21",
-                "productId": "i10",
-                "name": "LED Panel Light",
-                "hsn_sac": "9405",
-                "qty": 8,
+                "description": "LED Panel Light",
+                "hsnSacCode": "9405",
+                "taxRate": {
+                    "id": "tr_12",
+                    "hsnSacCode": "9405",
+                    "description": "12% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 6,
+                        "sgstRate": 6,
+                        "igstRate": 12,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 950,
-                "gst_rate": 12,
-                "tax_amount": 912,
-                "line_total": 7600
+                "quantityDecimal": 8,
+                "unitPricePaise": 95000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 760000,
+                "gstAmountPaise": 91200,
+                "totalAmountPaise": 851200
             }
         ],
-        "subtotal": 7600,
-        "discountAmount": 0,
-        "cgstAmount": 456,
-        "sgstAmount": 456,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 8512
+        "gstSummary": {
+            "slabs": {
+                "12": {
+                    "taxableValuePaise": 760000,
+                    "cgstRate": 6,
+                    "cgstAmountPaise": 45600,
+                    "sgstRate": 6,
+                    "sgstAmountPaise": 45600,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 760000,
+            "totalGSTAmountPaise": 91200,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 760000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 760000,
+        "totalGSTAmountPaise": 91200,
+        "totalAmountPaise": 851200,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PENDING",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 0,
+        "balanceDuePaise": 851200,
+        "expectedDeliveryDate": "2026-03-13T18:30:00.000Z"
     },
     {
         "id": "inv22",
-        "number": "INV-2026-022",
-        "date": "22 Apr 2026",
-        "type": "Tax Invoice",
-        "status": "Paid",
-        "customerId": "p7",
-        "customerName": "Party 7 Traders",
-        "items": [
+        "documentType": "SALES_INVOICE",
+        "documentNumber": "INV-2026-022",
+        "documentDate": "2026-04-21T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p7",
+        "partyName": "Party 7 Traders",
+        "lineItems": [
             {
                 "id": "i10-inv22",
-                "productId": "i10",
-                "name": "LED Panel Light",
-                "hsn_sac": "9405",
-                "qty": 3,
+                "description": "LED Panel Light",
+                "hsnSacCode": "9405",
+                "taxRate": {
+                    "id": "tr_12",
+                    "hsnSacCode": "9405",
+                    "description": "12% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 6,
+                        "sgstRate": 6,
+                        "igstRate": 12,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 950,
-                "gst_rate": 12,
-                "tax_amount": 342,
-                "line_total": 2850
+                "quantityDecimal": 3,
+                "unitPricePaise": 95000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 285000,
+                "gstAmountPaise": 34200,
+                "totalAmountPaise": 319200
             }
         ],
-        "subtotal": 2850,
-        "discountAmount": 0,
-        "cgstAmount": 171,
-        "sgstAmount": 171,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 3192
+        "gstSummary": {
+            "slabs": {
+                "12": {
+                    "taxableValuePaise": 285000,
+                    "cgstRate": 6,
+                    "cgstAmountPaise": 17100,
+                    "sgstRate": 6,
+                    "sgstAmountPaise": 17100,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 285000,
+            "totalGSTAmountPaise": 34200,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 285000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 285000,
+        "totalGSTAmountPaise": 34200,
+        "totalAmountPaise": 319200,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PAID",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 319200,
+        "balanceDuePaise": 0,
+        "expectedDeliveryDate": "2026-04-21T18:30:00.000Z"
     },
     {
         "id": "inv23",
-        "number": "INV-2026-023",
-        "date": "10 Apr 2026",
-        "type": "Tax Invoice",
-        "status": "Paid",
-        "customerId": "p4",
-        "customerName": "Sharma & Sons",
-        "items": [
+        "documentType": "SALES_INVOICE",
+        "documentNumber": "INV-2026-023",
+        "documentDate": "2026-04-09T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p4",
+        "partyName": "Sharma & Sons",
+        "lineItems": [
             {
                 "id": "i9-inv23",
-                "productId": "i9",
-                "name": "Copper Wire Bundle",
-                "hsn_sac": "7408",
-                "qty": 4,
+                "description": "Copper Wire Bundle",
+                "hsnSacCode": "7408",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "7408",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 2850,
-                "gst_rate": 18,
-                "tax_amount": 2052,
-                "line_total": 11400
+                "quantityDecimal": 4,
+                "unitPricePaise": 285000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 1140000,
+                "gstAmountPaise": 205200,
+                "totalAmountPaise": 1345200
             }
         ],
-        "subtotal": 11400,
-        "discountAmount": 0,
-        "cgstAmount": 1026,
-        "sgstAmount": 1026,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 13452
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 1140000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 102600,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 102600,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 1140000,
+            "totalGSTAmountPaise": 205200,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 1140000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 1140000,
+        "totalGSTAmountPaise": 205200,
+        "totalAmountPaise": 1345200,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PAID",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 1345200,
+        "balanceDuePaise": 0,
+        "expectedDeliveryDate": "2026-04-09T18:30:00.000Z"
     },
     {
         "id": "inv24",
-        "number": "INV-2026-024",
-        "date": "18 Feb 2026",
-        "type": "Tax Invoice",
-        "status": "Paid",
-        "customerId": "p7",
-        "customerName": "Party 7 Traders",
-        "items": [
+        "documentType": "SALES_INVOICE",
+        "documentNumber": "INV-2026-024",
+        "documentDate": "2026-02-17T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p7",
+        "partyName": "Party 7 Traders",
+        "lineItems": [
             {
                 "id": "i14-inv24",
-                "productId": "i14",
-                "name": "Annual Maintenance Contract",
-                "hsn_sac": "9987",
-                "qty": 9,
+                "description": "Annual Maintenance Contract",
+                "hsnSacCode": "9987",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "9987",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 25000,
-                "gst_rate": 18,
-                "tax_amount": 40500,
-                "line_total": 225000
+                "quantityDecimal": 9,
+                "unitPricePaise": 2500000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 22500000,
+                "gstAmountPaise": 4050000,
+                "totalAmountPaise": 26550000
             }
         ],
-        "subtotal": 225000,
-        "discountAmount": 0,
-        "cgstAmount": 20250,
-        "sgstAmount": 20250,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 265500
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 22500000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 2025000,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 2025000,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 22500000,
+            "totalGSTAmountPaise": 4050000,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 22500000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 22500000,
+        "totalGSTAmountPaise": 4050000,
+        "totalAmountPaise": 26550000,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PAID",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 26550000,
+        "balanceDuePaise": 0,
+        "expectedDeliveryDate": "2026-02-17T18:30:00.000Z"
     },
     {
         "id": "inv25",
-        "number": "INV-2026-025",
-        "date": "02 Jan 2026",
-        "type": "Tax Invoice",
-        "status": "Overdue",
-        "customerId": "p5",
-        "customerName": "Party 5 Traders",
-        "items": [
+        "documentType": "SALES_INVOICE",
+        "documentNumber": "INV-2026-025",
+        "documentDate": "2026-01-01T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p5",
+        "partyName": "Party 5 Traders",
+        "lineItems": [
             {
                 "id": "i5-inv25",
-                "productId": "i5",
-                "name": "Consulting Fees",
-                "hsn_sac": "9983",
-                "qty": 1,
+                "description": "Consulting Fees",
+                "hsnSacCode": "9983",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "9983",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 5000,
-                "gst_rate": 18,
-                "tax_amount": 900,
-                "line_total": 5000
+                "quantityDecimal": 1,
+                "unitPricePaise": 500000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 500000,
+                "gstAmountPaise": 90000,
+                "totalAmountPaise": 590000
             }
         ],
-        "subtotal": 5000,
-        "discountAmount": 0,
-        "cgstAmount": 450,
-        "sgstAmount": 450,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 5900
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 500000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 45000,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 45000,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 500000,
+            "totalGSTAmountPaise": 90000,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 500000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 500000,
+        "totalGSTAmountPaise": 90000,
+        "totalAmountPaise": 590000,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "OVERDUE",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 0,
+        "balanceDuePaise": 590000,
+        "expectedDeliveryDate": "2026-01-01T18:30:00.000Z"
     }
 ];
 
-export const PURCHASES: Invoice[] = [
+export const PURCHASES: PurchaseOrder[] = [
     {
         "id": "po1",
-        "number": "PO-2026-001",
-        "date": "25 Mar 2026",
-        "type": "Vendor Bill",
-        "status": "Paid",
-        "customerId": "p9",
-        "customerName": "Ultra Cement Depot",
-        "vendorId": "p9",
-        "vendorName": "Ultra Cement Depot",
-        "items": [
+        "documentType": "PURCHASE_ORDER",
+        "documentNumber": "PO-2026-001",
+        "documentDate": "2026-03-24T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p9",
+        "partyName": "Ultra Cement Depot",
+        "lineItems": [
             {
                 "id": "i8-po1",
-                "productId": "i8",
-                "name": "PVC Pipe 4 Inch",
-                "hsn_sac": "3917",
-                "qty": 20,
+                "description": "PVC Pipe 4 Inch",
+                "hsnSacCode": "3917",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "3917",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 1250,
-                "gst_rate": 18,
-                "tax_amount": 4500,
-                "line_total": 25000
+                "quantityDecimal": 20,
+                "unitPricePaise": 125000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 2500000,
+                "gstAmountPaise": 450000,
+                "totalAmountPaise": 2950000
             }
         ],
-        "subtotal": 25000,
-        "discountAmount": 0,
-        "cgstAmount": 2250,
-        "sgstAmount": 2250,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 29500
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 2500000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 225000,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 225000,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 2500000,
+            "totalGSTAmountPaise": 450000,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 2500000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 2500000,
+        "totalGSTAmountPaise": 450000,
+        "totalAmountPaise": 2950000,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PAID",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 2950000,
+        "balanceDuePaise": 0,
+        "expectedDeliveryDate": "2026-03-24T18:30:00.000Z"
     },
     {
         "id": "po2",
-        "number": "PO-2026-002",
-        "date": "08 Jun 2026",
-        "type": "Vendor Bill",
-        "status": "Pending",
-        "customerId": "p14",
-        "customerName": "Party 14 Suppliers",
-        "vendorId": "p14",
-        "vendorName": "Party 14 Suppliers",
-        "items": [
+        "documentType": "PURCHASE_ORDER",
+        "documentNumber": "PO-2026-002",
+        "documentDate": "2026-06-07T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p14",
+        "partyName": "Party 14 Suppliers",
+        "lineItems": [
             {
                 "id": "i8-po2",
-                "productId": "i8",
-                "name": "PVC Pipe 4 Inch",
-                "hsn_sac": "3917",
-                "qty": 16,
+                "description": "PVC Pipe 4 Inch",
+                "hsnSacCode": "3917",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "3917",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 1250,
-                "gst_rate": 18,
-                "tax_amount": 3600,
-                "line_total": 20000
+                "quantityDecimal": 16,
+                "unitPricePaise": 125000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 2000000,
+                "gstAmountPaise": 360000,
+                "totalAmountPaise": 2360000
             }
         ],
-        "subtotal": 20000,
-        "discountAmount": 0,
-        "cgstAmount": 1800,
-        "sgstAmount": 1800,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 23600
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 2000000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 180000,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 180000,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 2000000,
+            "totalGSTAmountPaise": 360000,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 2000000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 2000000,
+        "totalGSTAmountPaise": 360000,
+        "totalAmountPaise": 2360000,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PENDING",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 0,
+        "balanceDuePaise": 2360000,
+        "expectedDeliveryDate": "2026-06-07T18:30:00.000Z"
     },
     {
         "id": "po3",
-        "number": "PO-2026-003",
-        "date": "04 Feb 2026",
-        "type": "Vendor Bill",
-        "status": "Paid",
-        "customerId": "p9",
-        "customerName": "Ultra Cement Depot",
-        "vendorId": "p9",
-        "vendorName": "Ultra Cement Depot",
-        "items": [
+        "documentType": "PURCHASE_ORDER",
+        "documentNumber": "PO-2026-003",
+        "documentDate": "2026-02-03T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p9",
+        "partyName": "Ultra Cement Depot",
+        "lineItems": [
             {
                 "id": "i2-po3",
-                "productId": "i2",
-                "name": "Ambuja Cement 50kg",
-                "hsn_sac": "2523",
-                "qty": 8,
+                "description": "Ambuja Cement 50kg",
+                "hsnSacCode": "2523",
+                "taxRate": {
+                    "id": "tr_28",
+                    "hsnSacCode": "2523",
+                    "description": "28% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 14,
+                        "sgstRate": 14,
+                        "igstRate": 28,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 380,
-                "gst_rate": 28,
-                "tax_amount": 851.2,
-                "line_total": 3040
+                "quantityDecimal": 8,
+                "unitPricePaise": 38000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 304000,
+                "gstAmountPaise": 85120,
+                "totalAmountPaise": 389120
             }
         ],
-        "subtotal": 3040,
-        "discountAmount": 0,
-        "cgstAmount": 425.6,
-        "sgstAmount": 425.6,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 3891.2
+        "gstSummary": {
+            "slabs": {
+                "28": {
+                    "taxableValuePaise": 304000,
+                    "cgstRate": 14,
+                    "cgstAmountPaise": 42560,
+                    "sgstRate": 14,
+                    "sgstAmountPaise": 42560,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 304000,
+            "totalGSTAmountPaise": 85120,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 304000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 304000,
+        "totalGSTAmountPaise": 85120,
+        "totalAmountPaise": 389120,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PAID",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 389120,
+        "balanceDuePaise": 0,
+        "expectedDeliveryDate": "2026-02-03T18:30:00.000Z"
     },
     {
         "id": "po4",
-        "number": "PO-2026-004",
-        "date": "07 Apr 2026",
-        "type": "Vendor Bill",
-        "status": "Paid",
-        "customerId": "p15",
-        "customerName": "Party 15 Suppliers",
-        "vendorId": "p15",
-        "vendorName": "Party 15 Suppliers",
-        "items": [
+        "documentType": "PURCHASE_ORDER",
+        "documentNumber": "PO-2026-004",
+        "documentDate": "2026-04-06T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p15",
+        "partyName": "Party 15 Suppliers",
+        "lineItems": [
             {
                 "id": "i7-po4",
-                "productId": "i7",
-                "name": "ACC Cement 50kg",
-                "hsn_sac": "2523",
-                "qty": 16,
+                "description": "ACC Cement 50kg",
+                "hsnSacCode": "2523",
+                "taxRate": {
+                    "id": "tr_28",
+                    "hsnSacCode": "2523",
+                    "description": "28% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 14,
+                        "sgstRate": 14,
+                        "igstRate": 28,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 395,
-                "gst_rate": 28,
-                "tax_amount": 1769.6,
-                "line_total": 6320
+                "quantityDecimal": 16,
+                "unitPricePaise": 39500,
+                "discountPercent": 0,
+                "taxableAmountPaise": 632000,
+                "gstAmountPaise": 176960,
+                "totalAmountPaise": 808960
             }
         ],
-        "subtotal": 6320,
-        "discountAmount": 0,
-        "cgstAmount": 884.8,
-        "sgstAmount": 884.8,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 8089.6
+        "gstSummary": {
+            "slabs": {
+                "28": {
+                    "taxableValuePaise": 632000,
+                    "cgstRate": 14,
+                    "cgstAmountPaise": 88480,
+                    "sgstRate": 14,
+                    "sgstAmountPaise": 88480,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 632000,
+            "totalGSTAmountPaise": 176960,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 632000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 632000,
+        "totalGSTAmountPaise": 176960,
+        "totalAmountPaise": 808960,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PAID",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 808960,
+        "balanceDuePaise": 0,
+        "expectedDeliveryDate": "2026-04-06T18:30:00.000Z"
     },
     {
         "id": "po5",
-        "number": "PO-2026-005",
-        "date": "24 Jan 2026",
-        "type": "Vendor Bill",
-        "status": "Paid",
-        "customerId": "p9",
-        "customerName": "Ultra Cement Depot",
-        "vendorId": "p9",
-        "vendorName": "Ultra Cement Depot",
-        "items": [
+        "documentType": "PURCHASE_ORDER",
+        "documentNumber": "PO-2026-005",
+        "documentDate": "2026-01-23T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p9",
+        "partyName": "Ultra Cement Depot",
+        "lineItems": [
             {
                 "id": "i6-po5",
-                "productId": "i6",
-                "name": "TMT Bars 16mm",
-                "hsn_sac": "7214",
-                "qty": 16,
+                "description": "TMT Bars 16mm",
+                "hsnSacCode": "7214",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "7214",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 620,
-                "gst_rate": 18,
-                "tax_amount": 1785.6,
-                "line_total": 9920
+                "quantityDecimal": 16,
+                "unitPricePaise": 62000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 992000,
+                "gstAmountPaise": 178560,
+                "totalAmountPaise": 1170560
             }
         ],
-        "subtotal": 9920,
-        "discountAmount": 0,
-        "cgstAmount": 892.8,
-        "sgstAmount": 892.8,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 11705.6
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 992000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 89280,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 89280,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 992000,
+            "totalGSTAmountPaise": 178560,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 992000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 992000,
+        "totalGSTAmountPaise": 178560,
+        "totalAmountPaise": 1170560,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PAID",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 1170560,
+        "balanceDuePaise": 0,
+        "expectedDeliveryDate": "2026-01-23T18:30:00.000Z"
     },
     {
         "id": "po6",
-        "number": "PO-2026-006",
-        "date": "23 Feb 2026",
-        "type": "Vendor Bill",
-        "status": "Paid",
-        "customerId": "p11",
-        "customerName": "National Metals",
-        "vendorId": "p11",
-        "vendorName": "National Metals",
-        "items": [
+        "documentType": "PURCHASE_ORDER",
+        "documentNumber": "PO-2026-006",
+        "documentDate": "2026-02-22T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p11",
+        "partyName": "National Metals",
+        "lineItems": [
             {
                 "id": "i12-po6",
-                "productId": "i12",
-                "name": "Laser Printer",
-                "hsn_sac": "8443",
-                "qty": 17,
+                "description": "Laser Printer",
+                "hsnSacCode": "8443",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "8443",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 18500,
-                "gst_rate": 18,
-                "tax_amount": 56610,
-                "line_total": 314500
+                "quantityDecimal": 17,
+                "unitPricePaise": 1850000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 31450000,
+                "gstAmountPaise": 5661000,
+                "totalAmountPaise": 37111000
             }
         ],
-        "subtotal": 314500,
-        "discountAmount": 0,
-        "cgstAmount": 28305,
-        "sgstAmount": 28305,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 371110
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 31450000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 2830500,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 2830500,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 31450000,
+            "totalGSTAmountPaise": 5661000,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 31450000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 31450000,
+        "totalGSTAmountPaise": 5661000,
+        "totalAmountPaise": 37111000,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PAID",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 37111000,
+        "balanceDuePaise": 0,
+        "expectedDeliveryDate": "2026-02-22T18:30:00.000Z"
     },
     {
         "id": "po7",
-        "number": "PO-2026-007",
-        "date": "11 Apr 2026",
-        "type": "Vendor Bill",
-        "status": "Paid",
-        "customerId": "p14",
-        "customerName": "Party 14 Suppliers",
-        "vendorId": "p14",
-        "vendorName": "Party 14 Suppliers",
-        "items": [
+        "documentType": "PURCHASE_ORDER",
+        "documentNumber": "PO-2026-007",
+        "documentDate": "2026-04-10T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p14",
+        "partyName": "Party 14 Suppliers",
+        "lineItems": [
             {
                 "id": "i15-po7",
-                "productId": "i15",
-                "name": "Business Advisory",
-                "hsn_sac": "9983",
-                "qty": 24,
+                "description": "Business Advisory",
+                "hsnSacCode": "9983",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "9983",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 12000,
-                "gst_rate": 18,
-                "tax_amount": 51840,
-                "line_total": 288000
+                "quantityDecimal": 24,
+                "unitPricePaise": 1200000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 28800000,
+                "gstAmountPaise": 5184000,
+                "totalAmountPaise": 33984000
             }
         ],
-        "subtotal": 288000,
-        "discountAmount": 0,
-        "cgstAmount": 25920,
-        "sgstAmount": 25920,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 339840
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 28800000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 2592000,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 2592000,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 28800000,
+            "totalGSTAmountPaise": 5184000,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 28800000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 28800000,
+        "totalGSTAmountPaise": 5184000,
+        "totalAmountPaise": 33984000,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PAID",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 33984000,
+        "balanceDuePaise": 0,
+        "expectedDeliveryDate": "2026-04-10T18:30:00.000Z"
     },
     {
         "id": "po8",
-        "number": "PO-2026-008",
-        "date": "10 Jun 2026",
-        "type": "Vendor Bill",
-        "status": "Draft",
-        "customerId": "p13",
-        "customerName": "Party 13 Suppliers",
-        "vendorId": "p13",
-        "vendorName": "Party 13 Suppliers",
-        "items": [
+        "documentType": "PURCHASE_ORDER",
+        "documentNumber": "PO-2026-008",
+        "documentDate": "2026-06-09T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p13",
+        "partyName": "Party 13 Suppliers",
+        "lineItems": [
             {
                 "id": "i15-po8",
-                "productId": "i15",
-                "name": "Business Advisory",
-                "hsn_sac": "9983",
-                "qty": 12,
+                "description": "Business Advisory",
+                "hsnSacCode": "9983",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "9983",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 12000,
-                "gst_rate": 18,
-                "tax_amount": 25920,
-                "line_total": 144000
+                "quantityDecimal": 12,
+                "unitPricePaise": 1200000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 14400000,
+                "gstAmountPaise": 2592000,
+                "totalAmountPaise": 16992000
             }
         ],
-        "subtotal": 144000,
-        "discountAmount": 0,
-        "cgstAmount": 12960,
-        "sgstAmount": 12960,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 169920
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 14400000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 1296000,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 1296000,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 14400000,
+            "totalGSTAmountPaise": 2592000,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 14400000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 14400000,
+        "totalGSTAmountPaise": 2592000,
+        "totalAmountPaise": 16992000,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "DRAFT",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 0,
+        "balanceDuePaise": 16992000,
+        "expectedDeliveryDate": "2026-06-09T18:30:00.000Z"
     },
     {
         "id": "po9",
-        "number": "PO-2026-009",
-        "date": "25 Jan 2026",
-        "type": "Vendor Bill",
-        "status": "Paid",
-        "customerId": "p13",
-        "customerName": "Party 13 Suppliers",
-        "vendorId": "p13",
-        "vendorName": "Party 13 Suppliers",
-        "items": [
+        "documentType": "PURCHASE_ORDER",
+        "documentNumber": "PO-2026-009",
+        "documentDate": "2026-01-24T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p13",
+        "partyName": "Party 13 Suppliers",
+        "lineItems": [
             {
                 "id": "i7-po9",
-                "productId": "i7",
-                "name": "ACC Cement 50kg",
-                "hsn_sac": "2523",
-                "qty": 12,
+                "description": "ACC Cement 50kg",
+                "hsnSacCode": "2523",
+                "taxRate": {
+                    "id": "tr_28",
+                    "hsnSacCode": "2523",
+                    "description": "28% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 14,
+                        "sgstRate": 14,
+                        "igstRate": 28,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 395,
-                "gst_rate": 28,
-                "tax_amount": 1327.2,
-                "line_total": 4740
+                "quantityDecimal": 12,
+                "unitPricePaise": 39500,
+                "discountPercent": 0,
+                "taxableAmountPaise": 474000,
+                "gstAmountPaise": 132720,
+                "totalAmountPaise": 606720
             }
         ],
-        "subtotal": 4740,
-        "discountAmount": 0,
-        "cgstAmount": 663.6,
-        "sgstAmount": 663.6,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 6067.2
+        "gstSummary": {
+            "slabs": {
+                "28": {
+                    "taxableValuePaise": 474000,
+                    "cgstRate": 14,
+                    "cgstAmountPaise": 66360,
+                    "sgstRate": 14,
+                    "sgstAmountPaise": 66360,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 474000,
+            "totalGSTAmountPaise": 132720,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 474000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 474000,
+        "totalGSTAmountPaise": 132720,
+        "totalAmountPaise": 606720,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PAID",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 606720,
+        "balanceDuePaise": 0,
+        "expectedDeliveryDate": "2026-01-24T18:30:00.000Z"
     },
     {
         "id": "po10",
-        "number": "PO-2026-010",
-        "date": "02 May 2026",
-        "type": "Vendor Bill",
-        "status": "Pending",
-        "customerId": "p14",
-        "customerName": "Party 14 Suppliers",
-        "vendorId": "p14",
-        "vendorName": "Party 14 Suppliers",
-        "items": [
+        "documentType": "PURCHASE_ORDER",
+        "documentNumber": "PO-2026-010",
+        "documentDate": "2026-05-01T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p14",
+        "partyName": "Party 14 Suppliers",
+        "lineItems": [
             {
                 "id": "i6-po10",
-                "productId": "i6",
-                "name": "TMT Bars 16mm",
-                "hsn_sac": "7214",
-                "qty": 14,
+                "description": "TMT Bars 16mm",
+                "hsnSacCode": "7214",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "7214",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 620,
-                "gst_rate": 18,
-                "tax_amount": 1562.4,
-                "line_total": 8680
+                "quantityDecimal": 14,
+                "unitPricePaise": 62000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 868000,
+                "gstAmountPaise": 156240,
+                "totalAmountPaise": 1024240
             }
         ],
-        "subtotal": 8680,
-        "discountAmount": 0,
-        "cgstAmount": 781.2,
-        "sgstAmount": 781.2,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 10242.4
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 868000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 78120,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 78120,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 868000,
+            "totalGSTAmountPaise": 156240,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 868000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 868000,
+        "totalGSTAmountPaise": 156240,
+        "totalAmountPaise": 1024240,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PENDING",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 0,
+        "balanceDuePaise": 1024240,
+        "expectedDeliveryDate": "2026-05-01T18:30:00.000Z"
     },
     {
         "id": "po11",
-        "number": "PO-2026-011",
-        "date": "07 May 2026",
-        "type": "Vendor Bill",
-        "status": "Pending",
-        "customerId": "p11",
-        "customerName": "National Metals",
-        "vendorId": "p11",
-        "vendorName": "National Metals",
-        "items": [
+        "documentType": "PURCHASE_ORDER",
+        "documentNumber": "PO-2026-011",
+        "documentDate": "2026-05-06T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p11",
+        "partyName": "National Metals",
+        "lineItems": [
             {
                 "id": "i12-po11",
-                "productId": "i12",
-                "name": "Laser Printer",
-                "hsn_sac": "8443",
-                "qty": 18,
+                "description": "Laser Printer",
+                "hsnSacCode": "8443",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "8443",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 18500,
-                "gst_rate": 18,
-                "tax_amount": 59940,
-                "line_total": 333000
+                "quantityDecimal": 18,
+                "unitPricePaise": 1850000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 33300000,
+                "gstAmountPaise": 5994000,
+                "totalAmountPaise": 39294000
             }
         ],
-        "subtotal": 333000,
-        "discountAmount": 0,
-        "cgstAmount": 29970,
-        "sgstAmount": 29970,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 392940
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 33300000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 2997000,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 2997000,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 33300000,
+            "totalGSTAmountPaise": 5994000,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 33300000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 33300000,
+        "totalGSTAmountPaise": 5994000,
+        "totalAmountPaise": 39294000,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PENDING",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 0,
+        "balanceDuePaise": 39294000,
+        "expectedDeliveryDate": "2026-05-06T18:30:00.000Z"
     },
     {
         "id": "po12",
-        "number": "PO-2026-012",
-        "date": "01 Jun 2026",
-        "type": "Vendor Bill",
-        "status": "Paid",
-        "customerId": "p12",
-        "customerName": "Party 12 Suppliers",
-        "vendorId": "p12",
-        "vendorName": "Party 12 Suppliers",
-        "items": [
+        "documentType": "PURCHASE_ORDER",
+        "documentNumber": "PO-2026-012",
+        "documentDate": "2026-05-31T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p12",
+        "partyName": "Party 12 Suppliers",
+        "lineItems": [
             {
                 "id": "i8-po12",
-                "productId": "i8",
-                "name": "PVC Pipe 4 Inch",
-                "hsn_sac": "3917",
-                "qty": 19,
+                "description": "PVC Pipe 4 Inch",
+                "hsnSacCode": "3917",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "3917",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 1250,
-                "gst_rate": 18,
-                "tax_amount": 4275,
-                "line_total": 23750
+                "quantityDecimal": 19,
+                "unitPricePaise": 125000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 2375000,
+                "gstAmountPaise": 427500,
+                "totalAmountPaise": 2802500
             }
         ],
-        "subtotal": 23750,
-        "discountAmount": 0,
-        "cgstAmount": 2137.5,
-        "sgstAmount": 2137.5,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 28025
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 2375000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 213750,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 213750,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 2375000,
+            "totalGSTAmountPaise": 427500,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 2375000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 2375000,
+        "totalGSTAmountPaise": 427500,
+        "totalAmountPaise": 2802500,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PAID",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 2802500,
+        "balanceDuePaise": 0,
+        "expectedDeliveryDate": "2026-05-31T18:30:00.000Z"
     },
     {
         "id": "po13",
-        "number": "PO-2026-013",
-        "date": "01 Mar 2026",
-        "type": "Vendor Bill",
-        "status": "Draft",
-        "customerId": "p14",
-        "customerName": "Party 14 Suppliers",
-        "vendorId": "p14",
-        "vendorName": "Party 14 Suppliers",
-        "items": [
+        "documentType": "PURCHASE_ORDER",
+        "documentNumber": "PO-2026-013",
+        "documentDate": "2026-02-28T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p14",
+        "partyName": "Party 14 Suppliers",
+        "lineItems": [
             {
                 "id": "i3-po13",
-                "productId": "i3",
-                "name": "Office Chair Ergonomic",
-                "hsn_sac": "9401",
-                "qty": 18,
+                "description": "Office Chair Ergonomic",
+                "hsnSacCode": "9401",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "9401",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 4500,
-                "gst_rate": 18,
-                "tax_amount": 14580,
-                "line_total": 81000
+                "quantityDecimal": 18,
+                "unitPricePaise": 450000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 8100000,
+                "gstAmountPaise": 1458000,
+                "totalAmountPaise": 9558000
             }
         ],
-        "subtotal": 81000,
-        "discountAmount": 0,
-        "cgstAmount": 7290,
-        "sgstAmount": 7290,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 95580
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 8100000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 729000,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 729000,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 8100000,
+            "totalGSTAmountPaise": 1458000,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 8100000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 8100000,
+        "totalGSTAmountPaise": 1458000,
+        "totalAmountPaise": 9558000,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "DRAFT",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 0,
+        "balanceDuePaise": 9558000,
+        "expectedDeliveryDate": "2026-02-28T18:30:00.000Z"
     },
     {
         "id": "po14",
-        "number": "PO-2026-014",
-        "date": "04 Apr 2026",
-        "type": "Vendor Bill",
-        "status": "Paid",
-        "customerId": "p9",
-        "customerName": "Ultra Cement Depot",
-        "vendorId": "p9",
-        "vendorName": "Ultra Cement Depot",
-        "items": [
+        "documentType": "PURCHASE_ORDER",
+        "documentNumber": "PO-2026-014",
+        "documentDate": "2026-04-03T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p9",
+        "partyName": "Ultra Cement Depot",
+        "lineItems": [
             {
                 "id": "i7-po14",
-                "productId": "i7",
-                "name": "ACC Cement 50kg",
-                "hsn_sac": "2523",
-                "qty": 14,
+                "description": "ACC Cement 50kg",
+                "hsnSacCode": "2523",
+                "taxRate": {
+                    "id": "tr_28",
+                    "hsnSacCode": "2523",
+                    "description": "28% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 14,
+                        "sgstRate": 14,
+                        "igstRate": 28,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 395,
-                "gst_rate": 28,
-                "tax_amount": 1548.4,
-                "line_total": 5530
+                "quantityDecimal": 14,
+                "unitPricePaise": 39500,
+                "discountPercent": 0,
+                "taxableAmountPaise": 553000,
+                "gstAmountPaise": 154840,
+                "totalAmountPaise": 707840
             }
         ],
-        "subtotal": 5530,
-        "discountAmount": 0,
-        "cgstAmount": 774.2,
-        "sgstAmount": 774.2,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 7078.4
+        "gstSummary": {
+            "slabs": {
+                "28": {
+                    "taxableValuePaise": 553000,
+                    "cgstRate": 14,
+                    "cgstAmountPaise": 77420,
+                    "sgstRate": 14,
+                    "sgstAmountPaise": 77420,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 553000,
+            "totalGSTAmountPaise": 154840,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 553000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 553000,
+        "totalGSTAmountPaise": 154840,
+        "totalAmountPaise": 707840,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "PAID",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 707840,
+        "balanceDuePaise": 0,
+        "expectedDeliveryDate": "2026-04-03T18:30:00.000Z"
     },
     {
         "id": "po15",
-        "number": "PO-2026-015",
-        "date": "16 May 2026",
-        "type": "Vendor Bill",
-        "status": "Draft",
-        "customerId": "p10",
-        "customerName": "Prime Logistics",
-        "vendorId": "p10",
-        "vendorName": "Prime Logistics",
-        "items": [
+        "documentType": "PURCHASE_ORDER",
+        "documentNumber": "PO-2026-015",
+        "documentDate": "2026-05-15T18:30:00.000Z",
+        "businessId": "b1",
+        "partyId": "p10",
+        "partyName": "Prime Logistics",
+        "lineItems": [
             {
                 "id": "i1-po15",
-                "productId": "i1",
-                "name": "TMT Bars 12mm",
-                "hsn_sac": "7214",
-                "qty": 17,
+                "description": "TMT Bars 12mm",
+                "hsnSacCode": "7214",
+                "taxRate": {
+                    "id": "tr_18",
+                    "hsnSacCode": "7214",
+                    "description": "18% Rate",
+                    "isService": false,
+                    "isActive": true,
+                    "gstComponent": {
+                        "cgstRate": 9,
+                        "sgstRate": 9,
+                        "igstRate": 18,
+                        "cessRate": 0
+                    }
+                },
                 "unit": "pcs",
-                "rate": 450,
-                "gst_rate": 18,
-                "tax_amount": 1377,
-                "line_total": 7650
+                "quantityDecimal": 17,
+                "unitPricePaise": 45000,
+                "discountPercent": 0,
+                "taxableAmountPaise": 765000,
+                "gstAmountPaise": 137700,
+                "totalAmountPaise": 902700
             }
         ],
-        "subtotal": 7650,
-        "discountAmount": 0,
-        "cgstAmount": 688.5,
-        "sgstAmount": 688.5,
-        "igstAmount": 0,
-        "roundOff": 0,
-        "total": 9027
+        "gstSummary": {
+            "slabs": {
+                "18": {
+                    "taxableValuePaise": 765000,
+                    "cgstRate": 9,
+                    "cgstAmountPaise": 68850,
+                    "sgstRate": 9,
+                    "sgstAmountPaise": 68850,
+                    "igstRate": 0,
+                    "igstAmountPaise": 0,
+                    "cessRate": 0,
+                    "cessAmountPaise": 0
+                }
+            },
+            "totalTaxableValuePaise": 765000,
+            "totalGSTAmountPaise": 137700,
+            "totalCessAmountPaise": 0
+        },
+        "subtotalPaise": 765000,
+        "totalDiscountPaise": 0,
+        "totalTaxableAmountPaise": 765000,
+        "totalGSTAmountPaise": 137700,
+        "totalAmountPaise": 902700,
+        "totalAmountInWords": "",
+        "isInterState": false,
+        "placeOfSupply": "Maharashtra",
+        "status": "DRAFT",
+        "createdAt": "2026-06-11T08:45:07.780Z",
+        "updatedAt": "2026-06-11T08:45:07.780Z",
+        "paymentMode": "UPI",
+        "paidAmountPaise": 0,
+        "balanceDuePaise": 902700,
+        "expectedDeliveryDate": "2026-05-15T18:30:00.000Z"
     }
 ];
 
-export const PAYMENTS: Payment[] = [
-    { id: "pay1", date: "16 Jun 2026", amount: 54000, mode: "UPI", type: "in", partyName: "Ramesh Traders" },
-    { id: "pay2", date: "10 Jun 2026", amount: 150000, mode: "Bank Transfer", type: "out", partyName: "Tata Steel Wholesale" },
-    { id: "pay3", date: "21 Jun 2026", amount: 15000, mode: "Cash", type: "in", partyName: "Gupta Enterprises" }
+export const EXPENSES: ExpenseRecord[] = [
+    {
+        "id": "exp1",
+        "date": "2026-06-30T18:30:00.000Z",
+        "category": "Office Supplies",
+        "amountPaise": 250000,
+        "paymentMode": "UPI",
+        "vendorName": "Stationery Mart"
+    }
 ];
 
-export const EXPENSES: Expense[] = [
-    { id: "exp1", date: "01 Jul 2026", category: "Office Supplies", amount: 2500, paymentMode: "UPI", vendorName: "Stationery Mart" }
+export const PAYMENTS: PaymentRecord[] = [
+    {
+        "id": "pay1",
+        "date": "2026-06-15T18:30:00.000Z",
+        "amountPaise": 5400000,
+        "mode": "UPI",
+        "type": "in",
+        "partyId": "p1",
+        "partyName": "Ramesh Traders"
+    },
+    {
+        "id": "pay2",
+        "date": "2026-06-09T18:30:00.000Z",
+        "amountPaise": 15000000,
+        "mode": "Bank Transfer",
+        "type": "out",
+        "partyId": "p1",
+        "partyName": "Tata Steel Wholesale"
+    },
+    {
+        "id": "pay3",
+        "date": "2026-06-20T18:30:00.000Z",
+        "amountPaise": 1500000,
+        "mode": "Cash",
+        "type": "in",
+        "partyId": "p1",
+        "partyName": "Gupta Enterprises"
+    }
 ];
+
