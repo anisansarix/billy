@@ -192,6 +192,9 @@ export interface PurchaseOrder extends DocumentBase {
     documentType: DocumentType.PURCHASE_ORDER;
     expectedDeliveryDate: string;
     vendorQuoteNumber?: string;
+    paymentMode?: string;
+    paidAmountPaise?: number;
+    balanceDuePaise?: number;
 }
 
 export interface CreditNote extends DocumentBase {
