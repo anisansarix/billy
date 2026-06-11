@@ -1,8 +1,11 @@
 import { LineItem, GSTSummary, GSTSlab } from '../types/entities';
 
 export function computeLineItem(item: Omit<LineItem, 'taxableAmountPaise' | 'gstAmountPaise' | 'totalAmountPaise'>, isInterState: boolean): LineItem {
-    const rawTotalPaise = Math.round(item.unitPricePaise * item.quantityDecimal);
-    const discountAmountPaise = Math.round(rawTotalPaise * (item.discountPercent / 100));
+    const qty = item.quantityDecimal ?? 1;
+    const price = item.unitPricePaise || 0;
+    const discount = item.discountPercent || 0;
+    const rawTotalPaise = Math.round(price * qty);
+    const discountAmountPaise = Math.round(rawTotalPaise * (discount / 100));
     const taxableAmountPaise = rawTotalPaise - discountAmountPaise;
 
     let gstAmountPaise = 0;

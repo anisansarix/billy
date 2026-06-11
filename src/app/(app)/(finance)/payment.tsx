@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { Party, PaymentRecord, InventoryItem, StockAdjustmentRecord, DocumentType, SalesInvoice, PurchaseOrder, ExpenseRecord } from "@/types/entities";
+import { PaymentRecord } from "@/types/entities";
 
 import { useRouter } from "expo-router";
 import { useShallow } from 'zustand/react/shallow';

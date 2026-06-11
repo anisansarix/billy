@@ -1,12 +1,11 @@
-// @ts-nocheck
-import { Party, PaymentRecord, InventoryItem, StockAdjustmentRecord, DocumentType, SalesInvoice, PurchaseOrder, ExpenseRecord } from "@/types/entities";
+import { InventoryItem, TaxRate } from "@/types/entities";
 
 import AnimatedModal from "@/components/ui/AnimatedModal";
 import { useShallow } from 'zustand/react/shallow';
 import { useRouter } from "expo-router";
 import { ArrowLeft, Briefcase, Package, Plus, Search, X, Save, Edit, Trash2, AlertCircle, ArrowUpRight, ArrowDownRight } from "lucide-react-native";
 import { useState } from "react";
-import { Pressable, ScrollView, Text, TextInput, View, Alert, RefreshControl } from "react-native";
+import { Pressable, ScrollView, Text, TextInput, View, Alert, RefreshControl, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Card from "@/components/ui/Card";
 import { useAppStore } from "@/store";
@@ -40,10 +39,27 @@ export default function ProductsServicesScreen() {
     const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
     const [isFormModalVisible, setIsFormModalVisible] = useState(false);
     const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
-    const [formData, setFormData] = useState<Partial<InventoryItem>>({
+    interface FormState {
+        name: string;
+        type: 'product' | 'service';
+        unitPricePaise: number;
+        purchasePricePaise?: number;
+        hsnSacCode: string;
+        gstRate: number;
+        unit: string;
+        stock: number;
+        minimumStock?: number;
+        sku?: string;
+        description?: string;
+    }
+
+    const [formData, setFormData] = useState<FormState>({
         name: "",
         type: "product",
         unitPricePaise: 0,
+        hsnSacCode: "",
+        gstRate: 0,
+        unit: "pcs",
         stock: 0,
     });
     const [showMoreDetails, setShowMoreDetails] = useState(false);
@@ -51,7 +67,19 @@ export default function ProductsServicesScreen() {
     const openFormModal = (item?: InventoryItem) => {
         if (item) {
             setEditingItem(item);
-            setFormData({ ...item, stock: item.stock || 0 });
+            setFormData({ 
+                name: item.name,
+                type: item.type,
+                unitPricePaise: item.unitPricePaise,
+                purchasePricePaise: item.purchasePricePaise,
+                hsnSacCode: item.hsnSacCode,
+                gstRate: item.taxRate?.gstComponent?.igstRate || 0,
+                unit: item.unit,
+                stock: item.stock || 0,
+                minimumStock: item.minimumStock,
+                sku: item.sku,
+                description: item.description,
+            });
             setShowMoreDetails(false);
         } else {
             setEditingItem(null);
@@ -59,6 +87,9 @@ export default function ProductsServicesScreen() {
                 name: "",
                 type: tab,
                 unitPricePaise: 0,
+                hsnSacCode: "",
+                gstRate: 0,
+                unit: "pcs",
                 stock: 0,
             });
             setShowMoreDetails(false);
@@ -96,16 +127,35 @@ export default function ProductsServicesScreen() {
             return;
         }
 
+        const gstRate = formData.gstRate || 0;
+        const taxRateObj: TaxRate = {
+            id: `tax-${gstRate}`,
+            hsnSacCode: formData.hsnSacCode || "",
+            description: `GST ${gstRate}%`,
+            gstComponent: {
+                igstRate: gstRate,
+                cgstRate: gstRate / 2,
+                sgstRate: gstRate / 2,
+                cessRate: 0
+            },
+            isService: formData.type === 'service',
+            isActive: true
+        };
+
         const itemData: InventoryItem = {
-            ...formData,
             id: editingItem ? editingItem.id : `i${Date.now()}`,
             name: formData.name,
             type: formData.type || "product",
             unitPricePaise: Number(formData.unitPricePaise) || 0,
+            purchasePricePaise: formData.purchasePricePaise,
             hsnSacCode: formData.hsnSacCode || "",
-            taxRate: Number(formData.taxRate.gstComponent.igstRate) || 0,
+            taxRate: taxRateObj,
+            unit: formData.unit || "pcs",
             stock: Number(formData.stock) || 0,
-        } as InventoryItem;
+            minimumStock: formData.minimumStock,
+            sku: formData.sku,
+            description: formData.description,
+        };
 
         if (editingItem) {
             updateItem(itemData);
@@ -236,80 +286,86 @@ export default function ProductsServicesScreen() {
                 </View>
             )}
 
-            <ScrollView 
-                className="flex-1 px-5" 
-                showsVerticalScrollIndicator={false}
-                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#208AEF" />}
-            >
-                {view === 'catalog' ? (
-                    <>
-                        {filteredItems.map((item) => (
-                            <Card key={item.id} className="flex-row items-center mb-4 p-4" isPressable onPress={() => setSelectedItem(item)}>
-                                <View className="size-12 rounded-lg bg-[#e3e8fc] items-center justify-center mr-4">
-                                    {tab === "product" ? (
-                                        <Package color="#081126" size={24} />
-                                    ) : (
-                                        <Briefcase color="#081126" size={24} />
-                                    )}
-                                </View>
-                                <View className="flex-1">
-                                    <Text className="font-sans-bold text-lg text-primary mb-1">{item.name}</Text>
-                                    <Text className="font-sans-medium text-xs text-muted-foreground">
-                                        {tab === "product" ? "HSN" : "SAC"}: {item.hsnSacCode || "N/A"} • GST @ {item.taxRate.gstComponent.igstRate}%
-                                    </Text>
-                                </View>
-                                <View className="items-end">
-                                    <Text className="font-sans-bold text-base text-primary">
-                                        ₹ {item.unitPricePaise.toLocaleString('en-IN')}
-                                    </Text>
-                                    {tab === "product" && (
-                                        <Text className="font-sans-medium text-xs text-muted-foreground mt-1">
-                                            Stock: <Text className={item.stock && item.stock > (item.minimumStock || 5) ? "text-green-600" : "text-red-600"}>{item.stock || 0}</Text>
-                                        </Text>
-                                    )}
-                                </View>
-                            </Card>
-                        ))}
-
-                        {filteredItems.length === 0 && (
-                            <View className="items-center justify-center py-10">
-                                <Text className="font-sans-medium text-muted-foreground">No {tab}s found.</Text>
+            {view === 'catalog' ? (
+                <FlatList
+                    className="flex-1 px-5" 
+                    showsVerticalScrollIndicator={false}
+                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#208AEF" />}
+                    data={filteredItems}
+                    keyExtractor={(item) => item.id}
+                    initialNumToRender={15}
+                    maxToRenderPerBatch={10}
+                    renderItem={({ item }) => (
+                        <Card className="flex-row items-center mb-4 p-4" isPressable onPress={() => setSelectedItem(item)}>
+                            <View className="size-12 rounded-lg bg-[#e3e8fc] items-center justify-center mr-4">
+                                {tab === "product" ? (
+                                    <Package color="#081126" size={24} />
+                                ) : (
+                                    <Briefcase color="#081126" size={24} />
+                                )}
                             </View>
-                        )}
-                    </>
-                ) : (
-                    <>
-                        {adjustments.map((adj) => (
-                            <Card key={adj.id} className="flex-row items-center mb-4 p-4">
-                                <View className={`size-12 rounded-lg items-center justify-center mr-4 ${adj.type === 'Stock In' ? 'bg-green-100' : 'bg-amber-100'}`}>
-                                    {adj.type === 'Stock In' ? (
-                                        <ArrowDownRight color="#16a34a" size={24} />
-                                    ) : (
-                                        <ArrowUpRight color="#d97706" size={24} />
-                                    )}
-                                </View>
-                                <View className="flex-1">
-                                    <Text className="font-sans-bold text-base text-primary mb-1">{adj.itemName}</Text>
-                                    <Text className="font-sans-medium text-xs text-muted-foreground">
-                                        {adj.date} • {adj.reason}
-                                    </Text>
-                                </View>
-                                <View className="items-end">
-                                    <Text className={`font-sans-bold text-lg ${adj.type === 'Stock In' ? 'text-green-600' : 'text-amber-600'}`}>
-                                        {adj.type === 'Stock In' ? '+' : '-'}{adj.qty}
-                                    </Text>
-                                </View>
-                            </Card>
-                        ))}
-
-                        {adjustments.length === 0 && (
-                            <View className="items-center justify-center py-10">
-                                <Text className="font-sans-medium text-muted-foreground">No adjustments recorded yet.</Text>
+                            <View className="flex-1 mr-2">
+                                <Text className="font-sans-bold text-lg text-primary mb-1" numberOfLines={1}>{item.name}</Text>
+                                <Text className="font-sans-medium text-xs text-muted-foreground" numberOfLines={1}>
+                                    {tab === "product" ? "HSN" : "SAC"}: {item.hsnSacCode || "N/A"} • GST @ {item.taxRate.gstComponent.igstRate}%
+                                </Text>
                             </View>
-                        )}
-                    </>
-                )}
-            </ScrollView>
+                            <View className="items-end flex-shrink-0">
+                                <Text className="font-sans-bold text-base text-primary" numberOfLines={1} adjustsFontSizeToFit>
+                                    ₹ {item.unitPricePaise.toLocaleString('en-IN')}
+                                </Text>
+                                {tab === "product" && (
+                                    <Text className="font-sans-medium text-xs text-muted-foreground mt-1">
+                                        Stock: <Text className={item.stock && item.stock > (item.minimumStock || 5) ? "text-green-600" : "text-red-600"}>{item.stock || 0}</Text>
+                                    </Text>
+                                )}
+                            </View>
+                        </Card>
+                    )}
+                    ListEmptyComponent={
+                        <View className="items-center justify-center py-10">
+                            <Text className="font-sans-medium text-muted-foreground">No {tab}s found.</Text>
+                        </View>
+                    }
+                />
+            ) : (
+                <FlatList
+                    className="flex-1 px-5" 
+                    showsVerticalScrollIndicator={false}
+                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#208AEF" />}
+                    data={adjustments}
+                    keyExtractor={(adj) => adj.id}
+                    initialNumToRender={15}
+                    maxToRenderPerBatch={10}
+                    renderItem={({ item: adj }) => (
+                        <Card className="flex-row items-center mb-4 p-4">
+                            <View className={`size-12 rounded-lg items-center justify-center mr-4 ${adj.type === 'Stock In' ? 'bg-green-100' : 'bg-amber-100'}`}>
+                                {adj.type === 'Stock In' ? (
+                                    <ArrowDownRight color="#16a34a" size={24} />
+                                ) : (
+                                    <ArrowUpRight color="#d97706" size={24} />
+                                )}
+                            </View>
+                            <View className="flex-1 mr-2">
+                                <Text className="font-sans-bold text-base text-primary mb-1" numberOfLines={1}>{adj.itemName}</Text>
+                                <Text className="font-sans-medium text-xs text-muted-foreground" numberOfLines={1}>
+                                    {adj.date} • {adj.reason}
+                                </Text>
+                            </View>
+                            <View className="items-end flex-shrink-0">
+                                <Text className={`font-sans-bold text-lg ${adj.type === 'Stock In' ? 'text-green-600' : 'text-amber-600'}`} numberOfLines={1} adjustsFontSizeToFit>
+                                    {adj.type === 'Stock In' ? '+' : '-'}{adj.qty}
+                                </Text>
+                            </View>
+                        </Card>
+                    )}
+                    ListEmptyComponent={
+                        <View className="items-center justify-center py-10">
+                            <Text className="font-sans-medium text-muted-foreground">No adjustments recorded yet.</Text>
+                        </View>
+                    }
+                />
+            )}
 
             {/* Details Modal */}
             <AnimatedModal visible={!!selectedItem} onClose={() => setSelectedItem(null)}>
@@ -465,8 +521,8 @@ export default function ProductsServicesScreen() {
                                         className="bg-white border border-border rounded-xl px-4 py-4 font-sans-regular text-primary text-base"
                                         placeholder="0"
                                         keyboardType="numeric"
-                                        value={formData.purchasePricePaisePaise?.toString() || ""}
-                                        onChangeText={(text) => setFormData({ ...formData, purchasePricePaise: text ? parseFloat(text) : 0 })}
+                                        value={formData.purchasePricePaise?.toString() || ""}
+                                        onChangeText={(text) => setFormData({ ...formData, purchasePricePaise: text ? parseFloat(text) : undefined })}
                                     />
                                 </View>
 
@@ -477,8 +533,8 @@ export default function ProductsServicesScreen() {
                                             className="bg-white border border-border rounded-xl px-4 py-4 font-sans-regular text-primary text-base"
                                             placeholder="e.g. 18"
                                             keyboardType="numeric"
-                                            value={formData.taxRate.gstComponent.igstRate?.toString() || ""}
-                                            onChangeText={(text) => setFormData({ ...formData, taxRate: Number(text) ? parseFloat(text) : 0 })}
+                                            value={formData.gstRate?.toString() || ""}
+                                            onChangeText={(text) => setFormData({ ...formData, gstRate: Number(text) ? parseFloat(text) : 0 })}
                                         />
                                     </View>
                                     <View className="flex-1 ml-2">

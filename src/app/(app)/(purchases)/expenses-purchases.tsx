@@ -1,14 +1,14 @@
-// @ts-nocheck
 import { useRouter } from "expo-router";
 import { ArrowLeft, Plus, Receipt, Wallet, Search, X, Edit, Trash2, Box, Calendar, CreditCard, User } from "lucide-react-native";
 import { useState } from "react";
-import { Pressable, ScrollView, Text, TextInput, View, RefreshControl, Alert } from "react-native";
+import { Pressable, ScrollView, Text, TextInput, View, RefreshControl, Alert, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AnimatedModal from "@/components/ui/AnimatedModal";
 import Card from "@/components/ui/Card";
 import { useAppStore } from "@/store";
+import { useShallow } from 'zustand/react/shallow';
+import { ExpenseRecord, PurchaseOrder } from "@/types/entities";
 import "../../../../global.css";
-
 
 
 export default function ExpenseRecordsPurchasesScreen() {
@@ -24,7 +24,14 @@ export default function ExpenseRecordsPurchasesScreen() {
         setTimeout(() => setRefreshing(false), 1500);
     };
 
-    const { expenses, addExpenseRecord, updateExpenseRecord, deleteExpenseRecord, purchases, deletePurchase } = useAppStore();
+    const { expenses, addExpense, updateExpense, deleteExpense, purchases, deletePurchase } = useAppStore(useShallow(state => ({
+        expenses: state.expenses,
+        addExpense: state.addExpense,
+        updateExpense: state.updateExpense,
+        deleteExpense: state.deleteExpense,
+        purchases: state.purchases,
+        deletePurchase: state.deletePurchase
+    })));
 
     // ExpenseRecord Form State
     const [isExpenseRecordFormVisible, setIsExpenseRecordFormVisible] = useState(false);
@@ -50,12 +57,12 @@ export default function ExpenseRecordsPurchasesScreen() {
     const filteredPurchases = purchases.filter(pur => {
         const matchesTab = purchaseTab === "All" || pur.status === purchaseTab;
         const vendorName = pur.partyName || pur.partyName || "";
-        const matchesSearch = vendorName.toLowerCase().includes(search.toLowerCase()) || pur.documentNumber.toLowerCase().includes(search.toLowerCase());
+        const matchesSearch = vendorName.toLowerCase().includes(search.toLowerCase()) || pur.documentNumber?.toLowerCase().includes(search.toLowerCase());
         return matchesTab && matchesSearch;
     });
 
     // Summaries
-    const totalExpenseRecords = filteredExpenseRecords.reduce((sum, exp) => sum + exp.amountPaise, 0);
+    const totalExpenseRecords = filteredExpenseRecords.reduce((sum, exp) => sum + (exp.amountPaise || 0), 0);
     const totalPurchasesOutstanding = filteredPurchases.reduce((sum, pur) => {
         if (pur.status === "Pending" || pur.status === "Overdue" || pur.status === "Partially Paid") {
             return sum + pur.totalAmountPaise;
@@ -82,22 +89,22 @@ export default function ExpenseRecordsPurchasesScreen() {
     };
 
     const handleSaveExpenseRecord = () => {
-        if (!expenseFormData.category || !expenseFormData.amountPaise) {
+        if (!expenseFormData.category || !expenseFormData.amount) {
             Alert.alert("Error", "Please fill category and amount.");
             return;
         }
 
         const expData: ExpenseRecord = {
             id: editingExpenseRecord ? editingExpenseRecord.id : `exp-${Date.now()}`,
-            date: editingExpenseRecord ? editingExpense.date : new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+            date: editingExpenseRecord ? editingExpenseRecord.date : new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
             category: expenseFormData.category,
-            amount: parseFloat(expenseFormData.amountPaise),
+            amountPaise: isNaN(parseFloat(expenseFormData.amount)) ? 0 : parseFloat(expenseFormData.amount),
             paymentMode: expenseFormData.paymentMode as ExpenseRecord["paymentMode"],
             vendorName: expenseFormData.vendorName,
         };
 
-        if (editingExpenseRecord) updateExpenseRecord(expData);
-        else addExpenseRecord(expData);
+        if (editingExpenseRecord) updateExpense(expData);
+        else addExpense(expData);
 
         setIsExpenseRecordFormVisible(false);
     };
@@ -105,7 +112,7 @@ export default function ExpenseRecordsPurchasesScreen() {
     const handleDeleteExpenseRecord = (id: string) => {
         Alert.alert("Delete Expense", "Are you sure you want to delete this expense?", [
             { text: "Cancel", style: "cancel" },
-            { text: "Delete", style: "destructive", onPress: () => { deleteExpenseRecord(id); setSelectedExpenseRecord(null); } }
+            { text: "Delete", style: "destructive", onPress: () => { deleteExpense(id); setSelectedExpenseRecord(null); } }
         ]);
     };
 
@@ -202,120 +209,129 @@ export default function ExpenseRecordsPurchasesScreen() {
                 </View>
             </View>
 
-            <ScrollView 
-                className="flex-1 px-5" 
-                showsVerticalScrollIndicator={false} 
-                contentContainerStyle={{ paddingBottom: 100 }}
-                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#208AEF" />}
-            >
-                {mainTab === 'expenses' ? (
-                    <>
-                        {filteredExpenseRecords.map((exp) => (
-                            <Card key={exp.id} className="mb-4" isPressable onPress={() => setSelectedExpenseRecord(exp)}>
-                                <View className="flex-row justify-between items-start mb-2">
-                                    <View className="flex-row items-center">
-                                        <View className="bg-primary/10 p-2 rounded-full mr-3">
-                                            <Receipt color="#081126" size={20} />
-                                        </View>
-                                        <View>
-                                            <Text className="font-sans-bold text-base text-primary">{exp.category}</Text>
-                                            {exp.vendorName ? (
-                                                <Text className="font-sans-medium text-xs text-muted-foreground mt-0.5">{exp.vendorName}</Text>
-                                            ) : null}
-                                        </View>
+            {mainTab === 'expenses' ? (
+                <FlatList
+                    className="flex-1 px-5" 
+                    showsVerticalScrollIndicator={false} 
+                    contentContainerStyle={{ paddingBottom: 100 }}
+                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#208AEF" />}
+                    data={filteredExpenseRecords}
+                    keyExtractor={(exp) => exp.id}
+                    initialNumToRender={15}
+                    maxToRenderPerBatch={10}
+                    renderItem={({ item: exp }) => (
+                        <Card className="mb-4" isPressable onPress={() => setSelectedExpenseRecord(exp)}>
+                            <View className="flex-row justify-between items-start mb-2">
+                                <View className="flex-row items-center flex-1 mr-2">
+                                    <View className="bg-primary/10 p-2 rounded-full mr-3">
+                                        <Receipt color="#081126" size={20} />
                                     </View>
-                                    <View className="items-end">
-                                        <Text className="font-sans-bold text-lg text-primary">₹ {exp.amountPaise.toLocaleString('en-IN')}</Text>
-                                        <Text className="font-sans-medium text-xs text-muted-foreground mt-0.5">{exp.date}</Text>
+                                    <View className="flex-1">
+                                        <Text className="font-sans-bold text-base text-primary" numberOfLines={1}>{exp.category}</Text>
+                                        {exp.vendorName ? (
+                                            <Text className="font-sans-medium text-xs text-muted-foreground mt-0.5" numberOfLines={1}>{exp.vendorName}</Text>
+                                        ) : null}
                                     </View>
                                 </View>
-
-                                <View className="flex-row items-center mt-2 border-t border-border pt-2">
-                                    <Wallet color="#64748b" size={14} />
-                                    <Text className="font-sans-medium text-xs text-slate-500 ml-1.5 uppercase">{exp.paymentMode}</Text>
+                                <View className="items-end flex-shrink-0">
+                                    <Text className="font-sans-bold text-lg text-primary" numberOfLines={1} adjustsFontSizeToFit>₹ {(exp.amountPaise || 0).toLocaleString('en-IN')}</Text>
+                                    <Text className="font-sans-medium text-xs text-muted-foreground mt-0.5">{exp.date}</Text>
                                 </View>
-                            </Card>
-                        ))}
-                        {filteredExpenseRecords.length === 0 && (
-                            <View className="items-center justify-center py-20 px-5">
-                                <View className="h-24 w-24 bg-primary/5 rounded-full items-center justify-center mb-6">
-                                    <Receipt color="#208AEF" size={40} opacity={0.5} />
-                                </View>
-                                <Text className="font-sans-bold text-xl text-primary mb-2 text-center">No ExpenseRecords Found</Text>
-                                <Text className="font-sans-medium text-sm text-muted-foreground text-center mb-8">
-                                    {search ? `We couldn't find any expenses matching "${search}".` : "You haven't recorded any expenses yet. Keep track of your spending."}
-                                </Text>
-                                {!search && (
-                                    <Pressable 
-                                        onPress={() => openExpenseRecordForm()}
-                                        className="bg-primary flex-row items-center justify-center px-6 py-3 rounded-xl min-h-[44px]"
-                                    >
-                                        <Plus color="white" size={20} className="mr-2" />
-                                        <Text className="font-sans-bold text-white text-base">Add Expense</Text>
-                                    </Pressable>
-                                )}
                             </View>
-                        )}
-                    </>
-                ) : (
-                    <>
-                        {filteredPurchases.map((pur) => (
-                            <Card key={pur.id} className="mb-4" isPressable onPress={() => setSelectedPurchase(pur)}>
-                                <View className="flex-row justify-between items-start mb-3">
-                                    <View>
-                                        <Text className="font-sans-bold text-base text-primary">{pur.partyName || pur.partyName}</Text>
-                                        <Text className="font-sans-medium text-xs text-muted-foreground mt-1">{pur.documentNumber} • {pur.documentDate}</Text>
-                                    </View>
-                                    <View className={`px-2 py-1 rounded-md ${getStatusColor(pur.status).split(' ')[0]}`}>
-                                        <Text className={`font-sans-bold text-[10px] uppercase ${getStatusColor(pur.status).split(' ')[1]}`}>
-                                            {pur.status}
-                                        </Text>
-                                    </View>
-                                </View>
 
-                                <View className="h-[1px] w-full bg-border mb-3" />
-
-                                <View className="flex-row justify-between items-center">
-                                    <View>
-                                        <Text className="font-sans-medium text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Type</Text>
-                                        <Text className="font-sans-bold text-sm text-primary">{pur.type}</Text>
-                                    </View>
-                                    <View className="items-end">
-                                        <Text className="font-sans-medium text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Total Amount</Text>
-                                        <Text className="font-sans-bold text-lg text-primary">₹ {pur.totalAmountPaise.toLocaleString('en-IN')}</Text>
-                                    </View>
-                                </View>
-                            </Card>
-                        ))}
-                        {filteredPurchases.length === 0 && (
-                            <View className="items-center justify-center py-20 px-5">
-                                <View className="h-24 w-24 bg-primary/5 rounded-full items-center justify-center mb-6">
-                                    <Box color="#208AEF" size={40} opacity={0.5} />
-                                </View>
-                                <Text className="font-sans-bold text-xl text-primary mb-2 text-center">No Purchases Found</Text>
-                                <Text className="font-sans-medium text-sm text-muted-foreground text-center mb-8">
-                                    {search ? `We couldn't find any purchases matching "${search}".` : "You haven't recorded any purchases. Create your first purchase order or bill."}
-                                </Text>
-                                {!search && (
-                                    <Pressable 
-                                        onPress={() => router.push('/(app)/create-purchase')}
-                                        className="bg-primary flex-row items-center justify-center px-6 py-3 rounded-xl min-h-[44px]"
-                                    >
-                                        <Plus color="white" size={20} className="mr-2" />
-                                        <Text className="font-sans-bold text-white text-base">Create Purchase</Text>
-                                    </Pressable>
-                                )}
+                            <View className="flex-row items-center mt-2 border-t border-border pt-2">
+                                <Wallet color="#64748b" size={14} />
+                                <Text className="font-sans-medium text-xs text-slate-500 ml-1.5 uppercase">{exp.paymentMode}</Text>
                             </View>
-                        )}
-                    </>
-                )}
-            </ScrollView>
+                        </Card>
+                    )}
+                    ListEmptyComponent={
+                        <View className="items-center justify-center py-20 px-5">
+                            <View className="h-24 w-24 bg-primary/5 rounded-full items-center justify-center mb-6">
+                                <Receipt color="#208AEF" size={40} opacity={0.5} />
+                            </View>
+                            <Text className="font-sans-bold text-xl text-primary mb-2 text-center">No ExpenseRecords Found</Text>
+                            <Text className="font-sans-medium text-sm text-muted-foreground text-center mb-8">
+                                {search ? `We couldn't find any expenses matching "${search}".` : "You haven't recorded any expenses yet. Keep track of your spending."}
+                            </Text>
+                            {!search && (
+                                <Pressable 
+                                    onPress={() => openExpenseRecordForm()}
+                                    className="bg-primary flex-row items-center justify-center px-6 py-3 rounded-xl min-h-[44px]"
+                                >
+                                    <Plus color="white" size={20} className="mr-2" />
+                                    <Text className="font-sans-bold text-white text-base">Add Expense</Text>
+                                </Pressable>
+                            )}
+                        </View>
+                    }
+                />
+            ) : (
+                <FlatList
+                    className="flex-1 px-5" 
+                    showsVerticalScrollIndicator={false} 
+                    contentContainerStyle={{ paddingBottom: 100 }}
+                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#208AEF" />}
+                    data={filteredPurchases}
+                    keyExtractor={(pur) => pur.id}
+                    initialNumToRender={15}
+                    maxToRenderPerBatch={10}
+                    renderItem={({ item: pur }) => (
+                        <Card className="mb-4" isPressable onPress={() => setSelectedPurchase(pur)}>
+                            <View className="flex-row justify-between items-start mb-3">
+                                <View className="flex-1 mr-2">
+                                    <Text className="font-sans-bold text-base text-primary" numberOfLines={1}>{pur.partyName || pur.partyName}</Text>
+                                    <Text className="font-sans-medium text-xs text-muted-foreground mt-1">{pur.documentNumber} • {pur.documentDate}</Text>
+                                </View>
+                                <View className={`px-2 py-1 rounded-md ${getStatusColor(pur.status).split(' ')[0]} flex-shrink-0`}>
+                                    <Text className={`font-sans-bold text-[10px] uppercase ${getStatusColor(pur.status).split(' ')[1]}`}>
+                                        {pur.status}
+                                    </Text>
+                                </View>
+                            </View>
+
+                            <View className="h-[1px] w-full bg-border mb-3" />
+
+                            <View className="flex-row justify-between items-center">
+                                <View>
+                                    <Text className="font-sans-medium text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Type</Text>
+                                    <Text className="font-sans-bold text-sm text-primary">{pur.documentType}</Text>
+                                </View>
+                                <View className="items-end flex-shrink">
+                                    <Text className="font-sans-medium text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Total Amount</Text>
+                                    <Text className="font-sans-bold text-lg text-primary" numberOfLines={1} adjustsFontSizeToFit>₹ {pur.totalAmountPaise.toLocaleString('en-IN')}</Text>
+                                </View>
+                            </View>
+                        </Card>
+                    )}
+                    ListEmptyComponent={
+                        <View className="items-center justify-center py-20 px-5">
+                            <View className="h-24 w-24 bg-primary/5 rounded-full items-center justify-center mb-6">
+                                <Box color="#208AEF" size={40} opacity={0.5} />
+                            </View>
+                            <Text className="font-sans-bold text-xl text-primary mb-2 text-center">No Purchases Found</Text>
+                            <Text className="font-sans-medium text-sm text-muted-foreground text-center mb-8">
+                                {search ? `We couldn't find any purchases matching "${search}".` : "You haven't recorded any purchases. Create your first purchase order or bill."}
+                            </Text>
+                            {!search && (
+                                <Pressable 
+                                    onPress={() => router.push('/(app)/(purchases)/create-purchase')}
+                                    className="bg-primary flex-row items-center justify-center px-6 py-3 rounded-xl min-h-[44px]"
+                                >
+                                    <Plus color="white" size={20} className="mr-2" />
+                                    <Text className="font-sans-bold text-white text-base">Create Purchase</Text>
+                                </Pressable>
+                            )}
+                        </View>
+                    }
+                />
+            )}
 
             {/* Floating Action Button */}
             <Pressable
                 onPress={() => {
                     if (mainTab === 'expenses') openExpenseRecordForm();
-                    else router.push('/(app)/create-purchase');
+                    else router.push('/(app)/(purchases)/create-purchase');
                 }}
                 className="absolute bottom-8 right-6 h-16 w-16 items-center justify-center rounded-full bg-primary"
                 style={{
@@ -337,7 +353,7 @@ export default function ExpenseRecordsPurchasesScreen() {
                             <View className="flex-row justify-between items-start mb-6">
                                 <View className="flex-1 mr-4">
                                     <Text className="font-sans-bold text-2xl text-primary mb-1">{selectedExpenseRecord.category}</Text>
-                                    <Text className="font-sans-medium text-base text-muted-foreground">{selectedExpenseRecord.documentDate}</Text>
+                                    <Text className="font-sans-medium text-base text-muted-foreground">{selectedExpenseRecord.date}</Text>
                                 </View>
                                 <Pressable onPress={() => setSelectedExpenseRecord(null)} className="h-11 w-11 items-center justify-center bg-muted rounded-full">
                                     <X color="#64748b" size={20} />
@@ -402,7 +418,7 @@ export default function ExpenseRecordsPurchasesScreen() {
                             <View className="flex-row justify-between items-start mb-6">
                                 <View className="flex-1 mr-4">
                                     <Text className="font-sans-bold text-2xl text-primary mb-1">{selectedPurchase.partyName || selectedPurchase.partyName}</Text>
-                                    <Text className="font-sans-medium text-base text-muted-foreground">{selectedPurchase.type} • {selectedPurchase.documentNumber}</Text>
+                                    <Text className="font-sans-medium text-base text-muted-foreground">{selectedPurchase.documentType} • {selectedPurchase.documentNumber}</Text>
                                 </View>
                                 <Pressable onPress={() => setSelectedPurchase(null)} className="h-11 w-11 items-center justify-center bg-muted rounded-full">
                                     <X color="#64748b" size={20} />
@@ -485,7 +501,7 @@ export default function ExpenseRecordsPurchasesScreen() {
                                 className="bg-slate-50 border border-border rounded-lg px-4 py-3 font-sans-bold text-lg text-primary"
                                 keyboardType="numeric"
                                 placeholder="0.00"
-                                value={expenseFormData.amountPaise}
+                                value={expenseFormData.amount}
                                 onChangeText={t => setExpenseRecordFormData({...expenseFormData, amount: t})}
                             />
                         </View>

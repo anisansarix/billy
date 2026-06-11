@@ -1,11 +1,11 @@
 // @ts-nocheck
-import { Party, PaymentRecord, InventoryItem, StockAdjustmentRecord, DocumentType, SalesInvoice, PurchaseOrder, ExpenseRecord } from "@/types/entities";
+import { Party } from "@/types/entities";
 import AnimatedModal from "@/components/ui/AnimatedModal";
 import { useShallow } from 'zustand/react/shallow';
 import { useRouter } from "expo-router";
 import { ArrowLeft, Edit, Phone, Plus, Save, Search, Trash2, X } from "lucide-react-native";
 import { useState } from "react";
-import { Alert, Linking, Pressable, RefreshControl, ScrollView, Text, TextInput, View } from "react-native";
+import { Alert, Linking, Pressable, RefreshControl, ScrollView, Text, TextInput, View, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Card from "@/components/ui/Card";
 import { useAppStore } from "@/store";
@@ -49,7 +49,7 @@ export default function CustomersVendorsScreen() {
     const [showMoreDetails, setShowMoreDetails] = useState(false);
 
     const filteredParties = parties.filter(
-        p => p.partyType === tab && p.legalName.toLowerCase().includes(search.toLowerCase())
+        p => p.partyType === tab && p.legalName?.toLowerCase().includes(search.toLowerCase())
     );
 
     const totalReceivable = filteredParties.reduce((sum, p) => p.openingBalancePaise > 0 ? sum + p.openingBalancePaise : sum, 0);
@@ -98,8 +98,8 @@ export default function CustomersVendorsScreen() {
 
     const handleCloseFormModal = () => {
         const isDirty = editingParty 
-            ? formData.legalName !== editingParty.legalName || formData !== editingParty 
-            : !!(formData.legalName || formData);
+            ? formData.legalName !== editingParty.legalName || formData.phone !== editingParty.phone 
+            : !!(formData.legalName || formData.phone);
 
         if (isDirty) {
             Alert.alert(
@@ -120,7 +120,7 @@ export default function CustomersVendorsScreen() {
             Alert.alert("Error", "Name is required");
             return;
         }
-        if (!formData?.trim()) {
+        if (!formData.phone?.trim()) {
             Alert.alert("Error", "Mobile Number is required");
             return;
         }
@@ -133,7 +133,7 @@ export default function CustomersVendorsScreen() {
             id: editingParty ? editingParty.id : `p${Date.now()}`,
             legalName: formData.legalName,
             gstin: formData.gstin,
-            // phone: formData,
+            phone: formData.phone,
             openingBalancePaise: finalBalance,
             type: formData.partyType || "customer",
         } as Party;
@@ -248,22 +248,24 @@ export default function CustomersVendorsScreen() {
                 </View>
             </View>
 
-            {/* List */}
-            <ScrollView
+            <FlatList
                 className="flex-1 px-5"
                 showsVerticalScrollIndicator={false}
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#208AEF" />
                 }
-            >
-                {filteredParties.map((party) => (
-                    <Card key={party.id} className="flex-row justify-between items-center mb-4" isPressable onPress={() => openDetailsModal(party)}>
-                        <View className="flex-1">
-                            <Text className="font-sans-bold text-lg text-primary mb-1">{party.legalName}</Text>
-                            <Text className="font-sans-regular text-sm text-muted-foreground">GSTIN: {party.gstin}</Text>
+                data={filteredParties}
+                keyExtractor={(party) => party.id}
+                initialNumToRender={15}
+                maxToRenderPerBatch={10}
+                renderItem={({ item: party }) => (
+                    <Card className="flex-row justify-between items-center mb-4" isPressable onPress={() => openDetailsModal(party)}>
+                        <View className="flex-1 mr-2">
+                            <Text className="font-sans-bold text-lg text-primary mb-1" numberOfLines={1}>{party.legalName}</Text>
+                            <Text className="font-sans-regular text-sm text-muted-foreground" numberOfLines={1}>GSTIN: {party.gstin}</Text>
                         </View>
-                        <View className="items-end">
-                            <Text className={`font-sans-bold text-base ${party.openingBalancePaise > 0 ? (tab === 'customer' ? 'text-green-600' : 'text-red-500') : 'text-primary'}`}>
+                        <View className="items-end flex-shrink-0">
+                            <Text className={`font-sans-bold text-base ${party.openingBalancePaise > 0 ? (tab === 'customer' ? 'text-green-600' : 'text-red-500') : 'text-primary'}`} numberOfLines={1} adjustsFontSizeToFit>
                                 ₹ {Math.abs(party.openingBalancePaise).toLocaleString('en-IN')}
                             </Text>
                             <Text className="font-sans-medium text-xs text-muted-foreground">
@@ -271,14 +273,13 @@ export default function CustomersVendorsScreen() {
                             </Text>
                         </View>
                     </Card>
-                ))}
-
-                {filteredParties.length === 0 && (
+                )}
+                ListEmptyComponent={
                     <View className="items-center justify-center py-10">
                         <Text className="font-sans-medium text-muted-foreground">No {tab}s found.</Text>
                     </View>
-                )}
-            </ScrollView>
+                }
+            />
 
             {/* Details Modal */}
             <AnimatedModal visible={isDetailsModalVisible} onClose={closeDetailsModal}>
@@ -372,19 +373,19 @@ export default function CustomersVendorsScreen() {
                         {!editingParty && (
                             <View className="flex-row mb-6 bg-muted p-1 rounded-xl">
                                 <Pressable
-                                    onPress={() => setFormData({ ...formData, type: "customer" })}
+                                    onPress={() => setFormData({ ...formData, partyType: "customer" as any })}
                                     className={`flex-1 py-3 items-center rounded-lg ${formData.partyType === "customer" ? "bg-white shadow-sm" : ""}`}
                                 >
                                     <Text className={`font-sans-bold ${formData.partyType === "customer" ? "text-primary" : "text-muted-foreground"}`}>Customer</Text>
                                 </Pressable>
                                 <Pressable
-                                    onPress={() => setFormData({ ...formData, type: "vendor" })}
+                                    onPress={() => setFormData({ ...formData, partyType: "vendor" as any })}
                                     className={`flex-1 py-3 items-center rounded-lg ${formData.partyType === "vendor" ? "bg-white shadow-sm" : ""}`}
                                 >
                                     <Text className={`font-sans-bold ${formData.partyType === "vendor" ? "text-primary" : "text-muted-foreground"}`}>Vendor</Text>
                                 </Pressable>
                                 <Pressable
-                                    onPress={() => setFormData({ ...formData, type: "both" })}
+                                    onPress={() => setFormData({ ...formData, partyType: "both" as any })}
                                     className={`flex-1 py-3 items-center rounded-lg ${formData.partyType === "both" ? "bg-white shadow-sm" : ""}`}
                                 >
                                     <Text className={`font-sans-bold ${formData.partyType === "both" ? "text-primary" : "text-muted-foreground"}`}>Both</Text>
@@ -494,8 +495,8 @@ export default function CustomersVendorsScreen() {
                                         placeholder="Email"
                                         keyboardType="email-address"
                                         autoCapitalize="none"
-                                        value={formData.phone}
-                                        onChangeText={(text) => setFormData({ ...formData,  })}
+                                        value={formData.email}
+                                        onChangeText={(text) => setFormData({ ...formData, email: text })}
                                     />
                                 </View>
 

@@ -577,6 +577,10 @@ Avoid redundant comments.
 
 # 23. Git Standards
 
+## Core Rules
+* Never push changes to the main branch without asking or being given permission.
+* Always keep the root directory clean. Any `.js` or `.ts` scripts generated during development should be stored in the `scripts/` folder.
+
 Branch naming:
 
 ```txt
@@ -605,6 +609,9 @@ Before implementing anything:
 4. Avoid unnecessary dependencies.
 5. Preserve architecture.
 6. Respect project phase.
+
+## Workflow Rules
+* Always restart the Expo project when a task is completed or major changes are made with `npx expo start -c`.
 
 AI agents must prefer:
 

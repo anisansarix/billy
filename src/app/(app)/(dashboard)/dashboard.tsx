@@ -23,6 +23,14 @@ const QUICK_ACTIONS = [
     { label: "E-Way", icon: Truck, route: "/(app)/eway-bills" },
 ];
 
+const ALL_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const getMonthStr = (dateString?: string) => {
+    if (!dateString) return "Unknown";
+    const dateObj = new Date(dateString);
+    if (isNaN(dateObj.getTime())) return "Unknown";
+    return ALL_MONTHS[dateObj.getMonth()];
+};
+
 export default function App() {
   const router = useRouter();
   const [menuVisible, setMenuVisible] = useState(false);
@@ -52,10 +60,10 @@ export default function App() {
 
   const dashboardBalances = useMemo(() => {
     const totalSales = invoices.reduce((acc, inv) => acc + (inv.totalAmountPaise || 0), 0);
-    const totalSalesGST = invoices.reduce((acc, inv) => acc + ((inv.totalGSTAmountPaise || 0) + (inv.sgstAmount || 0) + (inv.igstAmount || 0)), 0);
+    const totalSalesGST = invoices.reduce((acc, inv) => acc + ((inv.totalGSTAmountPaise || 0) + ((inv as any).sgstAmount || 0) + ((inv as any).igstAmount || 0)), 0);
 
     const totalPurchases = purchases.reduce((acc, pur) => acc + (pur.totalAmountPaise || 0), 0);
-    const totalPurchasesGST = purchases.reduce((acc, pur) => acc + ((pur.totalGSTAmountPaise || 0) + (pur.sgstAmount || 0) + (pur.igstAmount || 0)), 0);
+    const totalPurchasesGST = purchases.reduce((acc, pur) => acc + ((pur.totalGSTAmountPaise || 0) + ((pur as any).sgstAmount || 0) + ((pur as any).igstAmount || 0)), 0);
 
     return [
       {
@@ -74,25 +82,27 @@ export default function App() {
   }, [invoices, purchases]);
 
   const outstandingData = useMemo(() => {
-    const salesAging = { current: 0, days1_30: 0, days31_60: 0, days90Plus: 0 };
-    const purchaseAging = { current: 0, days1_30: 0, days31_60: 0, days90Plus: 0 };
+    const salesAging = { current: 0, days1_30: 0, days31_60: 0, days61_90: 0, days90Plus: 0 };
+    const purchaseAging = { current: 0, days1_30: 0, days31_60: 0, days61_90: 0, days90Plus: 0 };
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const processDoc = (doc: SalesInvoice, aging: Record<string, number>) => {
+    const processDoc = (doc: any, aging: Record<string, number>) => {
         if (doc.status === 'Pending') {
             aging.current += (doc.totalAmountPaise || 0);
         } else if (doc.status === 'Overdue') {
-            const docDate = new Date(doc.documentDate);
-            docDate.setHours(0, 0, 0, 0);
-            const diffTime = today.getTime() - docDate.getTime();
+            const targetDate = doc.dueDate ? new Date(doc.dueDate) : new Date(doc.documentDate);
+            targetDate.setHours(0, 0, 0, 0);
+            const diffTime = today.getTime() - targetDate.getTime();
             const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
             
             if (diffDays <= 30) {
                 aging.days1_30 += (doc.totalAmountPaise || 0);
             } else if (diffDays <= 60) {
                 aging.days31_60 += (doc.totalAmountPaise || 0);
+            } else if (diffDays <= 90) {
+                aging.days61_90 += (doc.totalAmountPaise || 0);
             } else {
                 aging.days90Plus += (doc.totalAmountPaise || 0);
             }
@@ -119,10 +129,9 @@ export default function App() {
   const activeMonthsToDisplay = useMemo(() => {
       const uniqueMonths = new Set<string>();
       [...invoices, ...purchases, ...payments].forEach(doc => {
-          const parts = doc.documentDate?.split(" ") || [];
-          if(parts.length > 1) uniqueMonths.add(parts[1].substring(0, 3));
+          const monthStr = getMonthStr(doc.documentDate);
+          if (monthStr !== "Unknown") uniqueMonths.add(monthStr);
       });
-      const ALL_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
       const activeMonths = ALL_MONTHS.filter(m => uniqueMonths.has(m));
       const monthsToDisplay = activeMonths.slice(-6);
       if(monthsToDisplay.length === 0) {
@@ -135,15 +144,13 @@ export default function App() {
     const aggregated = activeMonthsToDisplay.map(m => ({ label: m, value1: 0, value2: 0 }));
 
     invoices.forEach(inv => {
-        const parts = inv.documentDate?.split(" ") || [];
-        const monthStr = parts.length > 1 ? parts[1].substring(0, 3) : "Unknown";
+        const monthStr = getMonthStr(inv.documentDate);
         const target = aggregated.find(a => a.label === monthStr);
         if (target) target.value1 += (inv.totalAmountPaise || 0);
     });
 
     purchases.forEach(pur => {
-        const parts = pur.documentDate?.split(" ") || [];
-        const monthStr = parts.length > 1 ? parts[1].substring(0, 3) : "Unknown";
+        const monthStr = getMonthStr(pur.documentDate);
         const target = aggregated.find(a => a.label === monthStr);
         if (target) target.value2 += (pur.totalAmountPaise || 0);
     });
@@ -155,8 +162,7 @@ export default function App() {
     const aggregated = activeMonthsToDisplay.map(m => ({ label: m, value1: 0, value2: 0, value3: 0 }));
 
     payments.forEach(pay => {
-        const parts = pay.documentDate?.split(" ") || [];
-        const monthStr = parts.length > 1 ? parts[1].substring(0, 3) : "Unknown";
+        const monthStr = getMonthStr(pay.documentDate);
         const target = aggregated.find(a => a.label === monthStr);
         if (target) {
             if (pay.type === 'in') target.value1 += pay.amountPaise;
@@ -166,20 +172,18 @@ export default function App() {
 
     // Add GST liability
     invoices.filter(i => i.status !== 'Draft' && i.status !== 'Cancelled').forEach(inv => {
-        const parts = inv.documentDate?.split(" ") || [];
-        const monthStr = parts.length > 1 ? parts[1].substring(0, 3) : "Unknown";
+        const monthStr = getMonthStr(inv.documentDate);
         const target = aggregated.find(a => a.label === monthStr);
         if (target) {
-            target.value3 += ((inv.totalGSTAmountPaise || 0) + (inv.sgstAmount || 0) + (inv.igstAmount || 0));
+            target.value3 += ((inv.totalGSTAmountPaise || 0) + ((inv as any).sgstAmount || 0) + ((inv as any).igstAmount || 0));
         }
     });
 
     purchases.filter(p => p.status !== 'Draft' && p.status !== 'Cancelled').forEach(pur => {
-        const parts = pur.documentDate?.split(" ") || [];
-        const monthStr = parts.length > 1 ? parts[1].substring(0, 3) : "Unknown";
+        const monthStr = getMonthStr(pur.documentDate);
         const target = aggregated.find(a => a.label === monthStr);
         if (target) {
-            target.value3 -= ((pur.totalGSTAmountPaise || 0) + (pur.sgstAmount || 0) + (pur.igstAmount || 0));
+            target.value3 -= ((pur.totalGSTAmountPaise || 0) + ((pur as any).sgstAmount || 0) + ((pur as any).igstAmount || 0));
         }
     });
 
@@ -188,8 +192,8 @@ export default function App() {
 
   // GST Liability Calculation
   const estimatedLiability = useMemo(() => {
-    const outputGST = invoices.filter(i => i.status !== 'Draft' && i.status !== 'Cancelled').reduce((acc, inv) => acc + ((inv.totalGSTAmountPaise || 0) + (inv.sgstAmount || 0) + (inv.igstAmount || 0)), 0);
-    const inputGST = purchases.filter(p => p.status !== 'Draft' && p.status !== 'Cancelled').reduce((acc, pur) => acc + ((pur.totalGSTAmountPaise || 0) + (pur.sgstAmount || 0) + (pur.igstAmount || 0)), 0);
+    const outputGST = invoices.filter(i => i.status !== 'Draft' && i.status !== 'Cancelled').reduce((acc, inv) => acc + ((inv.totalGSTAmountPaise || 0) + ((inv as any).sgstAmount || 0) + ((inv as any).igstAmount || 0)), 0);
+    const inputGST = purchases.filter(p => p.status !== 'Draft' && p.status !== 'Cancelled').reduce((acc, pur) => acc + ((pur.totalGSTAmountPaise || 0) + ((pur as any).sgstAmount || 0) + ((pur as any).igstAmount || 0)), 0);
     return outputGST - inputGST;
   }, [invoices, purchases]);
 
@@ -290,7 +294,7 @@ export default function App() {
 
             <View className="flex-row gap-4 mb-6">
               {dashboardBalances.map((balance: BalanceCardData, index: number) => (
-                <StatCard key={index} {...openingBalancePaise} />
+                <StatCard key={index} {...balance} />
               ))}
             </View>
 
@@ -398,7 +402,7 @@ export default function App() {
             </View>
 
             <View className="mt-4">
-              {outstandingData.map((data: { title: string, currency: string, data: { current: number, days1_30: number, days31_60: number, days90Plus: number } }, index: number) => (
+              {outstandingData.map((data: { title: string, currency: string, data: { current: number, days1_30: number, days31_60: number, days61_90: number, days90Plus: number } }, index: number) => (
                 <OutstandingList key={index} data={data} />
               ))}
             </View>

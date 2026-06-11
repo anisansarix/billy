@@ -1,12 +1,19 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useAppStore } from "@/store";
-import { Party, SalesInvoice, DocumentType } from "@/types/entities";
+import { useShallow } from 'zustand/react/shallow';
+import { Party, DocumentType, DeliveryChallan, SalesInvoice } from "@/types/entities";
 import DocumentBuilder, { DocumentData } from "@/components/domain/DocumentBuilder";
+import { buildGSTSummary, amountInIndianWords } from "@/utils/gst";
 
 export default function CreateSalesInvoiceScreen() {
     const router = useRouter();
     const params = useLocalSearchParams();
-    const { invoices, parties, addInvoice, updateInvoice } = useAppStore(); // Using invoices collection for estimates for now
+    const { invoices, parties, addInvoice, updateInvoice } = useAppStore(useShallow(state => ({
+        invoices: state.invoices,
+        parties: state.parties,
+        addInvoice: state.addInvoice,
+        updateInvoice: state.updateInvoice
+    }))); // Using invoices collection for estimates for now
 
     const editId = params.id as string | undefined;
     const existingDoc = editId ? invoices.find(i => i.id === editId) : undefined;
@@ -18,9 +25,9 @@ export default function CreateSalesInvoiceScreen() {
         initialData = {
             selectedParty: party || ({ id: existingDoc.partyId || "", legalName: "", partyType: "CUSTOMER" } as unknown as Party),
             header: {
-                type: existingDoc.documentType,
-                number: existingDoc.documentNumber,
-                date: existingDoc.documentDate,
+                documentType: existingDoc.documentType,
+                documentNumber: existingDoc.documentNumber,
+                documentDate: existingDoc.documentDate,
                 dueDate: existingDoc.dueDate || "",
                 status: existingDoc.status,
             },
@@ -42,7 +49,9 @@ export default function CreateSalesInvoiceScreen() {
     }
 
     const handleSave = (documentData: DocumentData) => {
-        const challanToSave: any = {
+        const gstSummary = buildGSTSummary(documentData.items, documentData.totals.isInterState);
+
+        const challanToSave = {
             id: editId || `${Date.now()}`,
             documentType: DocumentType.DELIVERY_CHALLAN,
             documentNumber: documentData.header.documentNumber,
@@ -50,31 +59,33 @@ export default function CreateSalesInvoiceScreen() {
             dueDate: documentData.header.dueDate,
             businessId: "b1",
             partyId: documentData.selectedParty.id,
+            partyName: documentData.selectedParty.legalName || "",
             lineItems: documentData.items,
-            gstSummary: { slabs: {}, totalTaxableValuePaise: 0, totalGSTAmountPaise: 0, totalCessAmountPaise: 0 },
+            gstSummary: gstSummary,
             subtotalPaise: documentData.totals.subtotalPaise,
             totalDiscountPaise: documentData.totals.discountPaise,
             totalTaxableAmountPaise: documentData.totals.subtotalPaise - documentData.totals.discountPaise,
             totalGSTAmountPaise: documentData.totals.cgstPaise + documentData.totals.sgstPaise + documentData.totals.igstPaise,
             totalAmountPaise: documentData.totals.totalAmountPaise,
-            totalAmountInWords: "",
+            totalAmountInWords: amountInIndianWords(documentData.totals.totalAmountPaise),
             notes: documentData.notes.external,
-            isInterState: false,
-            placeOfSupply: "",
+            isInterState: documentData.totals.isInterState,
+            placeOfSupply: documentData.selectedParty.billingAddress?.state || "",
             status: documentData.header.status || "Draft",
-            createdAt: new Date().toISOString(),
+            createdAt: existingDoc ? existingDoc.createdAt : new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-            paymentMode: documentData.payment.mode,
+            vehicleNumber: documentData.transport?.vehicleNo,
+            dispatchDate: documentData.transport?.deliveryDate || new Date().toISOString(),
+            paymentMode: documentData.payment.mode || "None",
             paidAmountPaise: 0,
             balanceDuePaise: documentData.totals.totalAmountPaise,
-            eWayBillNumber: documentData.transport?.ewayBill,
-        };
+        } as unknown as DeliveryChallan & Partial<SalesInvoice>;
 
         if (editId) {
-            updateInvoice(challanToSave );
+            updateInvoice(challanToSave as unknown as SalesInvoice);
             console.log("Updated Delivery Challan!");
         } else {
-            addInvoice(challanToSave );
+            addInvoice(challanToSave as unknown as SalesInvoice);
             console.log("Saved Delivery Challan!");
         }
         

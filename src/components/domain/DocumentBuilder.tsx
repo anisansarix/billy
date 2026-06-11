@@ -5,8 +5,9 @@ import { Pressable, ScrollView, Text, TextInput, View, KeyboardAvoidingView, Pla
 import { SafeAreaView } from "react-native-safe-area-context";
 import AnimatedModal from "@/components/ui/AnimatedModal";
 import { useAppStore } from "@/store";
-import { Party, LineItem, InventoryItem } from "@/types/entities";
-import { formatINR } from "../../utils/gst";
+import { useShallow } from 'zustand/react/shallow';
+import { Party, LineItem } from "@/types/entities";
+import { formatINR, computeLineItem, buildGSTSummary, isInterStateSupply } from "../../utils/gst";
 
 type SectionProps = {
     title: string;
@@ -17,19 +18,19 @@ type SectionProps = {
 };
 
 const Section = ({ title, isExpanded, onToggle, children, summary }: SectionProps) => (
-    <View className="bg-white rounded-xl shadow-sm mb-4 border border-border overflow-hidden">
+    <View className="bg-white rounded-2xl shadow-sm mb-4 border border-border overflow-hidden">
         <Pressable 
-            className={`flex-row justify-between items-center p-4 ${isExpanded ? 'border-b border-border bg-slate-50' : ''}`}
+            className={`flex-row justify-between items-center p-5 ${isExpanded ? 'border-b border-border bg-slate-50/50' : ''}`}
             onPress={onToggle}
         >
-            <View>
-                <Text className="font-sans-bold text-base text-primary">{title}</Text>
-                {!isExpanded && summary && <Text className="font-sans-medium text-xs text-muted-foreground mt-1">{summary}</Text>}
+            <View className="flex-1 pr-4">
+                <Text className="font-sans-bold text-lg text-primary">{title}</Text>
+                {!isExpanded && summary && <Text className="font-sans-medium text-sm text-muted-foreground mt-1">{summary}</Text>}
             </View>
-            {isExpanded ? <ChevronUp color="#081126" size={20} /> : <ChevronDown color="#081126" size={20} />}
+            {isExpanded ? <ChevronUp color="#0f172a" size={24} /> : <ChevronDown color="#0f172a" size={24} />}
         </Pressable>
         {isExpanded && (
-            <View className="p-4">
+            <View className="p-5">
                 {children}
             </View>
         )}
@@ -54,6 +55,7 @@ export interface DocumentData {
         igstPaise: number;
         totalAmountPaise: number;
         roundOffPaise: number;
+        isInterState: boolean;
     };
     payment: {
         mode: string;
@@ -94,7 +96,7 @@ export default function DocumentBuilder({
     onSave
 }: DocumentBuilderProps) {
     const router = useRouter();
-    const { parties, items } = useAppStore();
+    const { parties, items, currentBusiness } = useAppStore(useShallow(state => ({ parties: state.parties, items: state.items, currentBusiness: state.currentBusiness })));
 
     const [expandedSections, setExpandedSections] = useState({
         header: true,
@@ -128,38 +130,56 @@ export default function DocumentBuilder({
     const [transport, setTransport] = useState<NonNullable<DocumentData['transport']>>(initialData?.transport || { vehicleNo: "", ewayBill: "", deliveryDate: "" });
     const [notes, setNotes] = useState<DocumentData['notes']>(initialData?.notes || { internal: "", external: defaultNotes });
 
+    const isInterState = useMemo(() => {
+        if (!currentBusiness?.address?.stateCode || !selectedParty?.billingAddress?.stateCode) return false;
+        return isInterStateSupply(currentBusiness.address.stateCode, selectedParty.billingAddress.stateCode);
+    }, [currentBusiness, selectedParty]);
+
+    const handlePartySelect = (party: Party) => {
+        setSelectedParty(party);
+        setPartyModalVisible(false);
+        const newIsInterState = currentBusiness?.address?.stateCode && party.billingAddress?.stateCode ? isInterStateSupply(currentBusiness.address.stateCode, party.billingAddress.stateCode) : false;
+        
+        if (documentItems.length > 0) {
+            setDocumentItems(documentItems.map(item => computeLineItem(item, newIsInterState)));
+        }
+    };
+
     // Computed totals
     const totals = useMemo(() => {
-        let subtotalPaise = 0;
+        const summary = buildGSTSummary(documentItems, isInterState);
         let discountPaise = 0;
-        let cgstPaise = 0;
-        let sgstPaise = 0;
-        let igstPaise = 0;
-
+        let subtotalPaise = 0;
+        
         documentItems.forEach(item => {
-            const qty = item.quantityDecimal || 1;
-            const rate = item.unitPricePaise || 0;
-            const discountPcnt = item.discountPercent || 0;
-            
-            const grossAmount = qty * rate;
-            const lineDiscount = grossAmount * (discountPcnt / 100);
-            
-            const amountBeforeTax = grossAmount - lineDiscount;
-            subtotalPaise += amountBeforeTax;
+            const rawTotal = Math.round((item.unitPricePaise || 0) * (item.quantityDecimal ?? 1));
+            const lineDiscount = Math.round(rawTotal * ((item.discountPercent || 0) / 100));
             discountPaise += lineDiscount;
-
-            const taxRate = item.taxRate?.gstComponent?.igstRate || 0;
-            const taxAmt = amountBeforeTax * (taxRate / 100);
-            
-            cgstPaise += taxAmt / 2;
-            sgstPaise += taxAmt / 2;
+            subtotalPaise += rawTotal - lineDiscount;
         });
 
-        const totalAmountPaise = subtotalPaise + cgstPaise + sgstPaise + igstPaise;
-        const roundOffPaise = Math.round(totalAmountPaise) - totalAmountPaise;
+        const rawTotalAmountPaise = summary.totalTaxableValuePaise + summary.totalGSTAmountPaise + summary.totalCessAmountPaise;
+        const roundedTotalPaise = Math.round(rawTotalAmountPaise / 100) * 100;
+        const roundOffPaise = roundedTotalPaise - rawTotalAmountPaise;
 
-        return { subtotalPaise, discountPaise, cgstPaise, sgstPaise, igstPaise, totalAmountPaise: Math.round(totalAmountPaise), roundOffPaise };
-    }, [documentItems]);
+        let cgstPaise = 0, sgstPaise = 0, igstPaise = 0;
+        Object.values(summary.slabs).forEach(slab => {
+            cgstPaise += slab.cgstAmountPaise;
+            sgstPaise += slab.sgstAmountPaise;
+            igstPaise += slab.igstAmountPaise;
+        });
+
+        return { 
+            subtotalPaise, 
+            discountPaise, 
+            cgstPaise, 
+            sgstPaise, 
+            igstPaise, 
+            totalAmountPaise: roundedTotalPaise, 
+            roundOffPaise,
+            isInterState
+        };
+    }, [documentItems, isInterState]);
 
     const handleSave = () => {
         if (!selectedParty) {
@@ -197,8 +217,8 @@ export default function DocumentBuilder({
     };
 
     return (
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
-            <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
+        <KeyboardAvoidingView className="flex-1" behavior="padding" keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
+            <SafeAreaView className="flex-1 bg-slate-50">
             <View className="flex-row items-center justify-between p-5 bg-white shadow-sm z-10">
                 <View className="flex-row items-center">
                     <Pressable onPress={() => router.back()} className="mr-4 p-2 min-h-[44px] min-w-[44px] items-center justify-center">
@@ -212,7 +232,7 @@ export default function DocumentBuilder({
                 </Pressable>
             </View>
 
-            <ScrollView className="flex-1 px-5 pt-4" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
+            <ScrollView className="flex-1 px-5 pt-4" showsVerticalScrollIndicator={false} contentContainerClassName="pb-32">
                 
                 {/* 1. Header Details */}
                 <Section 
@@ -295,13 +315,14 @@ export default function DocumentBuilder({
                                     <Text className="font-sans-medium text-xs text-muted-foreground">Qty</Text>
                                     <View className="flex-row items-center mt-1">
                                         <TextInput 
-                                            style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 4, paddingHorizontal: 8, paddingVertical: 4, width: 64, textAlign: 'center', color: '#0f172a', fontFamily: 'PlusJakartaSans-Bold' }}
+                                            className="bg-white border border-slate-200 rounded-lg px-2 py-1.5 w-16 text-center text-primary font-sans-bold"
                                             value={item.quantityDecimal !== undefined ? String(item.quantityDecimal) : ''}
                                             keyboardType="numeric"
                                             onChangeText={t => {
                                                 const newItems = [...documentItems];
                                                 const parsed = parseFloat(t);
                                                 newItems[index].quantityDecimal = isNaN(parsed) ? 0 : parsed;
+                                                newItems[index] = computeLineItem(newItems[index], isInterState);
                                                 setDocumentItems(newItems);
                                             }}
                                         />
@@ -311,13 +332,14 @@ export default function DocumentBuilder({
                                 <View className="flex-1 min-w-[30%]">
                                     <Text className="font-sans-medium text-xs text-muted-foreground">Rate</Text>
                                     <TextInput 
-                                        style={{ backgroundColor: 'white', borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 4, paddingHorizontal: 8, paddingVertical: 4, width: 80, marginTop: 4, color: '#0f172a', fontFamily: 'PlusJakartaSans-Bold' }}
+                                        className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 w-24 mt-1 text-primary font-sans-bold"
                                         value={item.unitPricePaise !== undefined ? String(item.unitPricePaise) : ''}
                                         keyboardType="numeric"
                                         onChangeText={t => {
                                             const newItems = [...documentItems];
                                             const parsed = parseFloat(t);
                                             newItems[index].unitPricePaise = isNaN(parsed) ? 0 : parsed;
+                                            newItems[index] = computeLineItem(newItems[index], isInterState);
                                             setDocumentItems(newItems);
                                         }}
                                     />
@@ -325,7 +347,7 @@ export default function DocumentBuilder({
                                 <View className="flex-1 min-w-[30%] items-end pb-1">
                                     <Text className="font-sans-medium text-xs text-muted-foreground">Total (incl. GST)</Text>
                                     <Text className="font-sans-bold text-primary mt-1">
-                                        {formatINR(Math.round((item.quantityDecimal || 0) * (item.unitPricePaise || 0) * (1 + (item.taxRate?.gstComponent?.igstRate || 0)/100)))}
+                                        {formatINR(item.totalAmountPaise || 0)}
                                     </Text>
                                 </View>
                             </View>
@@ -347,14 +369,23 @@ export default function DocumentBuilder({
                                 <Text className="font-sans-medium text-muted-foreground">Subtotal</Text>
                                 <Text className="font-sans-bold text-primary">{formatINR(totals.subtotalPaise)}</Text>
                             </View>
-                            <View className="flex-row justify-between mb-1">
-                                <Text className="font-sans-medium text-muted-foreground">CGST</Text>
-                                <Text className="font-sans-bold text-primary">{formatINR(totals.cgstPaise)}</Text>
-                            </View>
-                            <View className="flex-row justify-between mb-2">
-                                <Text className="font-sans-medium text-muted-foreground">SGST</Text>
-                                <Text className="font-sans-bold text-primary">{formatINR(totals.sgstPaise)}</Text>
-                            </View>
+                            {isInterState ? (
+                                <View className="flex-row justify-between mb-2">
+                                    <Text className="font-sans-medium text-muted-foreground">IGST</Text>
+                                    <Text className="font-sans-bold text-primary">{formatINR(totals.igstPaise)}</Text>
+                                </View>
+                            ) : (
+                                <>
+                                    <View className="flex-row justify-between mb-1">
+                                        <Text className="font-sans-medium text-muted-foreground">CGST</Text>
+                                        <Text className="font-sans-bold text-primary">{formatINR(totals.cgstPaise)}</Text>
+                                    </View>
+                                    <View className="flex-row justify-between mb-2">
+                                        <Text className="font-sans-medium text-muted-foreground">SGST</Text>
+                                        <Text className="font-sans-bold text-primary">{formatINR(totals.sgstPaise)}</Text>
+                                    </View>
+                                </>
+                            )}
                             <View className="h-[1px] w-full bg-border mb-2" />
                             <View className="flex-row justify-between items-center">
                                 <Text className="font-sans-bold text-lg text-primary">Grand Total</Text>
@@ -454,7 +485,7 @@ export default function DocumentBuilder({
                             <Pressable 
                                 key={party.id} 
                                 className="p-4 border-b border-border flex-row justify-between items-center"
-                                onPress={() => { setSelectedParty(party); setPartyModalVisible(false); }}
+                                onPress={() => handlePartySelect(party)}
                             >
                                 <View>
                                     <Text className="font-sans-bold text-primary">{party.legalName}</Text>
@@ -483,7 +514,7 @@ export default function DocumentBuilder({
                                 key={item.id} 
                                 className="p-4 border-b border-border flex-row justify-between items-center"
                                 onPress={() => { 
-                                    setDocumentItems([...documentItems, {
+                                    const newItem = computeLineItem({
                                         id: `item-${Date.now()}`,
                                         description: item.name,
                                         hsnSacCode: item.hsnSacCode,
@@ -492,10 +523,8 @@ export default function DocumentBuilder({
                                         quantityDecimal: 1,
                                         unitPricePaise: item.unitPricePaise,
                                         discountPercent: 0,
-                                        taxableAmountPaise: item.unitPricePaise,
-                                        gstAmountPaise: item.unitPricePaise * ((item.taxRate?.gstComponent?.igstRate || 0) / 100),
-                                        totalAmountPaise: item.unitPricePaise * (1 + ((item.taxRate?.gstComponent?.igstRate || 0) / 100))
-                                    }]); 
+                                    } as any, isInterState);
+                                    setDocumentItems([...documentItems, newItem]); 
                                     setItemModalVisible(false); 
                                 }}
                             >

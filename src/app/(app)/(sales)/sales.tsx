@@ -1,13 +1,15 @@
-import { SalesInvoice, DocumentType } from "@/types/entities";
+import { SalesInvoice } from "@/types/entities";
 import { useRouter } from "expo-router";
 import { useShallow } from 'zustand/react/shallow';
-import { ArrowLeft, Plus, ReceiptText, Search, X, Edit, Trash2, Box } from "lucide-react-native";
+import { ArrowLeft, Plus, ReceiptText, X, Edit, Trash2, Box } from "lucide-react-native";
 import { useState } from "react";
-import { Pressable, ScrollView, Text, TextInput, View, RefreshControl, Alert } from "react-native";
+import { Pressable, Text, View, RefreshControl, Alert, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AnimatedModal from "@/components/ui/AnimatedModal";
 import Card from "@/components/ui/Card";
 import { useAppStore } from "@/store";
+import { SegmentedTabs } from "@/components/ui/SegmentedTabs";
+import { SearchBar } from "@/components/ui/SearchBar";
 import "../../../../global.css";
 
 export default function SalesScreen() {
@@ -44,7 +46,7 @@ export default function SalesScreen() {
         else if (tab === "Quotations") matchesTab = (inv.documentType as any) === "PROFORMA_INVOICE";
         else if (tab === "Challans") matchesTab = (inv.documentType as any) === "DELIVERY_CHALLAN";
 
-        const matchesSearch = inv.partyName.toLowerCase().includes(search.toLowerCase()) || inv.documentNumber.toLowerCase().includes(search.toLowerCase());
+        const matchesSearch = inv.partyName?.toLowerCase().includes(search.toLowerCase()) || inv.documentNumber?.toLowerCase().includes(search.toLowerCase());
         return matchesTab && matchesSearch;
     });
 
@@ -76,18 +78,12 @@ export default function SalesScreen() {
             </View>
 
             {/* Tabs */}
-            <View className="bg-white">
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-5 py-3 border-b border-border">
-                    {["All", "Invoices", "Estimates", "Quotations", "Challans"].map((t) => (
-                        <Pressable 
-                            key={t}
-                            onPress={() => setTab(t as never)}
-                            className={`mr-3 px-4 py-2 rounded-full border justify-center min-h-[44px] ${tab === t ? 'bg-primary border-primary' : 'bg-transparent border-border'}`}
-                        >
-                            <Text className={`font-sans-medium ${tab === t ? 'text-white' : 'text-muted-foreground'}`}>{t}</Text>
-                        </Pressable>
-                    ))}
-                </ScrollView>
+            <View className="bg-white pb-3 pt-3">
+                <SegmentedTabs 
+                    tabs={["All", "Invoices", "Estimates", "Quotations", "Challans"]} 
+                    activeTab={tab} 
+                    onTabChange={(t) => setTab(t as any)} 
+                />
             </View>
 
             {/* Summary Card */}
@@ -107,34 +103,31 @@ export default function SalesScreen() {
             </View>
 
             {/* Search */}
-            <View className="px-5 mt-4 mb-4">
-                <View className="flex-row items-center bg-white px-4 h-12 rounded-xl border border-border">
-                    <Search color="#9ca3af" size={20} />
-                    <TextInput
-                        className="flex-1 ml-3 h-full font-sans-regular text-base text-primary"
-                        placeholder="Search by name or number..."
-                        placeholderTextColor="#9ca3af"
-                        value={search}
-                        onChangeText={setSearch}
-                    />
-                </View>
-            </View>
+            <SearchBar 
+                value={search} 
+                onChangeText={setSearch} 
+                placeholder="Search by name or number..." 
+                className="px-5 mt-4" 
+            />
 
             {/* List */}
-            <ScrollView 
+            <FlatList 
                 className="flex-1 px-5" 
                 showsVerticalScrollIndicator={false} 
                 contentContainerStyle={{ paddingBottom: 100 }}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#208AEF" />}
-            >
-                {filteredInvoices.map((inv) => (
-                    <Card key={inv.id} className="mb-4" isPressable onPress={() => setSelectedInvoice(inv)}>
+                data={filteredInvoices}
+                keyExtractor={(inv) => inv.id}
+                initialNumToRender={15}
+                maxToRenderPerBatch={10}
+                renderItem={({ item: inv }) => (
+                    <Card className="mb-4" isPressable onPress={() => setSelectedInvoice(inv)}>
                         <View className="flex-row justify-between items-start mb-3">
-                            <View>
+                            <View className="flex-1 mr-2">
                                 <Text className="font-sans-bold text-base text-primary">{inv.partyName}</Text>
                                 <Text className="font-sans-medium text-xs text-muted-foreground mt-1">{inv.documentNumber} • {inv.documentDate}</Text>
                             </View>
-                            <View className={`px-2 py-1 rounded-md border ${getStatusColor(inv.status)}`}>
+                            <View className={`px-2 py-1 rounded-md border ${getStatusColor(inv.status)} flex-shrink-0`}>
                                 <Text className="font-sans-bold text-[10px] uppercase">
                                     {inv.status}
                                 </Text>
@@ -148,14 +141,14 @@ export default function SalesScreen() {
                                 <Text className="font-sans-medium text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Items</Text>
                                 <Text className="font-sans-bold text-sm text-primary">{inv.lineItems ? inv.lineItems.length : 0}</Text>
                             </View>
-                            <View className="items-end">
+                            <View className="items-end flex-shrink">
                                 <Text className="font-sans-medium text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Total Amount</Text>
-                                <Text className="font-sans-bold text-lg text-primary">₹ {inv.totalAmountPaise.toLocaleString('en-IN')}</Text>
+                                <Text className="font-sans-bold text-lg text-primary" numberOfLines={1} adjustsFontSizeToFit>₹ {inv.totalAmountPaise.toLocaleString('en-IN')}</Text>
                             </View>
                         </View>
                     </Card>
-                ))}
-                {filteredInvoices.length === 0 && (
+                )}
+                ListEmptyComponent={
                     <View className="items-center justify-center py-20 px-5">
                         <View className="h-24 w-24 bg-primary/5 rounded-full items-center justify-center mb-6">
                             <ReceiptText color="#208AEF" size={40} opacity={0.5} />
@@ -174,8 +167,8 @@ export default function SalesScreen() {
                             </Pressable>
                         )}
                     </View>
-                )}
-            </ScrollView>
+                }
+            />
 
             {/* FAB */}
             <Pressable

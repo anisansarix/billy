@@ -129,7 +129,7 @@ export const useAppStore = create<AppStore>()(
       deleteAdjustment: (id) => set((state) => ({ adjustments: state.adjustments.filter((a) => a.id !== id) })),
     }),
     {
-      name: 'billy-app-store',
+      name: 'billy-app-store-v2',
       storage: createJSONStorage(() => AsyncStorage),
       onRehydrateStorage: () => (state) => {
         if (state) {

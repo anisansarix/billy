@@ -2,8 +2,9 @@ import { useAppStore } from "@/store";
 import { useShallow } from 'zustand/react/shallow';
 import { useLocalSearchParams, useRouter } from "expo-router";
 
-import { Party, SalesInvoice, DocumentType } from "@/types/entities";
+import { Party, DocumentType, SalesInvoice } from "@/types/entities";
 import DocumentBuilder, { DocumentData } from "@/components/domain/DocumentBuilder";
+import { buildGSTSummary, amountInIndianWords } from "@/utils/gst";
 
 export default function CreateInvoiceScreen() {
     const router = useRouter();
@@ -44,7 +45,9 @@ export default function CreateInvoiceScreen() {
     }
 
     const handleSave = (documentData: DocumentData) => {
-        const invoiceToSave: any = {
+        const gstSummary = buildGSTSummary(documentData.items, documentData.totals.isInterState);
+
+        const invoiceToSave: SalesInvoice = {
             id: editId || `${Date.now()}`,
             documentType: DocumentType.SALES_INVOICE,
             documentNumber: documentData.header.documentNumber,
@@ -54,18 +57,18 @@ export default function CreateInvoiceScreen() {
             partyId: documentData.selectedParty.id,
             partyName: documentData.selectedParty.legalName,
             lineItems: documentData.items,
-            gstSummary: { slabs: {}, totalTaxableValuePaise: 0, totalGSTAmountPaise: 0, totalCessAmountPaise: 0 },
+            gstSummary: gstSummary,
             subtotalPaise: documentData.totals.subtotalPaise,
             totalDiscountPaise: documentData.totals.discountPaise,
             totalTaxableAmountPaise: documentData.totals.subtotalPaise - documentData.totals.discountPaise,
             totalGSTAmountPaise: documentData.totals.cgstPaise + documentData.totals.sgstPaise + documentData.totals.igstPaise,
             totalAmountPaise: documentData.totals.totalAmountPaise,
-            totalAmountInWords: "",
+            totalAmountInWords: amountInIndianWords(documentData.totals.totalAmountPaise),
             notes: documentData.notes.external,
-            isInterState: false,
-            placeOfSupply: "",
+            isInterState: documentData.totals.isInterState,
+            placeOfSupply: documentData.selectedParty.billingAddress?.state || "",
             status: documentData.header.status || "Draft",
-            createdAt: new Date().toISOString(),
+            createdAt: existingDoc ? existingDoc.createdAt : new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             paymentMode: documentData.payment.mode,
             paidAmountPaise: 0,

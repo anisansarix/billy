@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { Party, PaymentRecord, InventoryItem, StockAdjustmentRecord, DocumentType } from "@/types/entities";
+import { InventoryItem, StockAdjustmentRecord } from "@/types/entities";
 import { useRouter } from "expo-router";
 import { useShallow } from 'zustand/react/shallow';
 import { ArrowLeft, Save, Search, ArrowDownRight, ArrowUpRight } from "lucide-react-native";
