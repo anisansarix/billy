@@ -1,16 +1,15 @@
 import { Text, View } from "react-native";
 import "../../../global.css";
 
+import { formatINR } from "@/utils/money";
+
 type Props = {
     title: string;
-    amount: number;
-    gstAmount: number;
-    currency: string;
+    amountPaise: number;
+    gstAmountPaise: number;
 };
 
-export default function StatCard({ title, amount, gstAmount, currency }: Props) {
-    const formattedAmount = amount.toLocaleString('en-IN');
-    const formattedGst = gstAmount.toLocaleString('en-IN');
+export default function StatCard({ title, amountPaise, gstAmountPaise }: Props) {
 
     return (
         <View className="flex-1 rounded-2xl bg-white p-4 shadow-sm border border-white/50" style={{ elevation: 2 }}>
@@ -22,10 +21,10 @@ export default function StatCard({ title, amount, gstAmount, currency }: Props) 
                 numberOfLines={1} 
                 adjustsFontSizeToFit
             >
-                {currency}{formattedAmount}
+                {formatINR(amountPaise)}
             </Text>
             <Text className="text-sm font-sans-medium text-muted-foreground">
-                +GST {currency}{formattedGst}
+                +GST {formatINR(gstAmountPaise)}
             </Text>
         </View>
     );

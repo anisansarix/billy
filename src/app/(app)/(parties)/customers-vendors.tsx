@@ -1,5 +1,7 @@
 // @ts-nocheck
 import { Party } from "@/types/entities";
+import { ListCardSkeleton } from "@/components/ui/skeletons/ListCardSkeleton";
+import { useDeferredRender } from "@/hooks/useDeferredRender";
 import AnimatedModal from "@/components/ui/AnimatedModal";
 import { useShallow } from 'zustand/react/shallow';
 import { useRouter } from "expo-router";
@@ -30,6 +32,7 @@ export default function CustomersVendorsScreen() {
     };
 
     // State for data
+    const isReady = useDeferredRender();
     const {  parties, addParty, updateParty, deleteParty  } = useAppStore(useShallow(state => ({ parties: state.parties, addParty: state.addParty, updateParty: state.updateParty, deleteParty: state.deleteParty })));
 
     // State for Details Modal
@@ -249,6 +252,14 @@ export default function CustomersVendorsScreen() {
                 </View>
             </View>
 
+            {!isReady ? (
+                <View className="flex-1 px-5 pt-4">
+                    <ListCardSkeleton />
+                    <ListCardSkeleton />
+                    <ListCardSkeleton />
+                    <ListCardSkeleton />
+                </View>
+            ) : (
             <FlatList
                 className="flex-1 px-5"
                 showsVerticalScrollIndicator={false}
@@ -281,6 +292,7 @@ export default function CustomersVendorsScreen() {
                     </View>
                 }
             />
+            )}
 
             {/* Details Modal */}
             <AnimatedModal visible={isDetailsModalVisible} onClose={closeDetailsModal}>

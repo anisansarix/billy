@@ -8,12 +8,15 @@ import Card from "@/components/ui/Card";
 import { useAppStore } from "@/store";
 import { useShallow } from 'zustand/react/shallow';
 import { ExpenseRecord, PurchaseOrder } from "@/types/entities";
+import { ListCardSkeleton } from "@/components/ui/skeletons/ListCardSkeleton";
+import { useDeferredRender } from "@/hooks/useDeferredRender";
 import "../../../../global.css";
 import { formatINR } from "@/utils/money";
 
 
 export default function ExpenseRecordsPurchasesScreen() {
     const router = useRouter();
+    const isReady = useDeferredRender();
     const [search, setSearch] = useState("");
     const [mainTab, setMainTab] = useState<"expenses" | "purchases">("expenses");
     const [purchaseTab, setPurchaseTab] = useState<"All" | "Pending" | "Paid" | "Overdue" | "Draft" | "Sent">("All");
@@ -211,9 +214,17 @@ export default function ExpenseRecordsPurchasesScreen() {
             </View>
 
             {mainTab === 'expenses' ? (
+                !isReady ? (
+                <View className="flex-1 px-5 pt-4">
+                    <ListCardSkeleton />
+                    <ListCardSkeleton />
+                    <ListCardSkeleton />
+                    <ListCardSkeleton />
+                </View>
+            ) : (
                 <FlatList
                     className="flex-1 px-5" 
-                    showsVerticalScrollIndicator={false} 
+                    showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingBottom: 100 }}
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#208AEF" />}
                     data={filteredExpenseRecords}
@@ -267,6 +278,15 @@ export default function ExpenseRecordsPurchasesScreen() {
                         </View>
                     }
                 />
+            )
+            ) : (
+                !isReady ? (
+                <View className="flex-1 px-5 pt-4">
+                    <ListCardSkeleton />
+                    <ListCardSkeleton />
+                    <ListCardSkeleton />
+                    <ListCardSkeleton />
+                </View>
             ) : (
                 <FlatList
                     className="flex-1 px-5" 
@@ -326,6 +346,7 @@ export default function ExpenseRecordsPurchasesScreen() {
                         </View>
                     }
                 />
+            )
             )}
 
             {/* Floating Action Button */}

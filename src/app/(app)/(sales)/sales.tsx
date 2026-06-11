@@ -1,4 +1,6 @@
 import { SalesInvoice } from "@/types/entities";
+import { ListCardSkeleton } from "@/components/ui/skeletons/ListCardSkeleton";
+import { useDeferredRender } from "@/hooks/useDeferredRender";
 import { useRouter } from "expo-router";
 import { useShallow } from 'zustand/react/shallow';
 import { ArrowLeft, Plus, ReceiptText, X, Edit, Trash2, Box } from "lucide-react-native";
@@ -23,6 +25,7 @@ export default function SalesScreen() {
     // Details Modal State
     const [selectedInvoice, setSelectedInvoice] = useState<SalesInvoice | null>(null);
 
+    const isReady = useDeferredRender();
     const {  invoices, deleteInvoice  } = useAppStore(useShallow(state => ({ invoices: state.invoices, deleteInvoice: state.deleteInvoice })));
 
     const onRefresh = () => {
@@ -112,6 +115,14 @@ export default function SalesScreen() {
             />
 
             {/* List */}
+            {!isReady ? (
+                <View className="flex-1 px-5 pt-4">
+                    <ListCardSkeleton />
+                    <ListCardSkeleton />
+                    <ListCardSkeleton />
+                    <ListCardSkeleton />
+                </View>
+            ) : (
             <FlatList 
                 className="flex-1 px-5" 
                 showsVerticalScrollIndicator={false} 
@@ -170,6 +181,7 @@ export default function SalesScreen() {
                     </View>
                 }
             />
+            )}
 
             {/* FAB */}
             <Pressable

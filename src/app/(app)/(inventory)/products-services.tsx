@@ -1,4 +1,6 @@
 import { InventoryItem, TaxRate } from "@/types/entities";
+import { ListCardSkeleton } from "@/components/ui/skeletons/ListCardSkeleton";
+import { useDeferredRender } from "@/hooks/useDeferredRender";
 
 import AnimatedModal from "@/components/ui/AnimatedModal";
 import { useShallow } from 'zustand/react/shallow';
@@ -20,6 +22,7 @@ export default function ProductsServicesScreen() {
     const [refreshing, setRefreshing] = useState(false);
 
     // Data State
+    const isReady = useDeferredRender();
     const {  items, addItem, updateItem, deleteItem, adjustments  } = useAppStore(useShallow(state => ({ items: state.items, addItem: state.addItem, updateItem: state.updateItem, deleteItem: state.deleteItem, adjustments: state.adjustments })));
 
     const onRefresh = () => {
@@ -288,6 +291,14 @@ export default function ProductsServicesScreen() {
             )}
 
             {view === 'catalog' ? (
+                !isReady ? (
+                <View className="flex-1 px-5 pt-4">
+                    <ListCardSkeleton />
+                    <ListCardSkeleton />
+                    <ListCardSkeleton />
+                    <ListCardSkeleton />
+                </View>
+            ) : (
                 <FlatList
                     className="flex-1 px-5" 
                     showsVerticalScrollIndicator={false}
@@ -329,6 +340,15 @@ export default function ProductsServicesScreen() {
                         </View>
                     }
                 />
+            )
+            ) : (
+                !isReady ? (
+                <View className="flex-1 px-5 pt-4">
+                    <ListCardSkeleton />
+                    <ListCardSkeleton />
+                    <ListCardSkeleton />
+                    <ListCardSkeleton />
+                </View>
             ) : (
                 <FlatList
                     className="flex-1 px-5" 
@@ -366,6 +386,7 @@ export default function ProductsServicesScreen() {
                         </View>
                     }
                 />
+            )
             )}
 
             {/* Details Modal */}

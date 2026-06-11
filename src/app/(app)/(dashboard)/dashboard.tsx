@@ -15,14 +15,15 @@ import OutstandingList from "@/components/domain/OutstandingList";
 import StatCard from "@/components/ui/StatCard";
 import AnimatedModal from "@/components/ui/AnimatedModal";
 import "../../../../global.css";
-import { SalesInvoice, PurchaseOrder, InventoryItem } from "@/types/entities";
+import { InventoryItem } from "@/types/entities";
 import { formatINR } from "@/utils/money";
+import { useDeferredRender } from "@/hooks/useDeferredRender";
+import { StatCardSkeleton } from "@/components/ui/skeletons/StatCardSkeleton";
 
 interface BalanceCardData {
   title: string;
-  amount: number;
-  gstAmount: number;
-  currency: string;
+  amountPaise: number;
+  gstAmountPaise: number;
 }
 
 const QUICK_ACTIONS = [
@@ -65,9 +66,11 @@ export default function App() {
     "January 2026",
   ];
 
+  const isReady = useDeferredRender();
   const {  invoices, purchases, payments, items  } = useAppStore(useShallow(state => ({ invoices: state.invoices, purchases: state.purchases, payments: state.payments, items: state.items })));
 
   const dashboardBalances = useMemo(() => {
+    if (!isReady) return [];
     const totalSales = invoices.reduce((acc, inv) => acc + (inv.totalAmountPaise || 0), 0);
     const totalSalesGST = invoices.reduce((acc, inv) => acc + (inv.totalGSTAmountPaise || 0), 0);
 
@@ -77,18 +80,16 @@ export default function App() {
     return [
       {
         title: "Sales",
-        amount: totalSales,
-        gstAmount: totalSalesGST,
-        currency: "₹",
+        amountPaise: totalSales,
+        gstAmountPaise: totalSalesGST,
       },
       {
         title: "Purchase",
-        amount: totalPurchases,
-        gstAmount: totalPurchasesGST,
-        currency: "₹",
+        amountPaise: totalPurchases,
+        gstAmountPaise: totalPurchasesGST,
       }
     ];
-  }, [invoices, purchases]);
+  }, [invoices, purchases, isReady]);
 
   const outstandingData = useMemo(() => {
     const salesAging = { current: 0, days1_30: 0, days31_60: 0, days61_90: 0, days90Plus: 0 };
@@ -306,9 +307,16 @@ export default function App() {
             </View>
 
             <View className="flex-row gap-4 mb-6">
-              {dashboardBalances.map((balance: BalanceCardData, index: number) => (
-                <StatCard key={index} {...balance} />
-              ))}
+              {!isReady ? (
+                <>
+                  <StatCardSkeleton />
+                  <StatCardSkeleton />
+                </>
+              ) : (
+                dashboardBalances.map((balance: BalanceCardData, index: number) => (
+                  <StatCard key={index} {...balance} />
+                ))
+              )}
             </View>
 
             {/* Pending Actions / Alerts */}

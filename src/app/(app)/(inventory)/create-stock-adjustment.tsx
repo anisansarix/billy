@@ -7,7 +7,6 @@ import { useState, useMemo } from "react";
 import { Pressable, ScrollView, Text, TextInput, View, Alert, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppStore } from "@/store";
-import { InventoryItem, StockAdjustmentRecord } from "@/types/entities";
 import "../../../../global.css";
 import AnimatedModal from "@/components/ui/AnimatedModal";
 import { formatINR } from "@/utils/money";
