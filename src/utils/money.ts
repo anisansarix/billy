@@ -36,3 +36,32 @@ export function formatINR(paise: Paise | number): string {
     maximumFractionDigits: 2,
   }).format(inr);
 }
+
+/**
+ * Formats a Paise value as a compact Indian Rupee string (e.g., ₹1.5L, ₹2.4Cr).
+ * Useful for dashboards and tight UI spaces.
+ * @param paise Amount in paise
+ * @returns Compact formatted INR string
+ */
+export function formatCompactINR(paise: Paise | number): string {
+  const inr = fromPaise(paise);
+  const absInr = Math.abs(inr);
+  const sign = inr < 0 ? '-' : '';
+
+  if (absInr >= 10000000) {
+    const value = absInr / 10000000;
+    return `${sign}₹${value.toFixed(2).replace(/\.?0+$/, '')}Cr`;
+  } else if (absInr >= 100000) {
+    const value = absInr / 100000;
+    return `${sign}₹${value.toFixed(2).replace(/\.?0+$/, '')}L`;
+  } else if (absInr >= 1000) {
+    const value = absInr / 1000;
+    return `${sign}₹${value.toFixed(2).replace(/\.?0+$/, '')}K`;
+  } else {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 2,
+    }).format(inr);
+  }
+}

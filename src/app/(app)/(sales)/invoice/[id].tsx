@@ -6,6 +6,7 @@ import { ArrowLeft, Share2, Download } from 'lucide-react-native';
 import { useAppStore } from '@/store';
 import { formatINR } from '@/utils/money';
 import { generateInvoicePDF } from '@/utils/pdf';
+import QRCode from 'react-native-qrcode-svg';
 
 export default function InvoiceDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
@@ -67,6 +68,22 @@ export default function InvoiceDetailScreen() {
 
     const disableActions = !currentBusiness || isSharing;
 
+    const formatDate = (dateStr?: string) => {
+        if (!dateStr) return 'N/A';
+        // Handle YYYY-MM-DD format manually to avoid timezone issues
+        const parts = dateStr.split('T')[0].split('-');
+        if (parts.length === 3) {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const [year, month, day] = parts;
+            return `${day} ${months[parseInt(month, 10) - 1]} ${year}`;
+        }
+        return dateStr; // Fallback
+    };
+
+    const upiString = currentBusiness?.upiVpa 
+        ? `upi://pay?pa=${encodeURIComponent(currentBusiness.upiVpa)}&pn=${encodeURIComponent(currentBusiness.tradeName ?? currentBusiness.legalName)}&am=${(invoice.totalAmountPaise / 100).toFixed(2)}&cu=INR&tn=Invoice%20${encodeURIComponent(invoice.documentNumber)}` 
+        : '';
+
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }} edges={['top', 'left', 'right']}>
             {/* Header */}
@@ -109,11 +126,11 @@ export default function InvoiceDetailScreen() {
                     <View className="flex-row justify-between w-full border-t border-border pt-4">
                         <View>
                             <Text className="font-sans-medium text-xs text-muted-foreground uppercase tracking-wider mb-1">Invoice Date</Text>
-                            <Text className="font-sans-bold text-sm text-primary">{invoice.documentDate}</Text>
+                            <Text className="font-sans-bold text-sm text-primary">{formatDate(invoice.documentDate)}</Text>
                         </View>
                         <View className="items-end">
                             <Text className="font-sans-medium text-xs text-muted-foreground uppercase tracking-wider mb-1">Due Date</Text>
-                            <Text className="font-sans-bold text-sm text-primary">{invoice.dueDate || 'N/A'}</Text>
+                            <Text className="font-sans-bold text-sm text-primary">{formatDate(invoice.dueDate)}</Text>
                         </View>
                     </View>
                 </View>
@@ -209,9 +226,13 @@ export default function InvoiceDetailScreen() {
                         <Text className="font-sans-medium text-xs text-muted-foreground uppercase tracking-wider mb-2">Scan & Pay</Text>
                         <Text className="font-sans-bold text-2xl text-primary mb-4">{formatINR(invoice.totalAmountPaise)}</Text>
                         
-                        {/* QR: install react-native-qrcode-svg, then replace this card with <QRCode value={upiString} size={140} /> */}
-                        <View className="h-36 w-36 bg-gray-100 rounded-xl items-center justify-center mb-4 border border-border border-dashed">
-                            <Text className="font-sans-medium text-xs text-muted-foreground">QR Code Placeholder</Text>
+                        <View className="mb-4">
+                            <QRCode
+                                value={upiString}
+                                size={140}
+                                backgroundColor="white"
+                                color="#081126"
+                            />
                         </View>
                         
                         <Text className="font-mono text-sm text-primary bg-slate-100 px-3 py-1 rounded-md mb-2">{currentBusiness.upiVpa}</Text>

@@ -63,11 +63,11 @@ function buildInvoiceHTML(
         <td style="border: 1px solid #000; padding: 4px; text-align: center;">${item.hsnSacCode}</td>
         <td style="border: 1px solid #000; padding: 4px; text-align: right;">${item.quantityDecimal}</td>
         <td style="border: 1px solid #000; padding: 4px; text-align: center;">${item.unit}</td>
-        <td style="border: 1px solid #000; padding: 4px; text-align: right;">${formatINR(item.unitPricePaise / 100)}</td>
+        <td style="border: 1px solid #000; padding: 4px; text-align: right;">${formatINR(item.unitPricePaise)}</td>
         <td style="border: 1px solid #000; padding: 4px; text-align: right;">${item.discountPercent}%</td>
-        <td style="border: 1px solid #000; padding: 4px; text-align: right;">${formatINR(item.taxableAmountPaise / 100)}</td>
+        <td style="border: 1px solid #000; padding: 4px; text-align: right;">${formatINR(item.taxableAmountPaise)}</td>
         <td style="border: 1px solid #000; padding: 4px; text-align: right;">${gstPercent}%</td>
-        <td style="border: 1px solid #000; padding: 4px; text-align: right;">${formatINR(item.totalAmountPaise / 100)}</td>
+        <td style="border: 1px solid #000; padding: 4px; text-align: right;">${formatINR(item.totalAmountPaise)}</td>
       </tr>
     `;
   }).join('');
@@ -98,19 +98,19 @@ function buildInvoiceHTML(
     if (isInterState) {
       return `
         <tr>
-          <td style="border: 1px solid #000; padding: 4px; text-align: right;">${formatINR(slab.taxableValuePaise / 100)}</td>
+          <td style="border: 1px solid #000; padding: 4px; text-align: right;">${formatINR(slab.taxableValuePaise)}</td>
           <td style="border: 1px solid #000; padding: 4px; text-align: right;">${slab.igstRate}%</td>
-          <td style="border: 1px solid #000; padding: 4px; text-align: right;">${formatINR(slab.igstAmountPaise / 100)}</td>
+          <td style="border: 1px solid #000; padding: 4px; text-align: right;">${formatINR(slab.igstAmountPaise)}</td>
         </tr>
       `;
     }
     return `
       <tr>
-        <td style="border: 1px solid #000; padding: 4px; text-align: right;">${formatINR(slab.taxableValuePaise / 100)}</td>
+        <td style="border: 1px solid #000; padding: 4px; text-align: right;">${formatINR(slab.taxableValuePaise)}</td>
         <td style="border: 1px solid #000; padding: 4px; text-align: right;">${slab.cgstRate}%</td>
-        <td style="border: 1px solid #000; padding: 4px; text-align: right;">${formatINR(slab.cgstAmountPaise / 100)}</td>
+        <td style="border: 1px solid #000; padding: 4px; text-align: right;">${formatINR(slab.cgstAmountPaise)}</td>
         <td style="border: 1px solid #000; padding: 4px; text-align: right;">${slab.sgstRate}%</td>
-        <td style="border: 1px solid #000; padding: 4px; text-align: right;">${formatINR(slab.sgstAmountPaise / 100)}</td>
+        <td style="border: 1px solid #000; padding: 4px; text-align: right;">${formatINR(slab.sgstAmountPaise)}</td>
       </tr>
     `;
   }).join('');
@@ -149,27 +149,27 @@ function buildInvoiceHTML(
       <table style="width: 40%; border-collapse: collapse;">
         <tr>
           <td style="padding: 4px; font-weight: bold;">Subtotal:</td>
-          <td style="padding: 4px; text-align: right;">${formatINR(invoice.subtotalPaise / 100)}</td>
+          <td style="padding: 4px; text-align: right;">${formatINR(invoice.subtotalPaise)}</td>
         </tr>
         <tr>
           <td style="padding: 4px; font-weight: bold;">Discount:</td>
-          <td style="padding: 4px; text-align: right;">${formatINR(invoice.totalDiscountPaise / 100)}</td>
+          <td style="padding: 4px; text-align: right;">${formatINR(invoice.totalDiscountPaise)}</td>
         </tr>
         <tr>
           <td style="padding: 4px; font-weight: bold;">Taxable Amount:</td>
-          <td style="padding: 4px; text-align: right;">${formatINR(invoice.totalTaxableAmountPaise / 100)}</td>
+          <td style="padding: 4px; text-align: right;">${formatINR(invoice.totalTaxableAmountPaise)}</td>
         </tr>
         <tr>
           <td style="padding: 4px; font-weight: bold;">Total GST:</td>
-          <td style="padding: 4px; text-align: right;">${formatINR(invoice.totalGSTAmountPaise / 100)}</td>
+          <td style="padding: 4px; text-align: right;">${formatINR(invoice.totalGSTAmountPaise)}</td>
         </tr>
         <tr>
           <td style="padding: 4px; font-weight: bold;">Round-off:</td>
-          <td style="padding: 4px; text-align: right;">${formatINR(roundOffPaise / 100)}</td>
+          <td style="padding: 4px; text-align: right;">${formatINR(roundOffPaise)}</td>
         </tr>
         <tr style="border-top: 2px solid #000; border-bottom: 2px solid #000;">
           <td style="padding: 8px 4px; font-weight: bold; font-size: 16px;">GRAND TOTAL:</td>
-          <td style="padding: 8px 4px; text-align: right; font-weight: bold; font-size: 16px;">${formatINR(invoice.totalAmountPaise / 100)}</td>
+          <td style="padding: 8px 4px; text-align: right; font-weight: bold; font-size: 16px;">${formatINR(invoice.totalAmountPaise)}</td>
         </tr>
       </table>
     </div>
