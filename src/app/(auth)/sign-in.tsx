@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View, Image, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAppStore, DEFAULT_BUSINESS } from "@/store";
 import AuthInput from "@/components/ui/AuthInput";
 import Button from "@/components/ui/Button";
 import { icons } from "../../../constants/icons";
@@ -23,6 +24,7 @@ export default function SignInScreen() {
       Alert.alert("Validation Error", "Please enter your password.");
       return;
     }
+    useAppStore.getState().setCurrentBusiness(DEFAULT_BUSINESS);
     router.push("/(app)/(dashboard)/dashboard");
   };
 

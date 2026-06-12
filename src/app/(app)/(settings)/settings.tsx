@@ -74,7 +74,9 @@ export default function SettingsScreen() {
                             title="Log Out" 
                             isDestructive 
                             isLast
-                            onPress={() => router.replace("/(auth)/sign-in")} 
+                            onPress={() => {
+                                router.replace("/onboarding");
+                            }} 
                         />
                     </View>
                 </View>

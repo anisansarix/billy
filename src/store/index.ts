@@ -15,7 +15,7 @@ const zustandStorage: StateStorage = {
     return AsyncStorage.removeItem(name);
   },
 };
-const DEFAULT_BUSINESS: Business = {
+export const DEFAULT_BUSINESS: Business = {
     id: 'b1',
     legalName: 'Billy Textiles & Co.',
     tradeName: 'Billy Textiles',
