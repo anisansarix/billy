@@ -56,3 +56,11 @@ This log is used by all subagents to track completion of tasks across the multi-
 - [x] Audited sharing logic (`src/app/(app)/(sales)/invoice/[id].tsx`) and identified usability flaws: `handleDownload` leaves the file in the cache directory, and `handleShare` only shares a text message instead of the actual PDF.
 - [x] Scanned `src/` for hardcoded secrets/API keys (clean).
 - [x] Verified `npm audit` 13 moderate vulnerabilities related to `uuid` and older Expo dependencies.- [x] Audited screens inside src/app/(app)/: Found hardcoded tabs in dashboard, gst-returns, payment, create-stock-adjustment. Missing skeleton loading in payment, gst-returns, reports. Fixed header usage instead of ListHeaderComponent in payment and gst-returns.
+
+**QA / Testing Team (UI/UX & Routing Audit):**
+- [x] Read AGENTS.md to align with project standards.
+- [x] Audited src/app/(app)/ and src/app/(auth)/ after the recent settings.tsx and onboarding.tsx revamps.
+- [x] Identified widespread missing explicit loading and error states across data screens (violating Rule 20), though EmptyState is appropriately utilized.
+- [x] Flagged several large files (e.g., dashboard.tsx, eports.tsx, payment.tsx) exceeding the preferred 300-line limit, recommending component extraction.
+- [x] Discovered a broken navigation flow: settings.tsx is completely unlinked from the main application (no entry point in dashboard.tsx or elsewhere).
+- [x] Confirmed standard routing structures and mock data utilization are correctly followed.
