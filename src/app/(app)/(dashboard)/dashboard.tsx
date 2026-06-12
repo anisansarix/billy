@@ -19,6 +19,7 @@ import { InventoryItem } from "@/types/entities";
 import { formatINR } from "@/utils/money";
 import { useDeferredRender } from "@/hooks/useDeferredRender";
 import { StatCardSkeleton } from "@/components/ui/skeletons/StatCardSkeleton";
+import MonthPickerModal from "@/components/domain/dashboard/MonthPickerModal";
 
 interface BalanceCardData {
   title: string;
@@ -263,6 +264,8 @@ export default function App() {
                 <Text className="font-sans-medium text-sm text-green-600">Synced</Text>
               </View>
               <Pressable 
+                accessibilityRole="button"
+                accessibilityLabel="Select Month"
                 className="flex-row items-center bg-white rounded-xl px-4 py-2 min-h-[44px] border border-white/50 shadow-sm"
                 onPress={() => setMonthModalVisible(true)}
                 style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
@@ -294,6 +297,8 @@ export default function App() {
                 {QUICK_ACTIONS.map((action, i) => (
                     <Pressable 
                         key={i} 
+                        accessibilityRole="button"
+                        accessibilityLabel={`Go to ${action.label}`}
                         onPress={() => router.push(action.route as never)} 
                         className="items-center"
                         style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
@@ -467,6 +472,8 @@ export default function App() {
           />
 
           <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Open Menu"
             onPress={() =>
               setMenuVisible(true)
             }
@@ -488,23 +495,13 @@ export default function App() {
             />
           </Pressable>
 
-          <AnimatedModal visible={monthModalVisible} onClose={() => setMonthModalVisible(false)} placement="center">
-            <View className="bg-white rounded-3xl w-[85%] max-w-sm p-6 shadow-xl">
-              <Text className="font-sans-bold text-xl text-primary mb-4 text-center">Select Month</Text>
-              {monthOptions.map((month, index) => (
-                <Pressable 
-                  key={month} 
-                  className={`py-4 ${index !== monthOptions.length - 1 ? 'border-b border-border' : ''}`} 
-                  onPress={() => { setSelectedMonth(month); setMonthModalVisible(false); }}
-                  style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
-                >
-                  <Text className={`text-center text-lg ${selectedMonth === month ? 'text-primary font-sans-bold' : 'text-muted-foreground font-sans-medium'}`}>
-                    {month}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-          </AnimatedModal>
+          <MonthPickerModal
+            visible={monthModalVisible}
+            onClose={() => setMonthModalVisible(false)}
+            options={monthOptions}
+            selectedMonth={selectedMonth}
+            onSelect={setSelectedMonth}
+          />
         </View>
       </SafeAreaView>
     </LinearGradient>

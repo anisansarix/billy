@@ -13,6 +13,8 @@ import Card from "@/components/ui/Card";
 import { useAppStore } from "@/store";
 import "../../../../global.css";
 import { formatINR } from "@/utils/money";
+import InventoryItemDetailsModal from "@/components/domain/inventory/InventoryItemDetailsModal";
+import InventoryItemFormModal from "@/components/domain/inventory/InventoryItemFormModal";
 
 export default function ProductsServicesScreen() {
     const router = useRouter();
@@ -43,60 +45,12 @@ export default function ProductsServicesScreen() {
     const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
     const [isFormModalVisible, setIsFormModalVisible] = useState(false);
     const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
-    interface FormState {
-        name: string;
-        type: 'product' | 'service';
-        unitPricePaise: number;
-        purchasePricePaise?: number;
-        hsnSacCode: string;
-        gstRate: number;
-        unit: string;
-        stock: number;
-        minimumStock?: number;
-        sku?: string;
-        description?: string;
-    }
-
-    const [formData, setFormData] = useState<FormState>({
-        name: "",
-        type: "product",
-        unitPricePaise: 0,
-        hsnSacCode: "",
-        gstRate: 0,
-        unit: "pcs",
-        stock: 0,
-    });
-    const [showMoreDetails, setShowMoreDetails] = useState(false);
 
     const openFormModal = (item?: InventoryItem) => {
         if (item) {
             setEditingItem(item);
-            setFormData({ 
-                name: item.name,
-                type: item.type,
-                unitPricePaise: item.unitPricePaise,
-                purchasePricePaise: item.purchasePricePaise,
-                hsnSacCode: item.hsnSacCode,
-                gstRate: item.taxRate?.gstComponent?.igstRate || 0,
-                unit: item.unit,
-                stock: item.stock || 0,
-                minimumStock: item.minimumStock,
-                sku: item.sku,
-                description: item.description,
-            });
-            setShowMoreDetails(false);
         } else {
             setEditingItem(null);
-            setFormData({
-                name: "",
-                type: tab,
-                unitPricePaise: 0,
-                hsnSacCode: "",
-                gstRate: 0,
-                unit: "pcs",
-                stock: 0,
-            });
-            setShowMoreDetails(false);
         }
         setIsFormModalVisible(true);
     };
@@ -106,83 +60,18 @@ export default function ProductsServicesScreen() {
         setEditingItem(null);
     };
 
-    const handleCloseFormModal = () => {
-        const isDirty = editingItem
-            ? formData.name !== editingItem.name || formData.unitPricePaise !== editingItem.unitPricePaise
-            : !!(formData.name || formData.unitPricePaise);
-
-        if (isDirty) {
-            Alert.alert(
-                "Discard Changes?",
-                "You have unsaved changes. Are you sure you want to discard them?",
-                [
-                    { text: "Keep Editing", style: "cancel" },
-                    { text: "Discard", style: "destructive", onPress: closeFormModal }
-                ]
-            );
-        } else {
-            closeFormModal();
-        }
-    };
-
-    const handleSave = () => {
-        if (!formData.name?.trim()) {
-            Alert.alert("Error", "InventoryItem Name is required");
-            return;
-        }
-
-        const gstRate = formData.gstRate || 0;
-        const taxRateObj: TaxRate = {
-            id: `tax-${gstRate}`,
-            hsnSacCode: formData.hsnSacCode || "",
-            description: `GST ${gstRate}%`,
-            gstComponent: {
-                igstRate: gstRate,
-                cgstRate: gstRate / 2,
-                sgstRate: gstRate / 2,
-                cessRate: 0
-            },
-            isService: formData.type === 'service',
-            isActive: true
-        };
-
-        const itemData: InventoryItem = {
-            id: editingItem ? editingItem.id : `i${Date.now()}`,
-            name: formData.name,
-            type: formData.type || "product",
-            unitPricePaise: Number(formData.unitPricePaise) || 0,
-            purchasePricePaise: formData.purchasePricePaise,
-            hsnSacCode: formData.hsnSacCode || "",
-            taxRate: taxRateObj,
-            unit: formData.unit || "pcs",
-            stock: Number(formData.stock) || 0,
-            minimumStock: formData.minimumStock,
-            sku: formData.sku,
-            description: formData.description,
-        };
-
-        if (editingItem) {
-            updateItem(itemData);
-        } else {
-            addItem(itemData);
-        }
-
+    const handleFormSaveSuccess = (item: InventoryItem) => {
         closeFormModal();
+        if (editingItem && selectedItem?.id === editingItem.id) {
+            setSelectedItem(item);
+        }
     };
 
     const handleDelete = (id: string) => {
-        Alert.alert(
-            "Delete InventoryItem",
-            "Are you sure you want to delete this item?",
-            [
-                { text: "Cancel", style: "cancel" },
-                {
-                    text: "Delete",
-                    style: "destructive",
-                    onPress: () => deleteItem(id)
-                }
-            ]
-        );
+        deleteItem(id);
+        if (selectedItem?.id === id) {
+            setSelectedItem(null);
+        }
     };
 
     return (
@@ -389,254 +278,22 @@ export default function ProductsServicesScreen() {
             )
             )}
 
-            {/* Details Modal */}
-            <AnimatedModal visible={!!selectedItem} onClose={() => setSelectedItem(null)}>
-                {selectedItem && (
-                    <View className="bg-white rounded-t-3xl p-6 min-h-[350px]">
-                        <View className="flex-row justify-between items-start mb-6">
-                            <View className="flex-1 mr-4">
-                                <Text className="font-sans-bold text-2xl text-primary mb-1">{selectedItem.name}</Text>
-                                <Text className="font-sans-medium text-base text-muted-foreground">
-                                    {selectedItem.type === 'product' ? `HSN: ${selectedItem.hsnSacCode || 'N/A'}` : `SAC: ${selectedItem.hsnSacCode || 'N/A'}`} • GST @ {selectedItem.taxRate.gstComponent.igstRate}%
-                                </Text>
-                            </View>
-                            <Pressable onPress={() => setSelectedItem(null)} className="h-11 w-11 items-center justify-center bg-muted rounded-full">
-                                <X color="#64748b" size={20} />
-                            </Pressable>
-                        </View>
+            <InventoryItemDetailsModal
+                visible={!!selectedItem}
+                onClose={() => setSelectedItem(null)}
+                item={selectedItem}
+                onEdit={(item) => openFormModal(item)}
+                onDelete={handleDelete}
+            />
 
-                        <View className="p-4 rounded-2xl bg-slate-50 border border-border flex-row justify-between items-center mb-6">
-                            <View>
-                                <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Selling Price</Text>
-                                <Text className="font-sans-bold text-2xl text-primary">
-                                    {formatINR(selectedItem.unitPricePaise)}
-                                </Text>
-                            </View>
-                            {selectedItem.type === 'product' && (
-                                <View className={`px-3 py-1.5 rounded-md border ${selectedItem.stock && selectedItem.stock > 10 ? 'bg-green-100 border-green-200' : 'bg-amber-100 border-amber-200'}`}>
-                                    <Text className={`font-sans-bold text-xs uppercase ${selectedItem.stock && selectedItem.stock > 10 ? 'text-green-700' : 'text-amber-700'}`}>
-                                        Stock: {selectedItem.stock || 0}
-                                    </Text>
-                                </View>
-                            )}
-                        </View>
-
-                        {selectedItem.description && (
-                            <View className="mb-6">
-                                <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Description</Text>
-                                <Text className="font-sans-regular text-primary">{selectedItem.description}</Text>
-                            </View>
-                        )}
-
-                        <View className="flex-row space-x-4">
-                            <Pressable
-                                onPress={() => {
-                                    setSelectedItem(null);
-                                    openFormModal(selectedItem);
-                                }}
-                                className="flex-1 bg-blue-100 py-4 rounded-xl flex-row justify-center items-center mr-2"
-                            >
-                                <Edit color="#208AEF" size={18} className="mr-2" />
-                                <Text className="font-sans-bold text-primary text-base">Edit</Text>
-                            </Pressable>
-                            <Pressable
-                                onPress={() => {
-                                    handleDelete(selectedItem.id);
-                                    setSelectedItem(null);
-                                }}
-                                className="flex-1 border border-red-200 py-4 rounded-xl flex-row justify-center items-center ml-2"
-                            >
-                                <Trash2 color="#ef4444" size={18} className="mr-2" />
-                                <Text className="font-sans-bold text-red-500 text-base">Delete</Text>
-                            </Pressable>
-                        </View>
-                    </View>
-                )}
-            </AnimatedModal>
-
-            {/* Form Modal */}
-            <AnimatedModal visible={isFormModalVisible} onClose={handleCloseFormModal} avoidKeyboard>
-                <View className="bg-white rounded-t-3xl p-6 pb-12 h-[92%] flex-col">
-                    <View className="flex-row justify-between items-center mb-6">
-                        <Text className="font-sans-bold text-2xl text-primary">
-                            {editingItem ? 'Edit' : 'Add'} {formData.type === 'product' ? 'Product' : 'Service'}
-                        </Text>
-                        <View className="flex-row items-center">
-                            {editingItem && (
-                                <Pressable onPress={() => { closeFormModal(); handleDelete(editingItem.id); }} className="p-2 bg-red-50 rounded-full mr-2">
-                                    <Trash2 color="#ef4444" size={20} />
-                                </Pressable>
-                            )}
-                            <Pressable onPress={handleCloseFormModal} className="h-11 w-11 items-center justify-center bg-muted rounded-full">
-                                <X color="#64748b" size={20} />
-                            </Pressable>
-                        </View>
-                    </View>
-
-                    <ScrollView showsVerticalScrollIndicator={false} className="mb-4">
-                        {!editingItem && (
-                            <View className="flex-row mb-6 bg-muted p-1 rounded-xl">
-                                <Pressable
-                                    onPress={() => setFormData({ ...formData, type: "product" })}
-                                    className={`flex-1 py-3 items-center rounded-lg ${formData.type === "product" ? "bg-white shadow-sm" : ""}`}
-                                >
-                                    <Text className={`font-sans-bold ${formData.type === "product" ? "text-primary" : "text-muted-foreground"}`}>Product</Text>
-                                </Pressable>
-                                <Pressable
-                                    onPress={() => setFormData({ ...formData, type: "service" })}
-                                    className={`flex-1 py-3 items-center rounded-lg ${formData.type === "service" ? "bg-white shadow-sm" : ""}`}
-                                >
-                                    <Text className={`font-sans-bold ${formData.type === "service" ? "text-primary" : "text-muted-foreground"}`}>Service</Text>
-                                </Pressable>
-                            </View>
-                        )}
-
-                        <View className="mb-4">
-                            <Text className="font-sans-medium text-sm text-muted-foreground mb-2">InventoryItem Name *</Text>
-                            <TextInput
-                                className="bg-white border border-border rounded-xl px-4 py-4 font-sans-regular text-primary text-base"
-                                placeholder="Enter product or service name"
-                                value={formData.name}
-                                onChangeText={(text) => setFormData({ ...formData, name: text })}
-                            />
-                        </View>
-
-                        <View className="mb-4 flex-row">
-                            <View className="flex-1 mr-2">
-                                <Text className="font-sans-medium text-sm text-muted-foreground mb-2">Selling Price (₹) *</Text>
-                                <TextInput
-                                    className="bg-white border border-border rounded-xl px-4 py-4 font-sans-regular text-primary text-base"
-                                    placeholder="0"
-                                    keyboardType="numeric"
-                                    value={formData.unitPricePaise ? (formData.unitPricePaise / 100).toString() : ""}
-                                    onChangeText={(text) => setFormData({ ...formData, unitPricePaise: text ? Math.round(parseFloat(text) * 100) : 0 })}
-                                />
-                            </View>
-                            {formData.type === 'product' && (
-                                <View className="flex-1 ml-2">
-                                    <Text className="font-sans-medium text-sm text-muted-foreground mb-2">Opening Stock</Text>
-                                    <TextInput
-                                        className="bg-white border border-border rounded-xl px-4 py-4 font-sans-regular text-primary text-base"
-                                        placeholder="0"
-                                        keyboardType="numeric"
-                                        value={formData.stock?.toString() || ""}
-                                        onChangeText={(text) => setFormData({ ...formData, stock: text ? parseInt(text, 10) : 0 })}
-                                    />
-                                </View>
-                            )}
-                        </View>
-
-                        {!showMoreDetails ? (
-                            <Pressable 
-                                onPress={() => setShowMoreDetails(true)}
-                                className="py-6 items-center"
-                            >
-                                <Text className="font-sans-bold text-primary text-base">+ Add More Details</Text>
-                            </Pressable>
-                        ) : (
-                            <View className="mt-6 border-t border-border pt-6 pb-6">
-                                <Text className="font-sans-bold text-lg text-primary mb-4">Pricing & Tax</Text>
-                                
-                                <View className="mb-4">
-                                    <Text className="font-sans-medium text-sm text-muted-foreground mb-2">Purchase Price (₹)</Text>
-                                    <TextInput
-                                        className="bg-white border border-border rounded-xl px-4 py-4 font-sans-regular text-primary text-base"
-                                        placeholder="0"
-                                        keyboardType="numeric"
-                                        value={formData.purchasePricePaise ? (formData.purchasePricePaise / 100).toString() : ""}
-                                        onChangeText={(text) => setFormData({ ...formData, purchasePricePaise: text ? Math.round(parseFloat(text) * 100) : undefined })}
-                                    />
-                                </View>
-
-                                <View className="mb-4 flex-row">
-                                    <View className="flex-1 mr-2">
-                                        <Text className="font-sans-medium text-sm text-muted-foreground mb-2">GST Rate (%)</Text>
-                                        <TextInput
-                                            className="bg-white border border-border rounded-xl px-4 py-4 font-sans-regular text-primary text-base"
-                                            placeholder="e.g. 18"
-                                            keyboardType="numeric"
-                                            value={formData.gstRate?.toString() || ""}
-                                            onChangeText={(text) => setFormData({ ...formData, gstRate: Number(text) ? parseFloat(text) : 0 })}
-                                        />
-                                    </View>
-                                    <View className="flex-1 ml-2">
-                                        <Text className="font-sans-medium text-sm text-muted-foreground mb-2">{formData.type === 'product' ? 'HSN Code' : 'SAC Code'}</Text>
-                                        <TextInput
-                                            className="bg-white border border-border rounded-xl px-4 py-4 font-sans-regular text-primary text-base"
-                                            placeholder="e.g. 8471"
-                                            value={formData.hsnSacCode}
-                                            onChangeText={(text) => setFormData({ ...formData, hsnSacCode: text })}
-                                        />
-                                    </View>
-                                </View>
-                                
-                                <Text className="font-sans-bold text-lg text-primary mb-4 mt-6">InventoryItem Identity</Text>
-                                <View className="mb-4 flex-row">
-                                    <View className="flex-1 mr-2">
-                                        <Text className="font-sans-medium text-sm text-muted-foreground mb-2">InventoryItem Code / SKU</Text>
-                                        <TextInput
-                                            className="bg-white border border-border rounded-xl px-4 py-4 font-sans-regular text-primary text-base"
-                                            placeholder="SKU-123"
-                                            value={formData.sku}
-                                            onChangeText={(text) => setFormData({ ...formData, sku: text })}
-                                        />
-                                    </View>
-                                    <View className="flex-1 ml-2">
-                                        <Text className="font-sans-medium text-sm text-muted-foreground mb-2">Unit</Text>
-                                        <TextInput
-                                            className="bg-white border border-border rounded-xl px-4 py-4 font-sans-regular text-primary text-base"
-                                            placeholder="e.g. pcs, kg"
-                                            value={formData.unit}
-                                            onChangeText={(text) => setFormData({ ...formData, unit: text })}
-                                        />
-                                    </View>
-                                </View>
-
-                                {formData.type === 'product' && (
-                                    <View className="mb-4">
-                                        <Text className="font-sans-medium text-sm text-muted-foreground mb-2">Minimum Stock to Alert</Text>
-                                        <TextInput
-                                            className="bg-white border border-border rounded-xl px-4 py-4 font-sans-regular text-primary text-base"
-                                            placeholder="0"
-                                            keyboardType="numeric"
-                                            value={formData.minimumStock?.toString() || ""}
-                                            onChangeText={(text) => setFormData({ ...formData, minimumStock: text ? parseInt(text, 10) : 0 })}
-                                        />
-                                    </View>
-                                )}
-
-                                <Text className="font-sans-bold text-lg text-primary mb-4 mt-6">Details</Text>
-                                <View className="mb-6">
-                                    <Text className="font-sans-medium text-sm text-muted-foreground mb-2">Description</Text>
-                                    <TextInput
-                                        className="bg-white border border-border rounded-xl px-4 py-4 font-sans-regular text-primary text-base h-24"
-                                        placeholder="Add description..."
-                                        multiline
-                                        textAlignVertical="top"
-                                        value={formData.description}
-                                        onChangeText={(text) => setFormData({ ...formData, description: text })}
-                                    />
-                                </View>
-
-                                <View className="mb-6 p-4 bg-muted rounded-2xl items-center border border-dashed border-slate-300">
-                                    <Text className="font-sans-medium text-primary mb-2">Upload InventoryItem Image</Text>
-                                    <Pressable className="bg-white px-6 py-3 rounded-full border border-border shadow-sm mt-2">
-                                        <Text className="font-sans-bold text-primary">Browse Files</Text>
-                                    </Pressable>
-                                </View>
-                            </View>
-                        )}
-                    </ScrollView>
-
-                    <Pressable
-                        onPress={handleSave}
-                        className="bg-primary py-4 rounded-xl flex-row justify-center items-center shadow-md shadow-primary/30"
-                    >
-                        <Save color="white" size={20} className="mr-2" />
-                        <Text className="font-sans-bold text-white text-lg">Save {formData.type === 'product' ? 'Product' : 'Service'}</Text>
-                    </Pressable>
-                </View>
-            </AnimatedModal>
+            <InventoryItemFormModal
+                visible={isFormModalVisible}
+                onClose={closeFormModal}
+                itemToEdit={editingItem}
+                initialTab={tab}
+                onSaveSuccess={handleFormSaveSuccess}
+                onDelete={handleDelete}
+            />
         </SafeAreaView>
     );
 }

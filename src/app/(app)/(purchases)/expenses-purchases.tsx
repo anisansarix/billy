@@ -12,8 +12,9 @@ import { ListCardSkeleton } from "@/components/ui/skeletons/ListCardSkeleton";
 import { useDeferredRender } from "@/hooks/useDeferredRender";
 import "../../../../global.css";
 import { formatINR } from "@/utils/money";
-
-
+import ExpenseDetailsModal from "@/components/domain/purchases/ExpenseDetailsModal";
+import PurchaseDetailsModal from "@/components/domain/purchases/PurchaseDetailsModal";
+import ExpenseFormModal from "@/components/domain/purchases/ExpenseFormModal";
 export default function ExpenseRecordsPurchasesScreen() {
     const router = useRouter();
     const isReady = useDeferredRender();
@@ -40,12 +41,6 @@ export default function ExpenseRecordsPurchasesScreen() {
     // ExpenseRecord Form State
     const [isExpenseRecordFormVisible, setIsExpenseRecordFormVisible] = useState(false);
     const [editingExpenseRecord, setEditingExpenseRecord] = useState<ExpenseRecord | null>(null);
-    const [expenseFormData, setExpenseRecordFormData] = useState({
-        category: "",
-        amount: "",
-        paymentMode: "UPI",
-        vendorName: "",
-    });
 
     // Details Modals State
     const [selectedExpenseRecord, setSelectedExpenseRecord] = useState<ExpenseRecord | null>(null);
@@ -78,54 +73,22 @@ export default function ExpenseRecordsPurchasesScreen() {
     const openExpenseRecordForm = (exp?: ExpenseRecord) => {
         if (exp) {
             setEditingExpenseRecord(exp);
-            setExpenseRecordFormData({
-                category: exp.category,
-                amount: exp.amountPaise.toString(),
-                paymentMode: exp.paymentMode,
-                vendorName: exp.vendorName || "",
-            });
         } else {
             setEditingExpenseRecord(null);
-            setExpenseRecordFormData({ category: "", amount: "", paymentMode: "UPI", vendorName: "" });
         }
         setIsExpenseRecordFormVisible(true);
         setSelectedExpenseRecord(null); // close details if open
     };
 
-    const handleSaveExpenseRecord = () => {
-        if (!expenseFormData.category || !expenseFormData.amount) {
-            Alert.alert("Error", "Please fill category and amount.");
-            return;
-        }
-
-        const expData: ExpenseRecord = {
-            id: editingExpenseRecord ? editingExpenseRecord.id : `exp-${Date.now()}`,
-            date: editingExpenseRecord ? editingExpenseRecord.date : new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-            category: expenseFormData.category,
-            amountPaise: isNaN(parseFloat(expenseFormData.amount)) ? 0 : parseFloat(expenseFormData.amount),
-            paymentMode: expenseFormData.paymentMode as ExpenseRecord["paymentMode"],
-            vendorName: expenseFormData.vendorName,
-        };
-
-        if (editingExpenseRecord) updateExpense(expData);
-        else addExpense(expData);
-
-        setIsExpenseRecordFormVisible(false);
-    };
-
     const handleDeleteExpenseRecord = (id: string) => {
-        Alert.alert("Delete Expense", "Are you sure you want to delete this expense?", [
-            { text: "Cancel", style: "cancel" },
-            { text: "Delete", style: "destructive", onPress: () => { deleteExpense(id); setSelectedExpenseRecord(null); } }
-        ]);
+        deleteExpense(id);
+        setSelectedExpenseRecord(null);
     };
 
     // Purchase Handlers
     const handleDeletePurchase = (id: string) => {
-        Alert.alert("Delete Purchase", "Are you sure you want to delete this purchase document?", [
-            { text: "Cancel", style: "cancel" },
-            { text: "Delete", style: "destructive", onPress: () => { deletePurchase(id); setSelectedPurchase(null); } }
-        ]);
+        deletePurchase(id);
+        setSelectedPurchase(null);
     };
 
     const getStatusColor = (status: string) => {
@@ -367,213 +330,26 @@ export default function ExpenseRecordsPurchasesScreen() {
                 <Plus color="white" size={32} />
             </Pressable>
 
-            {/* ExpenseRecord Details Modal */}
-            <AnimatedModal visible={!!selectedExpenseRecord} onClose={() => setSelectedExpenseRecord(null)}>
-                <View className="bg-white rounded-t-3xl p-8 min-h-[350px]">
-                    {selectedExpenseRecord && (
-                        <>
-                            <View className="flex-row justify-between items-start mb-6">
-                                <View className="flex-1 mr-4">
-                                    <Text className="font-sans-bold text-2xl text-primary mb-1">{selectedExpenseRecord.category}</Text>
-                                    <Text className="font-sans-medium text-base text-muted-foreground">{selectedExpenseRecord.date}</Text>
-                                </View>
-                                <Pressable onPress={() => setSelectedExpenseRecord(null)} className="h-11 w-11 items-center justify-center bg-muted rounded-full">
-                                    <X color="#64748b" size={20} />
-                                </Pressable>
-                            </View>
+            <ExpenseDetailsModal
+                visible={!!selectedExpenseRecord}
+                onClose={() => setSelectedExpenseRecord(null)}
+                expense={selectedExpenseRecord}
+                onEdit={openExpenseRecordForm}
+                onDelete={handleDeleteExpenseRecord}
+            />
 
-                            <View className="bg-muted p-4 rounded-2xl mb-6">
-                                <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Amount</Text>
-                                <Text className="font-sans-bold text-3xl text-primary">
-                                    {formatINR(selectedExpenseRecord.amountPaise)}
-                                </Text>
-                            </View>
+            <PurchaseDetailsModal
+                visible={!!selectedPurchase}
+                onClose={() => setSelectedPurchase(null)}
+                purchase={selectedPurchase}
+                onDelete={handleDeletePurchase}
+            />
 
-                            <View className="mb-8">
-                                <View className="flex-row items-center mb-6">
-                                    <View className="w-12 h-12 bg-blue-100 rounded-full items-center justify-center mr-4">
-                                        <User color="#208AEF" size={24} />
-                                    </View>
-                                    <View>
-                                        <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Vendor / Payee</Text>
-                                        <Text className="font-sans-bold text-base text-primary">{selectedExpenseRecord.vendorName || 'Not Specified'}</Text>
-                                    </View>
-                                </View>
-
-                                <View className="flex-row items-center">
-                                    <View className="w-12 h-12 bg-purple-100 rounded-full items-center justify-center mr-4">
-                                        <CreditCard color="#9333ea" size={24} />
-                                    </View>
-                                    <View>
-                                        <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Payment Mode</Text>
-                                        <Text className="font-sans-bold text-base text-primary uppercase">{selectedExpenseRecord.paymentMode}</Text>
-                                    </View>
-                                </View>
-                            </View>
-
-                            <View className="flex-row space-x-4">
-                                <Pressable
-                                    onPress={() => openExpenseRecordForm(selectedExpenseRecord)}
-                                    className="flex-1 bg-blue-100 py-4 rounded-xl flex-row justify-center items-center mr-2 min-h-[44px]"
-                                >
-                                    <Edit color="#208AEF" size={18} className="mr-2" />
-                                    <Text className="font-sans-bold text-primary text-base">Edit</Text>
-                                </Pressable>
-                                <Pressable
-                                    onPress={() => handleDeleteExpenseRecord(selectedExpenseRecord.id)}
-                                    className="flex-1 border border-red-200 py-4 rounded-xl flex-row justify-center items-center ml-2 min-h-[44px]"
-                                >
-                                    <Trash2 color="#ef4444" size={18} className="mr-2" />
-                                    <Text className="font-sans-bold text-red-500 text-base">Delete</Text>
-                                </Pressable>
-                            </View>
-                        </>
-                    )}
-                </View>
-            </AnimatedModal>
-
-            {/* Purchase Details Modal */}
-            <AnimatedModal visible={!!selectedPurchase} onClose={() => setSelectedPurchase(null)}>
-                <View className="bg-white rounded-t-3xl p-8 min-h-[400px]">
-                    {selectedPurchase && (
-                        <>
-                            <View className="flex-row justify-between items-start mb-6">
-                                <View className="flex-1 mr-4">
-                                    <Text className="font-sans-bold text-2xl text-primary mb-1">{selectedPurchase.partyName || selectedPurchase.partyName}</Text>
-                                    <Text className="font-sans-medium text-base text-muted-foreground">{selectedPurchase.documentType} • {selectedPurchase.documentNumber}</Text>
-                                </View>
-                                <Pressable onPress={() => setSelectedPurchase(null)} className="h-11 w-11 items-center justify-center bg-muted rounded-full">
-                                    <X color="#64748b" size={20} />
-                                </Pressable>
-                            </View>
-
-                            <View className="bg-muted p-4 rounded-2xl mb-6 flex-row justify-between items-center">
-                                <View>
-                                    <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Total Amount</Text>
-                                    <Text className="font-sans-bold text-3xl text-primary">
-                                        {formatINR(selectedPurchase.totalAmountPaise)}
-                                    </Text>
-                                </View>
-                                <View className={`px-3 py-1.5 rounded-md ${getStatusColor(selectedPurchase.status).split(' ')[0]}`}>
-                                    <Text className={`font-sans-bold text-xs uppercase ${getStatusColor(selectedPurchase.status).split(' ')[1]}`}>
-                                        {selectedPurchase.status}
-                                    </Text>
-                                </View>
-                            </View>
-
-                            <View className="mb-8">
-                                <View className="flex-row items-center mb-6">
-                                    <View className="w-12 h-12 bg-blue-100 rounded-full items-center justify-center mr-4">
-                                        <Calendar color="#208AEF" size={24} />
-                                    </View>
-                                    <View>
-                                        <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Date</Text>
-                                        <Text className="font-sans-bold text-base text-primary">{selectedPurchase.documentDate}</Text>
-                                    </View>
-                                </View>
-
-                                <View className="flex-row items-center">
-                                    <View className="w-12 h-12 bg-purple-100 rounded-full items-center justify-center mr-4">
-                                        <Box color="#9333ea" size={24} />
-                                    </View>
-                                    <View>
-                                        <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Items Included</Text>
-                                        <Text className="font-sans-bold text-base text-primary">{selectedPurchase.lineItems?.length || 0} Items</Text>
-                                    </View>
-                                </View>
-                            </View>
-
-                            <View className="flex-row space-x-4">
-                                <Pressable
-                                    onPress={() => alert("Marking as Paid is mocked for now.")}
-                                    className="flex-1 bg-primary py-4 rounded-xl flex-row justify-center items-center mr-2 min-h-[44px]"
-                                >
-                                    <Wallet color="white" size={18} className="mr-2" />
-                                    <Text className="font-sans-bold text-white text-base">Mark Paid</Text>
-                                </Pressable>
-                                <Pressable
-                                    onPress={() => handleDeletePurchase(selectedPurchase.id)}
-                                    className="flex-1 border border-red-200 py-4 rounded-xl flex-row justify-center items-center ml-2 min-h-[44px]"
-                                >
-                                    <Trash2 color="#ef4444" size={18} className="mr-2" />
-                                    <Text className="font-sans-bold text-red-500 text-base">Delete</Text>
-                                </Pressable>
-                            </View>
-                        </>
-                    )}
-                </View>
-            </AnimatedModal>
-
-            {/* Form Modal for Add/Edit ExpenseRecord */}
-            <AnimatedModal visible={isExpenseRecordFormVisible} onClose={() => setIsExpenseRecordFormVisible(false)} avoidKeyboard>
-                <View className="bg-white rounded-t-3xl h-[75%] p-5 pb-12 shadow-xl flex-col">
-                    <View className="flex-row justify-between items-center mb-6">
-                        <Text className="font-sans-bold text-xl text-primary">
-                            {editingExpenseRecord ? 'Edit ExpenseRecord' : 'Add Expense'}
-                        </Text>
-                        <Pressable onPress={() => setIsExpenseRecordFormVisible(false)} className="h-11 w-11 items-center justify-center bg-muted rounded-full">
-                            <X color="#64748b" size={20} />
-                        </Pressable>
-                    </View>
-                    
-                    <ScrollView showsVerticalScrollIndicator={false} className="mb-4">
-                        <View className="mb-4">
-                            <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Amount (₹)</Text>
-                            <TextInput 
-                                className="bg-slate-50 border border-border rounded-lg px-4 py-3 font-sans-bold text-lg text-primary"
-                                keyboardType="numeric"
-                                placeholder="0.00"
-                                value={expenseFormData.amount}
-                                onChangeText={t => setExpenseRecordFormData({...expenseFormData, amount: t})}
-                            />
-                        </View>
-
-                        <View className="mb-4">
-                            <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Category</Text>
-                            <TextInput 
-                                className="bg-slate-50 border border-border rounded-lg px-4 py-3 font-sans-medium text-primary"
-                                placeholder="e.g. Office Supplies, Travel"
-                                value={expenseFormData.category}
-                                onChangeText={t => setExpenseRecordFormData({...expenseFormData, category: t})}
-                            />
-                        </View>
-
-                        <View className="mb-4">
-                            <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Vendor/Payee (Optional)</Text>
-                            <TextInput 
-                                className="bg-slate-50 border border-border rounded-lg px-4 py-3 font-sans-medium text-primary"
-                                placeholder="e.g. Amazon, Uber"
-                                value={expenseFormData.vendorName}
-                                onChangeText={t => setExpenseRecordFormData({...expenseFormData, vendorName: t})}
-                            />
-                        </View>
-
-                        <View className="mb-6">
-                            <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Payment Mode</Text>
-                            <View className="flex-row flex-wrap gap-2 mt-1">
-                                {["UPI", "Cash", "Credit Card", "Bank Transfer"].map(mode => (
-                                    <Pressable 
-                                        key={mode}
-                                        onPress={() => setExpenseRecordFormData({...expenseFormData, paymentMode: mode})}
-                                        className={`px-4 py-2 rounded-full border justify-center min-h-[44px] ${expenseFormData.paymentMode === mode ? 'bg-primary border-primary' : 'bg-white border-border'}`}
-                                    >
-                                        <Text className={`font-sans-medium text-sm ${expenseFormData.paymentMode === mode ? 'text-white' : 'text-primary'}`}>
-                                            {mode}
-                                        </Text>
-                                    </Pressable>
-                                ))}
-                            </View>
-                        </View>
-                    </ScrollView>
-
-                    <Pressable 
-                        onPress={handleSaveExpenseRecord}
-                        className="bg-primary rounded-xl py-4 items-center justify-center min-h-[44px] shadow-md shadow-primary/30"
-                    >
-                        <Text className="font-sans-bold text-white text-lg">Save ExpenseRecord</Text>
-                    </Pressable>
-                </View>
-            </AnimatedModal>
+            <ExpenseFormModal
+                visible={isExpenseRecordFormVisible}
+                onClose={() => setIsExpenseRecordFormVisible(false)}
+                expenseToEdit={editingExpenseRecord}
+            />
         </SafeAreaView>
     );
 }
