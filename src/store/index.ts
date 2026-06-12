@@ -1,9 +1,26 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { persist, createJSONStorage, StateStorage } from 'zustand/middleware';
+import { MMKV } from 'react-native-mmkv';
 import { INVOICES, ITEMS, PARTIES, PURCHASES, EXPENSES, PAYMENTS } from '../../constants/data';
 import { Business, TaxRate, GSTType, SalesInvoice, PurchaseOrder, Party, InventoryItem, PaymentRecord, ExpenseRecord, StockAdjustmentRecord } from '../types/entities';
 
+const storage = new MMKV({
+  id: 'billy-storage',
+  encryptionKey: 'billy-secure-key'
+});
+
+const zustandStorage: StateStorage = {
+  setItem: (name, value) => {
+    return storage.set(name, value);
+  },
+  getItem: (name) => {
+    const value = storage.getString(name);
+    return value ?? null;
+  },
+  removeItem: (name) => {
+    return storage.delete(name);
+  },
+};
 const DEFAULT_BUSINESS: Business = {
     id: 'b1',
     legalName: 'Billy Textiles & Co.',
@@ -130,7 +147,7 @@ export const useAppStore = create<AppStore>()(
     }),
     {
       name: 'billy-app-store-v2',
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => zustandStorage),
       onRehydrateStorage: () => (state) => {
         if (state) {
           state.setHasHydrated(true);
