@@ -16,7 +16,7 @@ import StatCard from "@/components/ui/StatCard";
 import AnimatedModal from "@/components/ui/AnimatedModal";
 import "../../../../global.css";
 import { InventoryItem } from "@/types/entities";
-import { formatINR } from "@/utils/money";
+import { formatINR, formatCompactINR } from "@/utils/money";
 import { useDeferredRender } from "@/hooks/useDeferredRender";
 import { StatCardSkeleton } from "@/components/ui/skeletons/StatCardSkeleton";
 import MonthPickerModal from "@/components/domain/dashboard/MonthPickerModal";
@@ -41,6 +41,7 @@ const QUICK_ACTIONS = [
 
 export default function App() {
   const router = useRouter();
+  const currentBusiness = useAppStore(state => state.currentBusiness);
   const [menuVisible, setMenuVisible] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
   
@@ -99,7 +100,9 @@ export default function App() {
                 <Bell color="#081126" fill="#081126" size={22} />
                 <View className="absolute right-0 top-0 size-2.5 rounded-full bg-red-600 border border-white" />
               </View>
+          <Pressable onPress={() => router.push("/(app)/(settings)/settings")}>
               <Image source={images.avatar} className="size-12 rounded-full" />
+          </Pressable>
             </View>
           </View>
 
@@ -130,7 +133,7 @@ export default function App() {
                 <View>
                     <Text className="font-sans-medium text-xs text-muted-foreground uppercase tracking-wider mb-1">Est. GST Liability</Text>
                     <Text className={`font-sans-bold text-2xl ${estimatedLiability > 0 ? 'text-red-600' : 'text-green-600'}`}>
-                        {estimatedLiability > 0 ? `Payable ${formatINR(estimatedLiability)}` : `Refund ${formatINR(Math.abs(estimatedLiability))}`}
+                        {estimatedLiability > 0 ? `Payable ${formatCompactINR(estimatedLiability)}` : `Refund ${formatCompactINR(Math.abs(estimatedLiability))}`}
                     </Text>
                 </View>
                 <View className="h-10 w-10 bg-primary/10 rounded-full items-center justify-center">
@@ -207,8 +210,8 @@ export default function App() {
                         </View>
                         {unpaidInvoices.slice(0, 3).map((inv, idx) => (
                             <View key={inv.id} className={`flex-row justify-between items-center py-2 ${idx !== Math.min(unpaidInvoices.length, 3) - 1 ? 'border-b border-red-200/50' : ''}`}>
-                                <Text className="font-sans-medium text-red-900 flex-1 mr-2" numberOfLines={1}>{inv.partyName}</Text>
-                                <Text className="font-sans-bold text-red-700">{formatINR(inv.totalAmountPaise || 0)}</Text>
+                                <Text className="font-sans-medium text-primary" numberOfLines={1}>{inv.partyName}</Text>
+                                <Text className="font-sans-bold text-red-700">{formatCompactINR(inv.totalAmountPaise || 0)}</Text>
                             </View>
                         ))}
                         {unpaidInvoices.length > 3 && (
