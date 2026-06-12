@@ -81,15 +81,6 @@ export function buildGSTSummary(lineItems: LineItem[], isInterState: boolean): G
     };
 }
 
-export function formatINR(paise: number): string {
-    const rupees = paise / 100;
-    return new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    }).format(rupees);
-}
 
 export function amountInIndianWords(paise: number): string {
     let num = Math.floor(paise / 100);

@@ -1,15 +1,16 @@
 import { useRouter } from "expo-router";
-import { ArrowLeft, Plus, Receipt, Wallet, Search, X, Edit, Trash2, Box, Calendar, CreditCard, User } from "lucide-react-native";
+import { ArrowLeft, Plus, Receipt, Wallet, Search, Box } from "lucide-react-native";
 import { useState } from "react";
-import { Pressable, ScrollView, Text, TextInput, View, RefreshControl, Alert, FlatList } from "react-native";
+import { Pressable, ScrollView, Text, TextInput, View, RefreshControl, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import AnimatedModal from "@/components/ui/AnimatedModal";
 import Card from "@/components/ui/Card";
 import { useAppStore } from "@/store";
 import { useShallow } from 'zustand/react/shallow';
 import { ExpenseRecord, PurchaseOrder } from "@/types/entities";
 import { ListCardSkeleton } from "@/components/ui/skeletons/ListCardSkeleton";
 import { useDeferredRender } from "@/hooks/useDeferredRender";
+import { useTabTransition } from "@/hooks/useTabTransition";
+import { SegmentedTabs } from "@/components/ui/SegmentedTabs";
 import "../../../../global.css";
 import { formatINR } from "@/utils/money";
 import ExpenseDetailsModal from "@/components/domain/purchases/ExpenseDetailsModal";
@@ -18,6 +19,8 @@ import ExpenseFormModal from "@/components/domain/purchases/ExpenseFormModal";
 export default function ExpenseRecordsPurchasesScreen() {
     const router = useRouter();
     const isReady = useDeferredRender();
+    const { isTabReady, startTransition } = useTabTransition();
+    const isFullyReady = isReady && isTabReady;
     const [search, setSearch] = useState("");
     const [mainTab, setMainTab] = useState<"expenses" | "purchases">("expenses");
     const [purchaseTab, setPurchaseTab] = useState<"All" | "Pending" | "Paid" | "Overdue" | "Draft" | "Sent">("All");
@@ -29,7 +32,7 @@ export default function ExpenseRecordsPurchasesScreen() {
         setTimeout(() => setRefreshing(false), 1500);
     };
 
-    const { expenses, addExpense, updateExpense, deleteExpense, purchases, deletePurchase } = useAppStore(useShallow(state => ({
+    const { expenses, deleteExpense, purchases, deletePurchase } = useAppStore(useShallow(state => ({
         expenses: state.expenses,
         addExpense: state.addExpense,
         updateExpense: state.updateExpense,
@@ -102,44 +105,22 @@ export default function ExpenseRecordsPurchasesScreen() {
         }
     };
 
-    return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
-            <View className="flex-row items-center p-5 bg-white shadow-sm z-10">
-                <Pressable onPress={() => router.back()} className="mr-4 p-2 min-h-[44px] min-w-[44px] items-center justify-center">
-                    <ArrowLeft color="#081126" size={24} />
-                </Pressable>
-                <Text className="text-2xl font-sans-bold text-primary">ExpenseRecords & Purchases</Text>
-            </View>
-
+    const header = (
+        <>
             {/* Main Tabs */}
-            <View className="bg-white border-b border-border">
-                <View className="flex-row px-5 py-3">
-                    {[
-                        { id: "expenses", label: "ExpenseRecords" },
-                        { id: "purchases", label: "Purchases" }
-                    ].map((t) => (
-                        <Pressable 
-                            key={t.id}
-                            onPress={() => setMainTab(t.id as never)}
-                            className={`mr-3 px-4 py-2 rounded-full border justify-center min-h-[44px] ${mainTab === t.id ? 'bg-primary border-primary' : 'bg-transparent border-border'}`}
-                        >
-                            <Text className={`font-sans-medium ${mainTab === t.id ? 'text-white' : 'text-muted-foreground'}`}>{t.label}</Text>
-                        </Pressable>
-                    ))}
-                </View>
-
+            <View className="bg-white pb-1 pt-3">
+                <SegmentedTabs 
+                    tabs={["Expenses", "Purchases"]} 
+                    activeTab={mainTab === "expenses" ? "Expenses" : "Purchases"} 
+                    onTabChange={(t) => startTransition(() => setMainTab(t === "Expenses" ? "expenses" : "purchases"))} 
+                />
+                
                 {mainTab === 'purchases' && (
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-5 pb-3">
-                        {["All", "Pending", "Paid", "Overdue", "Draft", "Sent"].map((t) => (
-                            <Pressable 
-                                key={t}
-                                onPress={() => setPurchaseTab(t as never)}
-                                className={`mr-2 px-3 py-1 rounded-md border justify-center min-h-[44px] ${purchaseTab === t ? 'bg-slate-200 border-slate-300' : 'bg-transparent border-transparent'}`}
-                            >
-                                <Text className={`font-sans-medium text-xs ${purchaseTab === t ? 'text-primary' : 'text-muted-foreground'}`}>{t}</Text>
-                            </Pressable>
-                        ))}
-                    </ScrollView>
+                    <SegmentedTabs 
+                        tabs={["All", "Pending", "Paid", "Overdue", "Draft", "Sent"]} 
+                        activeTab={purchaseTab} 
+                        onTabChange={(t) => startTransition(() => setPurchaseTab(t as never))} 
+                    />
                 )}
             </View>
 
@@ -175,18 +156,31 @@ export default function ExpenseRecordsPurchasesScreen() {
                     />
                 </View>
             </View>
-
+        </>
+    );
+    return (
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
+            <View className="flex-row items-center p-5 bg-white shadow-sm z-10">
+                <Pressable onPress={() => router.back()} className="mr-4 p-2 min-h-[44px] min-w-[44px] items-center justify-center">
+                    <ArrowLeft color="#081126" size={24} />
+                </Pressable>
+                <Text className="text-2xl font-sans-bold text-primary">ExpenseRecords & Purchases</Text>
+            </View>
             {mainTab === 'expenses' ? (
-                !isReady ? (
-                <View className="flex-1 px-5 pt-4">
-                    <ListCardSkeleton />
-                    <ListCardSkeleton />
-                    <ListCardSkeleton />
-                    <ListCardSkeleton />
-                </View>
+                !isFullyReady ? (
+                <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+                    {header}
+                    <View className="flex-1 pt-4">
+                        <View className="px-5"><ListCardSkeleton /></View>
+                        <View className="px-5"><ListCardSkeleton /></View>
+                        <View className="px-5"><ListCardSkeleton /></View>
+                        <View className="px-5"><ListCardSkeleton /></View>
+                    </View>
+                </ScrollView>
             ) : (
                 <FlatList
-                    className="flex-1 px-5" 
+                    ListHeaderComponent={header}
+                    className="flex-1" 
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingBottom: 100 }}
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#208AEF" />}
@@ -195,7 +189,7 @@ export default function ExpenseRecordsPurchasesScreen() {
                     initialNumToRender={15}
                     maxToRenderPerBatch={10}
                     renderItem={({ item: exp }) => (
-                        <Card className="mb-4" isPressable onPress={() => setSelectedExpenseRecord(exp)}>
+                        <Card className="mb-4 mx-5" isPressable onPress={() => setSelectedExpenseRecord(exp)}>
                             <View className="flex-row justify-between items-start mb-2">
                                 <View className="flex-row items-center flex-1 mr-2">
                                     <View className="bg-primary/10 p-2 rounded-full mr-3">
@@ -243,16 +237,21 @@ export default function ExpenseRecordsPurchasesScreen() {
                 />
             )
             ) : (
-                !isReady ? (
-                <View className="flex-1 px-5 pt-4">
-                    <ListCardSkeleton />
-                    <ListCardSkeleton />
-                    <ListCardSkeleton />
-                    <ListCardSkeleton />
-                </View>
-            ) : (
+                /* Purchases List */
+                !isFullyReady ? (
+                    <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+                        {header}
+                        <View className="flex-1 pt-4">
+                            <View className="px-5"><ListCardSkeleton /></View>
+                            <View className="px-5"><ListCardSkeleton /></View>
+                            <View className="px-5"><ListCardSkeleton /></View>
+                            <View className="px-5"><ListCardSkeleton /></View>
+                        </View>
+                    </ScrollView>
+                ) : (
                 <FlatList
-                    className="flex-1 px-5" 
+                    ListHeaderComponent={header}
+                    className="flex-1" 
                     showsVerticalScrollIndicator={false} 
                     contentContainerStyle={{ paddingBottom: 100 }}
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#208AEF" />}
@@ -261,7 +260,7 @@ export default function ExpenseRecordsPurchasesScreen() {
                     initialNumToRender={15}
                     maxToRenderPerBatch={10}
                     renderItem={({ item: pur }) => (
-                        <Card className="mb-4" isPressable onPress={() => setSelectedPurchase(pur)}>
+                        <Card className="mb-4 mx-5" isPressable onPress={() => setSelectedPurchase(pur)}>
                             <View className="flex-row justify-between items-start mb-3">
                                 <View className="flex-1 mr-2">
                                     <Text className="font-sans-bold text-base text-primary" numberOfLines={1}>{pur.partyName || pur.partyName}</Text>

@@ -2,6 +2,8 @@
 import { Party } from "@/types/entities";
 import { ListCardSkeleton } from "@/components/ui/skeletons/ListCardSkeleton";
 import { useDeferredRender } from "@/hooks/useDeferredRender";
+import { useTabTransition } from "@/hooks/useTabTransition";
+import { SegmentedTabs } from "@/components/ui/SegmentedTabs";
 import AnimatedModal from "@/components/ui/AnimatedModal";
 import { useShallow } from 'zustand/react/shallow';
 import { useRouter } from "expo-router";
@@ -15,8 +17,6 @@ import "../../../../global.css";
 import { formatINR } from "@/utils/money";
 import PartyDetailsModal from "@/components/domain/parties/PartyDetailsModal";
 import PartyFormModal from "@/components/domain/parties/PartyFormModal";
-import { formatINR } from "@/utils/money";
-
 
 
 export default function CustomersVendorsScreen() {
@@ -25,6 +25,9 @@ export default function CustomersVendorsScreen() {
     const [search, setSearch] = useState("");
 
     // State for refreshing
+    const isReady = useDeferredRender();
+    const { isTabReady, startTransition } = useTabTransition();
+    const isFullyReady = isReady && isTabReady;
     const [refreshing, setRefreshing] = useState(false);
 
     const onRefresh = () => {
@@ -35,7 +38,6 @@ export default function CustomersVendorsScreen() {
     };
 
     // State for data
-    const isReady = useDeferredRender();
     const {  parties, addParty, updateParty, deleteParty  } = useAppStore(useShallow(state => ({ parties: state.parties, addParty: state.addParty, updateParty: state.updateParty, deleteParty: state.deleteParty })));
 
     // State for Details Modal
@@ -91,38 +93,17 @@ export default function CustomersVendorsScreen() {
         closeDetailsModal();
     };
 
-    return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
-            {/* Header */}
-            <View className="flex-row items-center justify-between p-5 bg-white shadow-sm z-10">
-                <View className="flex-row items-center">
-                    <Pressable onPress={() => router.back()} className="mr-4">
-                        <ArrowLeft color="#081126" size={24} />
-                    </Pressable>
-                    <Text className="text-2xl font-sans-bold text-primary">Directory</Text>
-                </View>
-                <Pressable onPress={() => openFormModal()} className="p-2 bg-primary rounded-full">
-                    <Plus color="white" size={20} />
-                </Pressable>
-            </View>
+    
 
+    const header = (
+        <>
             {/* Tabs */}
-            <View className="bg-white">
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-5 py-3 border-b border-border">
-                    {[
-                        { id: "customer", label: "Customers" },
-                        { id: "vendor", label: "Vendors" },
-                        { id: "both", label: "Both" }
-                    ].map((t) => (
-                        <Pressable 
-                            key={t.id}
-                            onPress={() => setTab(t.id as never)}
-                            className={`mr-3 px-4 py-2 rounded-full border ${tab === t.id ? 'bg-primary border-primary' : 'bg-transparent border-border'}`}
-                        >
-                            <Text className={`font-sans-medium ${tab === t.id ? 'text-white' : 'text-muted-foreground'}`}>{t.label}</Text>
-                        </Pressable>
-                    ))}
-                </ScrollView>
+            <View className="bg-white pb-1 pt-3">
+                <SegmentedTabs 
+                    tabs={["Customers", "Vendors", "Both"]} 
+                    activeTab={tab === "customer" ? "Customers" : tab === "vendor" ? "Vendors" : "Both"} 
+                    onTabChange={(t) => startTransition(() => setTab(t === "Customers" ? "customer" : t === "Vendors" ? "vendor" : "both"))} 
+                />
             </View>
 
             {/* Summary Card */}
@@ -158,17 +139,38 @@ export default function CustomersVendorsScreen() {
                     />
                 </View>
             </View>
+        </>
+    );
 
-            {!isReady ? (
-                <View className="flex-1 px-5 pt-4">
-                    <ListCardSkeleton />
-                    <ListCardSkeleton />
-                    <ListCardSkeleton />
-                    <ListCardSkeleton />
+    return (
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
+            {/* Header */}
+            <View className="flex-row items-center justify-between p-5 bg-white shadow-sm z-10">
+                <View className="flex-row items-center">
+                    <Pressable onPress={() => router.back()} className="mr-4 p-2 min-h-[44px] min-w-[44px] items-center justify-center">
+                        <ArrowLeft color="#081126" size={24} />
+                    </Pressable>
+                    <Text className="text-2xl font-sans-bold text-primary">Directory</Text>
                 </View>
+                <Pressable onPress={() => openFormModal()} className="p-2 bg-primary rounded-full min-h-[44px] min-w-[44px] items-center justify-center">
+                    <Plus color="white" size={20} />
+                </Pressable>
+            </View>
+
+            {!isFullyReady ? (
+                <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+                    {header}
+                    <View className="flex-1 pt-4">
+                        <View className="px-5"><ListCardSkeleton /></View>
+                        <View className="px-5"><ListCardSkeleton /></View>
+                        <View className="px-5"><ListCardSkeleton /></View>
+                        <View className="px-5"><ListCardSkeleton /></View>
+                    </View>
+                </ScrollView>
             ) : (
             <FlatList
-                className="flex-1 px-5"
+                ListHeaderComponent={header}
+                className="flex-1"
                 showsVerticalScrollIndicator={false}
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#208AEF" />
@@ -178,7 +180,7 @@ export default function CustomersVendorsScreen() {
                 initialNumToRender={15}
                 maxToRenderPerBatch={10}
                 renderItem={({ item: party }) => (
-                    <Card className="flex-row justify-between items-center mb-4" isPressable onPress={() => openDetailsModal(party)}>
+                    <Card className="flex-row justify-between items-center mb-4 mx-5" isPressable onPress={() => openDetailsModal(party)}>
                         <View className="flex-1 mr-2">
                             <Text className="font-sans-bold text-lg text-primary mb-1" numberOfLines={1}>{party.legalName}</Text>
                             <Text className="font-sans-regular text-sm text-muted-foreground" numberOfLines={1}>GSTIN: {party.gstin}</Text>

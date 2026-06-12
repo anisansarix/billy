@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import {  useState, useEffect  } from 'react';
 import { View, Text, Pressable, TextInput, ScrollView, Alert } from "react-native";
 import { X, Save } from "lucide-react-native";
 import AnimatedModal from "@/components/ui/AnimatedModal";
-import { Party } from "@/types/entities";
+import { Party, PartyType } from "@/types/entities";
 import { useAppStore } from "@/store";
 import { useShallow } from 'zustand/react/shallow';
 
@@ -10,7 +10,7 @@ interface PartyFormModalProps {
     visible: boolean;
     onClose: () => void;
     partyToEdit: Party | null;
-    initialPartyType?: "customer" | "vendor" | "both";
+    initialPartyType?: PartyType.CUSTOMER | PartyType.VENDOR | PartyType.BOTH;
     onSaveSuccess?: (party: Party) => void;
 }
 
@@ -21,7 +21,7 @@ export default function PartyFormModal({ visible, onClose, partyToEdit, initialP
         legalName: "",
         gstin: "",
         balanceString: "0",
-        partyType: "CUSTOMER" as any,
+        partyType: PartyType.CUSTOMER,
         balanceType: "receivable"
     });
     const [showMoreDetails, setShowMoreDetails] = useState(false);
@@ -42,7 +42,7 @@ export default function PartyFormModal({ visible, onClose, partyToEdit, initialP
                     gstin: "",
                     phone: "",
                     balanceString: "0",
-                    partyType: initialPartyType !== "both" && initialPartyType ? initialPartyType : "customer" as any,
+                    partyType: initialPartyType !== PartyType.BOTH && initialPartyType ? initialPartyType : PartyType.CUSTOMER,
                     balanceType: "receivable"
                 });
                 setShowMoreDetails(false);
@@ -89,7 +89,7 @@ export default function PartyFormModal({ visible, onClose, partyToEdit, initialP
             gstin: formData.gstin,
             phone: formData.phone,
             openingBalancePaise: finalBalance,
-            partyType: formData.partyType || ("CUSTOMER" as any),
+            partyType: formData.partyType || PartyType.CUSTOMER,
         } as Party;
 
         delete (partyData as Party & { balanceString?: string }).balanceString;
@@ -113,7 +113,7 @@ export default function PartyFormModal({ visible, onClose, partyToEdit, initialP
             <View className="bg-white rounded-t-3xl p-6 pb-12 h-[92%] flex-col">
                 <View className="flex-row justify-between items-center mb-6">
                     <Text className="font-sans-bold text-2xl text-primary">
-                        {partyToEdit ? 'Edit' : 'Add'} {formData.partyType === 'customer' ? 'Customer' : formData.partyType === 'vendor' ? 'Vendor' : 'Party'}
+                        {partyToEdit ? 'Edit' : 'Add'} {formData.partyType === PartyType.CUSTOMER ? 'Customer' : formData.partyType === PartyType.VENDOR ? 'Vendor' : 'Party'}
                     </Text>
                     <Pressable onPress={handleClose} className="h-11 w-11 items-center justify-center bg-muted rounded-full">
                         <X color="#64748b" size={20} />
@@ -124,22 +124,22 @@ export default function PartyFormModal({ visible, onClose, partyToEdit, initialP
                     {!partyToEdit && (
                         <View className="flex-row mb-6 bg-muted p-1 rounded-xl">
                             <Pressable
-                                onPress={() => setFormData({ ...formData, partyType: "customer" as any })}
-                                className={`flex-1 py-3 items-center rounded-lg ${formData.partyType === "customer" ? "bg-white shadow-sm" : ""}`}
+                                onPress={() => setFormData({ ...formData, partyType: PartyType.CUSTOMER })}
+                                className={`flex-1 py-3 items-center rounded-lg ${formData.partyType === PartyType.CUSTOMER ? "bg-white shadow-sm" : ""}`}
                             >
-                                <Text className={`font-sans-bold ${formData.partyType === "customer" ? "text-primary" : "text-muted-foreground"}`}>Customer</Text>
+                                <Text className={`font-sans-bold ${formData.partyType === PartyType.CUSTOMER ? "text-primary" : "text-muted-foreground"}`}>Customer</Text>
                             </Pressable>
                             <Pressable
-                                onPress={() => setFormData({ ...formData, partyType: "vendor" as any })}
-                                className={`flex-1 py-3 items-center rounded-lg ${formData.partyType === "vendor" ? "bg-white shadow-sm" : ""}`}
+                                onPress={() => setFormData({ ...formData, partyType: PartyType.VENDOR })}
+                                className={`flex-1 py-3 items-center rounded-lg ${formData.partyType === PartyType.VENDOR ? "bg-white shadow-sm" : ""}`}
                             >
-                                <Text className={`font-sans-bold ${formData.partyType === "vendor" ? "text-primary" : "text-muted-foreground"}`}>Vendor</Text>
+                                <Text className={`font-sans-bold ${formData.partyType === PartyType.VENDOR ? "text-primary" : "text-muted-foreground"}`}>Vendor</Text>
                             </Pressable>
                             <Pressable
-                                onPress={() => setFormData({ ...formData, partyType: "both" as any })}
-                                className={`flex-1 py-3 items-center rounded-lg ${formData.partyType === "both" ? "bg-white shadow-sm" : ""}`}
+                                onPress={() => setFormData({ ...formData, partyType: PartyType.BOTH })}
+                                className={`flex-1 py-3 items-center rounded-lg ${formData.partyType === PartyType.BOTH ? "bg-white shadow-sm" : ""}`}
                             >
-                                <Text className={`font-sans-bold ${formData.partyType === "both" ? "text-primary" : "text-muted-foreground"}`}>Both</Text>
+                                <Text className={`font-sans-bold ${formData.partyType === PartyType.BOTH ? "text-primary" : "text-muted-foreground"}`}>Both</Text>
                             </Pressable>
                         </View>
                     )}
@@ -235,8 +235,8 @@ export default function PartyFormModal({ visible, onClose, partyToEdit, initialP
                                 <TextInput
                                     className="bg-white border border-border rounded-xl px-4 py-4 font-sans-regular text-primary text-base"
                                     placeholder="Name"
-                                    value={formData.contactPerson}
-                                    onChangeText={(text) => setFormData({ ...formData, contactPersons: text })}
+                                    value={formData.contactPersons?.[0]?.name || ''}
+                                    onChangeText={(text) => setFormData({ ...formData, contactPersons: [{ name: text, phone: '', isPrimary: true }] })}
                                 />
                             </View>
                             <View className="mb-4">
@@ -280,7 +280,7 @@ export default function PartyFormModal({ visible, onClose, partyToEdit, initialP
                     className="bg-primary py-4 rounded-xl flex-row justify-center items-center shadow-md shadow-primary/30"
                 >
                     <Save color="white" size={20} className="mr-2" />
-                    <Text className="font-sans-bold text-white text-lg">Save {formData.partyType === 'customer' ? 'Customer' : 'Vendor'}</Text>
+                    <Text className="font-sans-bold text-white text-lg">Save {formData.partyType === PartyType.CUSTOMER ? 'Customer' : formData.partyType === PartyType.VENDOR ? 'Vendor' : 'Party'}</Text>
                 </Pressable>
             </View>
         </AnimatedModal>

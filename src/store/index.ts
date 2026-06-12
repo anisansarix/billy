@@ -1,24 +1,18 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage, StateStorage } from 'zustand/middleware';
-import { MMKV } from 'react-native-mmkv';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { INVOICES, ITEMS, PARTIES, PURCHASES, EXPENSES, PAYMENTS } from '../../constants/data';
 import { Business, TaxRate, GSTType, SalesInvoice, PurchaseOrder, Party, InventoryItem, PaymentRecord, ExpenseRecord, StockAdjustmentRecord } from '../types/entities';
 
-const storage = new MMKV({
-  id: 'billy-storage',
-  encryptionKey: 'billy-secure-key'
-});
-
 const zustandStorage: StateStorage = {
   setItem: (name, value) => {
-    return storage.set(name, value);
+    return AsyncStorage.setItem(name, value);
   },
   getItem: (name) => {
-    const value = storage.getString(name);
-    return value ?? null;
+    return AsyncStorage.getItem(name);
   },
   removeItem: (name) => {
-    return storage.delete(name);
+    return AsyncStorage.removeItem(name);
   },
 };
 const DEFAULT_BUSINESS: Business = {

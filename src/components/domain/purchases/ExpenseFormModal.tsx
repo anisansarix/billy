@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import {  useState, useEffect  } from 'react';
 import { View, Text, Pressable, TextInput, ScrollView, Alert } from "react-native";
 import { X } from "lucide-react-native";
 import AnimatedModal from "@/components/ui/AnimatedModal";

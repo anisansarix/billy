@@ -7,9 +7,12 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppStore } from "@/store";
 import { formatINR } from "@/utils/money";
+import { useDeferredRender } from "@/hooks/useDeferredRender";
+import { ListCardSkeleton } from "@/components/ui/skeletons/ListCardSkeleton";
 
 export default function EWayBillsScreen() {
     const router = useRouter();
+    const isReady = useDeferredRender();
     const {  invoices  } = useAppStore(useShallow(state => ({ invoices: state.invoices })));
     
     // In India, interstate E-way bill limit is ₹50,000. Intrastate may vary but ₹50,000 is a safe threshold to flag.
@@ -42,28 +45,38 @@ export default function EWayBillsScreen() {
 
                 <Text className="font-sans-bold text-lg text-primary mb-4">Requires Attention ({pendingEwayBills.length})</Text>
 
-                {pendingEwayBills.map(inv => (
-                    <View key={inv.id} className="bg-white rounded-2xl p-4 mb-4 border border-amber-200 shadow-sm flex-row items-center justify-between">
-                        <View>
-                            <Text className="font-sans-bold text-base text-primary">{inv.documentNumber}</Text>
-                            <Text className="font-sans-medium text-xs text-muted-foreground">{inv.documentDate} • {formatINR(inv.totalAmountPaise || 0)}</Text>
-                        </View>
-                        <Pressable className="bg-amber-100 px-4 py-2 rounded-lg border border-amber-200">
-                            <Text className="font-sans-bold text-amber-800 text-xs uppercase tracking-wider">Generate</Text>
-                        </Pressable>
-                    </View>
-                ))}
+                {!isReady ? (
+                    <>
+                        <ListCardSkeleton />
+                        <ListCardSkeleton />
+                        <ListCardSkeleton />
+                    </>
+                ) : (
+                    <>
+                        {pendingEwayBills.map(inv => (
+                            <View key={inv.id} className="bg-white rounded-2xl p-4 mb-4 border border-amber-200 shadow-sm flex-row items-center justify-between">
+                                <View>
+                                    <Text className="font-sans-bold text-base text-primary">{inv.documentNumber}</Text>
+                                    <Text className="font-sans-medium text-xs text-muted-foreground">{inv.documentDate} • {formatINR(inv.totalAmountPaise || 0)}</Text>
+                                </View>
+                                <Pressable className="bg-amber-100 px-4 py-2 rounded-lg border border-amber-200">
+                                    <Text className="font-sans-bold text-amber-800 text-xs uppercase tracking-wider">Generate</Text>
+                                </Pressable>
+                            </View>
+                        ))}
 
-                {pendingEwayBills.length === 0 && (
-                    <View className="items-center justify-center py-10">
-                        <View className="h-16 w-16 bg-green-100 rounded-full items-center justify-center mb-4">
-                            <AlertCircle color="#16a34a" size={32} />
-                        </View>
-                        <Text className="font-sans-bold text-lg text-primary mb-2 text-center">All Good!</Text>
-                        <Text className="font-sans-medium text-sm text-muted-foreground text-center">
-                            No high-value invoices require E-Way bill generation at the moment.
-                        </Text>
-                    </View>
+                        {pendingEwayBills.length === 0 && (
+                            <View className="items-center justify-center py-10">
+                                <View className="h-16 w-16 bg-green-100 rounded-full items-center justify-center mb-4">
+                                    <AlertCircle color="#16a34a" size={32} />
+                                </View>
+                                <Text className="font-sans-bold text-lg text-primary mb-2 text-center">All Good!</Text>
+                                <Text className="font-sans-medium text-sm text-muted-foreground text-center">
+                                    No high-value invoices require E-Way bill generation at the moment.
+                                </Text>
+                            </View>
+                        )}
+                    </>
                 )}
 
             </ScrollView>

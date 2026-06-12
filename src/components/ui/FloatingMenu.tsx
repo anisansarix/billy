@@ -146,20 +146,13 @@ export default function FloatingMenu({
 
                 <View className="flex-1 justify-end items-end px-5 pb-24">
                     <Animated.View
+                        className="w-[300px] rounded-[32px] bg-white p-5 shadow-2xl shadow-black/20 border border-black/5"
                         style={[
                             animatedStyle,
                             {
-                                width: 300,
-                                borderRadius: 32,
-                                backgroundColor: "white",
-                                padding: 20,
-                                shadowColor: "#000",
                                 shadowOffset: { width: 0, height: 15 },
-                                shadowOpacity: 0.2,
                                 shadowRadius: 30,
                                 elevation: 25,
-                                borderWidth: 1,
-                                borderColor: "rgba(0,0,0,0.05)",
                             },
                         ]}
                     >
@@ -170,6 +163,8 @@ export default function FloatingMenu({
                                 <Pressable
                                     key={item.label}
                                     className="flex-row items-center py-4"
+                                    accessibilityRole="menuitem"
+                                    accessibilityLabel={`Navigate to ${item.label}`}
                                     onPress={() => {
                                         onClose();
                                         if (item.label === "Dashboard" && (pathname === '/(app)/dashboard' || pathname === '/dashboard' || pathname === '/')) {
@@ -197,6 +192,8 @@ export default function FloatingMenu({
                         <Pressable 
                             className="mt-2 flex-row items-center justify-center rounded-3xl border border-primary min-h-[44px] py-3"
                             onPress={() => setFyModalVisible(true)}
+                            accessibilityRole="button"
+                            accessibilityLabel={`Select Financial Year, currently ${selectedFy}`}
                         >
                             <ArrowDown size={18} color="#081126" />
 

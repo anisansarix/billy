@@ -5,6 +5,8 @@ import { useEffect } from "react";
 import '../../global.css';
 import { useAppStore } from "@/store";
 
+import { StatusBar } from "expo-status-bar";
+
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -30,6 +32,9 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack screenOptions={{ headerShown: false }} />
+    <>
+      <StatusBar style="dark" />
+      <Stack screenOptions={{ headerShown: false }} />
+    </>
   );
 }

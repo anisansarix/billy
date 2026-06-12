@@ -1,8 +1,8 @@
-// @ts-ignore: expo-print is provided by the Expo SDK runtime
 import * as Print from 'expo-print';
-import * as FileSystem from 'expo-file-system';
+import { Paths, File } from 'expo-file-system';
 import type { SalesInvoice, Business, Party } from '@/types/entities';
-import { formatINR, amountInIndianWords } from '@/utils/gst';
+import { formatINR } from '@/utils/money';
+import { amountInIndianWords } from '@/utils/gst';
 
 function buildInvoiceHTML(
   invoice: SalesInvoice,
@@ -219,9 +219,7 @@ export async function generateInvoicePDF(
   const { uri } = await Print.printToFileAsync({ html, base64: false });
   const partyName = (party.tradeName ?? party.legalName).replace(/\s+/g, '_');
   const filename = `${invoice.documentType}-${invoice.documentNumber}-${partyName}.pdf`;
-  // @ts-ignore: cacheDirectory is present in older Expo FileSystem versions
-  const dest = `${FileSystem.cacheDirectory}${filename}`;
-  // @ts-ignore: moveAsync is present in older Expo FileSystem versions
-  await FileSystem.moveAsync({ from: uri, to: dest });
-  return dest;
+  const destFile = new File(Paths.cache, filename);
+  await new File(uri).move(destFile);
+  return destFile.uri;
 }

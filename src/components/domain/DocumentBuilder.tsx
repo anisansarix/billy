@@ -7,7 +7,8 @@ import AnimatedModal from "@/components/ui/AnimatedModal";
 import { useAppStore } from "@/store";
 import { useShallow } from 'zustand/react/shallow';
 import { Party, LineItem } from "@/types/entities";
-import { formatINR, computeLineItem, buildGSTSummary, isInterStateSupply } from "../../utils/gst";
+import { formatINR } from "../../utils/money";
+import { computeLineItem, buildGSTSummary, isInterStateSupply } from "../../utils/gst";
 
 type SectionProps = {
     title: string;
@@ -333,12 +334,13 @@ export default function DocumentBuilder({
                                     <Text className="font-sans-medium text-xs text-muted-foreground">Rate</Text>
                                     <TextInput 
                                         className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 w-24 mt-1 text-primary font-sans-bold"
-                                        value={item.unitPricePaise !== undefined ? String(item.unitPricePaise) : ''}
                                         keyboardType="numeric"
-                                        onChangeText={t => {
+                                        placeholder="0.00"
+                                        value={item.unitPricePaise !== undefined ? String(item.unitPricePaise / 100) : ''}
+                                        onChangeText={val => {
                                             const newItems = [...documentItems];
-                                            const parsed = parseFloat(t);
-                                            newItems[index].unitPricePaise = isNaN(parsed) ? 0 : parsed;
+                                            const parsed = parseFloat(val);
+                                            newItems[index].unitPricePaise = isNaN(parsed) ? 0 : Math.round(parsed * 100);
                                             newItems[index] = computeLineItem(newItems[index], isInterState);
                                             setDocumentItems(newItems);
                                         }}

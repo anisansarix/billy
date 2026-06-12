@@ -1,13 +1,15 @@
-import { InventoryItem, TaxRate } from "@/types/entities";
+import { InventoryItem } from "@/types/entities";
 import { ListCardSkeleton } from "@/components/ui/skeletons/ListCardSkeleton";
 import { useDeferredRender } from "@/hooks/useDeferredRender";
+import { useTabTransition } from "@/hooks/useTabTransition";
+import { SegmentedTabs } from "@/components/ui/SegmentedTabs";
 
-import AnimatedModal from "@/components/ui/AnimatedModal";
+
 import { useShallow } from 'zustand/react/shallow';
 import { useRouter } from "expo-router";
-import { ArrowLeft, Briefcase, Package, Plus, Search, X, Save, Edit, Trash2, AlertCircle, ArrowUpRight, ArrowDownRight } from "lucide-react-native";
+import { ArrowLeft, Briefcase, Package, Plus, Search, AlertCircle, ArrowUpRight, ArrowDownRight } from "lucide-react-native";
 import { useState } from "react";
-import { Pressable, ScrollView, Text, TextInput, View, Alert, RefreshControl, FlatList } from "react-native";
+import { Pressable, ScrollView, Text, TextInput, View, RefreshControl, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Card from "@/components/ui/Card";
 import { useAppStore } from "@/store";
@@ -25,7 +27,9 @@ export default function ProductsServicesScreen() {
 
     // Data State
     const isReady = useDeferredRender();
-    const {  items, addItem, updateItem, deleteItem, adjustments  } = useAppStore(useShallow(state => ({ items: state.items, addItem: state.addItem, updateItem: state.updateItem, deleteItem: state.deleteItem, adjustments: state.adjustments })));
+    const { isTabReady, startTransition } = useTabTransition();
+    const isFullyReady = isReady && isTabReady;
+    const { items, deleteItem, adjustments } = useAppStore(useShallow(state => ({ items: state.items, deleteItem: state.deleteItem, adjustments: state.adjustments })));
 
     const onRefresh = () => {
         setRefreshing(true);
@@ -74,56 +78,23 @@ export default function ProductsServicesScreen() {
         }
     };
 
-    return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
-            <View className="flex-row items-center justify-between p-5 bg-white shadow-sm z-10">
-                <View className="flex-row items-center">
-                    <Pressable onPress={() => router.back()} className="mr-4">
-                        <ArrowLeft color="#081126" size={24} />
-                    </Pressable>
-                    <Text className="text-2xl font-sans-bold text-primary">Inventory</Text>
-                </View>
-                <Pressable onPress={() => {
-                    if (view === 'catalog') openFormModal();
-                    else router.push('/(app)/(inventory)/create-stock-adjustment' as any);
-                }} className="p-2 bg-primary rounded-full">
-                    <Plus color="white" size={20} />
-                </Pressable>
-            </View>
+    const header = (
+        <>
+            <View className="bg-white pb-1 pt-3">
+                <SegmentedTabs 
+                    tabs={["Catalog", "Stock Adjustments"]} 
+                    activeTab={view === "catalog" ? "Catalog" : "Stock Adjustments"} 
+                    onTabChange={(t) => startTransition(() => setView(t === "Catalog" ? "catalog" : "adjustments"))} 
+                />
 
-            <View className="bg-white">
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-5 py-3 border-b border-border">
-                    {[
-                        { id: "catalog", label: "Catalog" },
-                        { id: "adjustments", label: "Stock Adjustments" }
-                    ].map((t) => (
-                        <Pressable 
-                            key={t.id}
-                            onPress={() => setView(t.id as never)}
-                            className={`mr-3 px-4 py-2 rounded-full border ${view === t.id ? 'bg-primary border-primary' : 'bg-transparent border-border'}`}
-                        >
-                            <Text className={`font-sans-medium ${view === t.id ? 'text-white' : 'text-muted-foreground'}`}>{t.label}</Text>
-                        </Pressable>
-                    ))}
-                </ScrollView>
+                {view === 'catalog' && (
+                    <SegmentedTabs 
+                        tabs={["Products", "Services"]} 
+                        activeTab={tab === "product" ? "Products" : "Services"} 
+                        onTabChange={(t) => startTransition(() => setTab(t === "Products" ? "product" : "service"))} 
+                    />
+                )}
             </View>
-
-            {view === 'catalog' && (
-                <View className="px-5 pt-4 pb-4 flex-row">
-                    {[
-                        { id: "product", label: "Products" },
-                        { id: "service", label: "Services" }
-                    ].map((t) => (
-                        <Pressable 
-                            key={t.id}
-                            onPress={() => setTab(t.id as never)}
-                            className={`mr-3 px-4 py-2 rounded-lg border ${tab === t.id ? 'bg-white border-border shadow-sm' : 'bg-transparent border-transparent'}`}
-                        >
-                            <Text className={`font-sans-bold ${tab === t.id ? 'text-primary' : 'text-muted-foreground'}`}>{t.label}</Text>
-                        </Pressable>
-                    ))}
-                </View>
-            )}
 
             {/* Summary Card */}
             {view === 'catalog' && (
@@ -178,18 +149,40 @@ export default function ProductsServicesScreen() {
                     </View>
                 </View>
             )}
+        </>
+    );
+    return (
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
+            <View className="flex-row items-center justify-between p-5 bg-white shadow-sm z-10">
+                <View className="flex-row items-center">
+                    <Pressable onPress={() => router.back()} className="mr-4">
+                        <ArrowLeft color="#081126" size={24} />
+                    </Pressable>
+                    <Text className="text-2xl font-sans-bold text-primary">Inventory</Text>
+                </View>
+                <Pressable onPress={() => {
+                    if (view === 'catalog') openFormModal();
+                    else router.push('/(app)/(inventory)/create-stock-adjustment' as any);
+                }} className="p-2 bg-primary rounded-full">
+                    <Plus color="white" size={20} />
+                </Pressable>
+            </View>
 
             {view === 'catalog' ? (
-                !isReady ? (
-                <View className="flex-1 px-5 pt-4">
-                    <ListCardSkeleton />
-                    <ListCardSkeleton />
-                    <ListCardSkeleton />
-                    <ListCardSkeleton />
-                </View>
+                !isFullyReady ? (
+                <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+                    {header}
+                    <View className="flex-1 pt-4">
+                        <View className="px-5"><ListCardSkeleton /></View>
+                        <View className="px-5"><ListCardSkeleton /></View>
+                        <View className="px-5"><ListCardSkeleton /></View>
+                        <View className="px-5"><ListCardSkeleton /></View>
+                    </View>
+                </ScrollView>
             ) : (
                 <FlatList
-                    className="flex-1 px-5" 
+                    ListHeaderComponent={header}
+                    className="flex-1" 
                     showsVerticalScrollIndicator={false}
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#208AEF" />}
                     data={filteredItems}
@@ -197,7 +190,7 @@ export default function ProductsServicesScreen() {
                     initialNumToRender={15}
                     maxToRenderPerBatch={10}
                     renderItem={({ item }) => (
-                        <Card className="flex-row items-center mb-4 p-4" isPressable onPress={() => setSelectedItem(item)}>
+                        <Card className="flex-row items-center mb-4 p-4 mx-5" isPressable onPress={() => setSelectedItem(item)}>
                             <View className="size-12 rounded-lg bg-[#e3e8fc] items-center justify-center mr-4">
                                 {tab === "product" ? (
                                     <Package color="#081126" size={24} />
@@ -231,16 +224,20 @@ export default function ProductsServicesScreen() {
                 />
             )
             ) : (
-                !isReady ? (
-                <View className="flex-1 px-5 pt-4">
-                    <ListCardSkeleton />
-                    <ListCardSkeleton />
-                    <ListCardSkeleton />
-                    <ListCardSkeleton />
-                </View>
+                !isFullyReady ? (
+                <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+                    {header}
+                    <View className="flex-1 pt-4">
+                        <View className="px-5"><ListCardSkeleton /></View>
+                        <View className="px-5"><ListCardSkeleton /></View>
+                        <View className="px-5"><ListCardSkeleton /></View>
+                        <View className="px-5"><ListCardSkeleton /></View>
+                    </View>
+                </ScrollView>
             ) : (
                 <FlatList
-                    className="flex-1 px-5" 
+                    ListHeaderComponent={header}
+                    className="flex-1" 
                     showsVerticalScrollIndicator={false}
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#208AEF" />}
                     data={adjustments}
@@ -248,7 +245,7 @@ export default function ProductsServicesScreen() {
                     initialNumToRender={15}
                     maxToRenderPerBatch={10}
                     renderItem={({ item: adj }) => (
-                        <Card className="flex-row items-center mb-4 p-4">
+                        <Card className="flex-row items-center mb-4 p-4 mx-5">
                             <View className={`size-12 rounded-lg items-center justify-center mr-4 ${adj.type === 'Stock In' ? 'bg-green-100' : 'bg-amber-100'}`}>
                                 {adj.type === 'Stock In' ? (
                                     <ArrowDownRight color="#16a34a" size={24} />

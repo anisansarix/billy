@@ -5,8 +5,12 @@ import { useRouter } from "expo-router";
 import { useShallow } from 'zustand/react/shallow';
 import { ArrowDownLeft, ArrowLeft, ArrowUpRight, Plus, Search, X, Edit, Trash2, CreditCard, Calendar } from "lucide-react-native";
 import { useState } from "react";
-import { Pressable, ScrollView, Text, TextInput, View, RefreshControl, Alert } from "react-native";
+import { Pressable, ScrollView, Text, TextInput, View, RefreshControl, Alert, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useDeferredRender } from "@/hooks/useDeferredRender";
+import { useTabTransition } from "@/hooks/useTabTransition";
+import { SegmentedTabs } from "@/components/ui/SegmentedTabs";
+import { ListCardSkeleton } from "@/components/ui/skeletons/ListCardSkeleton";
 import AnimatedModal from "@/components/ui/AnimatedModal";
 import Card from "@/components/ui/Card";
 import { useAppStore } from "@/store";
@@ -21,6 +25,10 @@ export default function PaymentScreen() {
     const [tab, setTab] = useState<"in" | "out">("in");
     const [refreshing, setRefreshing] = useState(false);
 
+    const isReady = useDeferredRender();
+    const { isTabReady, startTransition } = useTabTransition();
+    const isFullyReady = isReady && isTabReady;
+    
     const {  payments, addPayment, updatePayment, deletePayment  } = useAppStore(useShallow(state => ({ payments: state.payments, addPayment: state.addPayment, updatePayment: state.updatePayment, deletePayment: state.deletePayment })));
 
     const onRefresh = () => {
@@ -98,32 +106,15 @@ export default function PaymentScreen() {
         ]);
     };
 
-    return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
-            {/* Header */}
-            <View className="flex-row items-center p-5 bg-white shadow-sm z-10">
-                <Pressable onPress={() => router.back()} className="mr-4">
-                    <ArrowLeft color="#081126" size={24} />
-                </Pressable>
-                <Text className="text-2xl font-sans-bold text-primary">Payments</Text>
-            </View>
-
+    const header = (
+        <>
             {/* Tabs */}
-            <View className="bg-white border-b border-border">
-                <View className="flex-row px-5 py-3">
-                    {[
-                        { id: "in", label: "Money In" },
-                        { id: "out", label: "Money Out" }
-                    ].map((t) => (
-                        <Pressable 
-                            key={t.id}
-                            onPress={() => setTab(t.id as never)}
-                            className={`mr-3 px-4 py-2 rounded-full border ${tab === t.id ? 'bg-primary border-primary' : 'bg-transparent border-border'}`}
-                        >
-                            <Text className={`font-sans-medium ${tab === t.id ? 'text-white' : 'text-muted-foreground'}`}>{t.label}</Text>
-                        </Pressable>
-                    ))}
-                </View>
+            <View className="bg-white pb-1 pt-3">
+                <SegmentedTabs 
+                    tabs={["Money In", "Money Out"]} 
+                    activeTab={tab === "in" ? "Money In" : "Money Out"} 
+                    onTabChange={(t) => startTransition(() => setTab(t === "Money In" ? "in" : "out"))} 
+                />
             </View>
 
             {/* Summary Card */}
@@ -153,40 +144,68 @@ export default function PaymentScreen() {
                     />
                 </View>
             </View>
+        </>
+    );
+
+    return (
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
+            {/* Header */}
+            <View className="flex-row items-center p-5 bg-white shadow-sm z-10">
+                <Pressable onPress={() => router.back()} className="mr-4">
+                    <ArrowLeft color="#081126" size={24} />
+                </Pressable>
+                <Text className="text-2xl font-sans-bold text-primary">Payments</Text>
+            </View>
 
             {/* List */}
-            <ScrollView 
-                className="flex-1 px-5" 
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingBottom: 100 }}
-                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#208AEF" />}
-            >
-                {filteredPayments.map((payment) => (
-                    <Card key={payment.id} className="flex-row items-center mb-4" isPressable onPress={() => setSelectedPayment(payment)}>
-                        <View className={`size-12 rounded-full items-center justify-center mr-4 ${payment.type === 'in' ? 'bg-green-100' : 'bg-red-100'}`}>
-                            {payment.type === 'in' ? (
-                                <ArrowDownLeft color="#16a34a" size={24} />
-                            ) : (
-                                <ArrowUpRight color="#dc2626" size={24} />
-                            )}
-                        </View>
-                        <View className="flex-1">
-                            <Text className="font-sans-bold text-base text-primary mb-1">{payment.partyName}</Text>
-                            <Text className="font-sans-medium text-xs text-muted-foreground">{payment.mode} • {payment.date}</Text>
-                        </View>
-                        <View className="items-end">
-                            <Text className={`font-sans-bold text-lg ${payment.type === 'in' ? 'text-green-600' : 'text-primary'}`}>
-                                {payment.type === 'in' ? '+' : '-'} {formatINR(payment.amountPaise)}
-                            </Text>
-                        </View>
-                    </Card>
-                ))}
-                {filteredPayments.length === 0 && (
-                    <View className="items-center justify-center py-10">
-                        <Text className="font-sans-medium text-muted-foreground">No payments found.</Text>
+            {!isFullyReady ? (
+                <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+                    {header}
+                    <View className="flex-1 pt-4">
+                        <View className="px-5"><ListCardSkeleton /></View>
+                        <View className="px-5"><ListCardSkeleton /></View>
+                        <View className="px-5"><ListCardSkeleton /></View>
+                        <View className="px-5"><ListCardSkeleton /></View>
                     </View>
-                )}
-            </ScrollView>
+                </ScrollView>
+            ) : (
+                <FlatList 
+                    ListHeaderComponent={header}
+                    className="flex-1" 
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{ paddingBottom: 100 }}
+                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#208AEF" />}
+                    data={filteredPayments}
+                    keyExtractor={(payment) => payment.id}
+                    initialNumToRender={15}
+                    maxToRenderPerBatch={10}
+                    renderItem={({ item: payment }) => (
+                        <Card className="flex-row items-center mb-4 mx-5" isPressable onPress={() => setSelectedPayment(payment)}>
+                            <View className={`size-12 rounded-full items-center justify-center mr-4 ${payment.type === 'in' ? 'bg-green-100' : 'bg-red-100'}`}>
+                                {payment.type === 'in' ? (
+                                    <ArrowDownLeft color="#16a34a" size={24} />
+                                ) : (
+                                    <ArrowUpRight color="#dc2626" size={24} />
+                                )}
+                            </View>
+                            <View className="flex-1">
+                                <Text className="font-sans-bold text-base text-primary mb-1">{payment.partyName}</Text>
+                                <Text className="font-sans-medium text-xs text-muted-foreground">{payment.mode} • {payment.date}</Text>
+                            </View>
+                            <View className="items-end">
+                                <Text className={`font-sans-bold text-lg ${payment.type === 'in' ? 'text-green-600' : 'text-primary'}`}>
+                                    {payment.type === 'in' ? '+' : '-'} {formatINR(payment.amountPaise)}
+                                </Text>
+                            </View>
+                        </Card>
+                    )}
+                    ListEmptyComponent={
+                        <View className="items-center justify-center py-10">
+                            <Text className="font-sans-medium text-muted-foreground">No payments found.</Text>
+                        </View>
+                    }
+                />
+            )}
 
             {/* FAB */}
             <Pressable
@@ -284,19 +303,12 @@ export default function PaymentScreen() {
                     
                     <ScrollView showsVerticalScrollIndicator={false} className="mb-4">
                         
-                        <View className="flex-row mb-6 bg-muted p-1 rounded-xl">
-                            <Pressable
-                                onPress={() => setFormData({ ...formData, type: "in" })}
-                                className={`flex-1 py-3 items-center rounded-lg ${formData.type === "in" ? "bg-white shadow-sm" : ""}`}
-                            >
-                                <Text className={`font-sans-bold ${formData.type === "in" ? "text-primary" : "text-muted-foreground"}`}>Money In</Text>
-                            </Pressable>
-                            <Pressable
-                                onPress={() => setFormData({ ...formData, type: "out" })}
-                                className={`flex-1 py-3 items-center rounded-lg ${formData.type === "out" ? "bg-white shadow-sm" : ""}`}
-                            >
-                                <Text className={`font-sans-bold ${formData.type === "out" ? "text-primary" : "text-muted-foreground"}`}>Money Out</Text>
-                            </Pressable>
+                        <View className="mb-6">
+                            <SegmentedTabs 
+                                tabs={["Money In", "Money Out"]} 
+                                activeTab={formData.type === "in" ? "Money In" : "Money Out"} 
+                                onTabChange={(t) => setFormData({ ...formData, type: t === "Money In" ? "in" : "out" })} 
+                            />
                         </View>
 
                         <View className="mb-4">

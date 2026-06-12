@@ -1,11 +1,12 @@
 import { SalesInvoice } from "@/types/entities";
 import { ListCardSkeleton } from "@/components/ui/skeletons/ListCardSkeleton";
 import { useDeferredRender } from "@/hooks/useDeferredRender";
+import { useTabTransition } from "@/hooks/useTabTransition";
 import { useRouter } from "expo-router";
 import { useShallow } from 'zustand/react/shallow';
 import { ArrowLeft, Plus, ReceiptText, X, Edit, Trash2, Box } from "lucide-react-native";
 import { useState } from "react";
-import { Pressable, Text, View, RefreshControl, Alert, FlatList } from "react-native";
+import { Pressable, Text, View, RefreshControl, Alert, FlatList, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AnimatedModal from "@/components/ui/AnimatedModal";
 import Card from "@/components/ui/Card";
@@ -26,6 +27,8 @@ export default function SalesScreen() {
     const [selectedInvoice, setSelectedInvoice] = useState<SalesInvoice | null>(null);
 
     const isReady = useDeferredRender();
+    const { isTabReady, startTransition } = useTabTransition();
+    const isFullyReady = isReady && isTabReady;
     const {  invoices, deleteInvoice  } = useAppStore(useShallow(state => ({ invoices: state.invoices, deleteInvoice: state.deleteInvoice })));
 
     const onRefresh = () => {
@@ -71,22 +74,14 @@ export default function SalesScreen() {
         ]);
     };
 
-    return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
-            {/* Header */}
-            <View className="flex-row items-center p-5 bg-white shadow-sm z-10">
-                <Pressable onPress={() => router.back()} className="mr-4 p-2 min-h-[44px] min-w-[44px] items-center justify-center">
-                    <ArrowLeft color="#081126" size={24} />
-                </Pressable>
-                <Text className="text-2xl font-sans-bold text-primary">Sales Documents</Text>
-            </View>
-
+    const header = (
+        <>
             {/* Tabs */}
             <View className="bg-white pb-3 pt-3">
                 <SegmentedTabs 
                     tabs={["All", "Invoices", "Estimates", "Quotations", "Challans"]} 
                     activeTab={tab} 
-                    onTabChange={(t) => setTab(t as any)} 
+                    onTabChange={(t) => startTransition(() => setTab(t as any))} 
                 />
             </View>
 
@@ -107,24 +102,40 @@ export default function SalesScreen() {
             </View>
 
             {/* Search */}
-            <SearchBar 
-                value={search} 
-                onChangeText={setSearch} 
-                placeholder="Search by name or number..." 
-                className="px-5 mt-4" 
-            />
-
+            <View className="pb-4">
+                <SearchBar 
+                    value={search} 
+                    onChangeText={setSearch} 
+                    placeholder="Search by name or number..." 
+                    className="px-5 mt-4" 
+                />
+            </View>
+        </>
+    );
+    return (
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
+            {/* Header */}
+            <View className="flex-row items-center p-5 bg-white shadow-sm z-10">
+                <Pressable onPress={() => router.back()} className="mr-4 p-2 min-h-[44px] min-w-[44px] items-center justify-center">
+                    <ArrowLeft color="#081126" size={24} />
+                </Pressable>
+                <Text className="text-2xl font-sans-bold text-primary">Sales Documents</Text>
+            </View>
             {/* List */}
-            {!isReady ? (
-                <View className="flex-1 px-5 pt-4">
-                    <ListCardSkeleton />
-                    <ListCardSkeleton />
-                    <ListCardSkeleton />
-                    <ListCardSkeleton />
-                </View>
+            {!isFullyReady ? (
+                <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+                    {header}
+                    <View className="flex-1 pt-4">
+                        <View className="px-5"><ListCardSkeleton /></View>
+                        <View className="px-5"><ListCardSkeleton /></View>
+                        <View className="px-5"><ListCardSkeleton /></View>
+                        <View className="px-5"><ListCardSkeleton /></View>
+                    </View>
+                </ScrollView>
             ) : (
             <FlatList 
-                className="flex-1 px-5" 
+                ListHeaderComponent={header}
+                className="flex-1" 
                 showsVerticalScrollIndicator={false} 
                 contentContainerStyle={{ paddingBottom: 100 }}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#208AEF" />}
@@ -133,7 +144,7 @@ export default function SalesScreen() {
                 initialNumToRender={15}
                 maxToRenderPerBatch={10}
                 renderItem={({ item: inv }) => (
-                    <Card className="mb-4" isPressable onPress={() => setSelectedInvoice(inv)}>
+                    <Card className="mb-4 mx-5" isPressable onPress={() => setSelectedInvoice(inv)}>
                         <View className="flex-row justify-between items-start mb-3">
                             <View className="flex-1 mr-2">
                                 <Text className="font-sans-bold text-base text-primary">{inv.partyName}</Text>
@@ -275,6 +286,17 @@ export default function SalesScreen() {
                                     <Text className="font-sans-bold text-red-500 text-base">Delete</Text>
                                 </Pressable>
                             </View>
+                            <Pressable
+                                onPress={() => {
+                                    const id = selectedInvoice.id;
+                                    setSelectedInvoice(null);
+                                    router.push(`/(app)/(sales)/invoice/${id}` as never);
+                                }}
+                                className="mt-4 w-full bg-slate-100 py-4 rounded-xl flex-row justify-center items-center border border-slate-200"
+                            >
+                                <ReceiptText color="#475569" size={18} className="mr-2" />
+                                <Text className="font-sans-bold text-slate-700 text-base">View Full Details</Text>
+                            </Pressable>
                         </>
                     )}
                 </View>

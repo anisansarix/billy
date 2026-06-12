@@ -11,6 +11,8 @@ import Card from "@/components/ui/Card";
 import { useAppStore } from "@/store";
 import "../../../../global.css";
 import { formatINR } from "@/utils/money";
+import { useDeferredRender } from "@/hooks/useDeferredRender";
+import { ListCardSkeleton } from "@/components/ui/skeletons/ListCardSkeleton";
 
 
 
@@ -20,6 +22,8 @@ export default function ReportsScreen() {
     const [selectedReport, setSelectedReport] = useState<'pnl' | 'gst' | 'cashflow' | null>(null);
 
     const {  invoices, purchases, expenses, payments  } = useAppStore(useShallow(state => ({ invoices: state.invoices, purchases: state.purchases, expenses: state.expenses, payments: state.payments })));
+
+    const isReady = useDeferredRender();
 
     const onRefresh = () => {
         setRefreshing(true);
@@ -77,7 +81,13 @@ export default function ReportsScreen() {
                 contentContainerStyle={{ paddingBottom: 100 }}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#208AEF" />}
             >
-                {isDataEmpty ? (
+                {!isReady ? (
+                    <View>
+                        <ListCardSkeleton />
+                        <ListCardSkeleton />
+                        <ListCardSkeleton />
+                    </View>
+                ) : isDataEmpty ? (
                     <View className="items-center justify-center py-20 px-5">
                         <View className="h-24 w-24 bg-primary/5 rounded-full items-center justify-center mb-6">
                             <FileBarChart color="#208AEF" size={40} opacity={0.5} />

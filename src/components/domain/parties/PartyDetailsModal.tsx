@@ -1,8 +1,8 @@
-import React from "react";
+import {  } from 'react';
 import { View, Text, Pressable, Alert, Linking } from "react-native";
 import { X, Phone, Edit, Trash2 } from "lucide-react-native";
 import AnimatedModal from "@/components/ui/AnimatedModal";
-import { Party } from "@/types/entities";
+import { Party, PartyType } from "@/types/entities";
 import { formatINR } from "@/utils/money";
 
 interface PartyDetailsModalProps {
@@ -56,11 +56,11 @@ export default function PartyDetailsModal({ visible, onClose, party, onEdit, onD
 
                 <View className="bg-muted p-4 rounded-2xl mb-6">
                     <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Current Balance</Text>
-                    <Text className={`font-sans-bold text-3xl ${party.openingBalancePaise > 0 ? (party.partyType === 'customer' ? 'text-green-600' : 'text-red-500') : 'text-primary'}`}>
+                    <Text className={`font-sans-bold text-3xl ${party.openingBalancePaise > 0 ? (party.partyType === PartyType.CUSTOMER ? 'text-green-600' : 'text-red-500') : 'text-primary'}`}>
                         {formatINR(Math.abs(party.openingBalancePaise))}
                     </Text>
                     <Text className="font-sans-medium text-sm mt-1 text-muted-foreground">
-                        {party.openingBalancePaise > 0 ? (party.partyType === 'customer' ? 'To Receive' : 'To Pay') : 'Advance'}
+                        {party.openingBalancePaise > 0 ? (party.partyType === PartyType.CUSTOMER ? 'To Receive' : 'To Pay') : 'Advance'}
                     </Text>
                 </View>
 
@@ -108,7 +108,7 @@ export default function PartyDetailsModal({ visible, onClose, party, onEdit, onD
                     className="mt-4 py-4 rounded-xl flex-row justify-center items-center border border-red-200"
                 >
                     <Trash2 color="#ef4444" size={18} className="mr-2" />
-                    <Text className="font-sans-bold text-red-500 text-base">Delete {party.partyType === 'customer' ? 'Customer' : 'Vendor'}</Text>
+                    <Text className="font-sans-bold text-red-500 text-base">Delete {party.partyType === PartyType.CUSTOMER ? 'Customer' : 'Vendor'}</Text>
                 </Pressable>
             </View>
         </AnimatedModal>

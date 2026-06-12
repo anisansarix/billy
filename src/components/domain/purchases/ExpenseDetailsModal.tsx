@@ -1,4 +1,4 @@
-import React from "react";
+import {  } from 'react';
 import { View, Text, Pressable } from "react-native";
 import { X, Edit, Trash2, User, CreditCard } from "lucide-react-native";
 import AnimatedModal from "@/components/ui/AnimatedModal";

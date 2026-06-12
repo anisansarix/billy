@@ -50,6 +50,7 @@ export default function Card({ children, variant = 'elevated', className = '', i
       onPressOut={handlePressOut}
       style={animatedStyle}
       disabled={!isPressable && !props.onPress}
+      accessibilityRole={isPressable || props.onPress ? 'button' : 'none'}
       {...props}
     >
       {children}

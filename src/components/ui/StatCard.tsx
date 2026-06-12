@@ -12,7 +12,13 @@ type Props = {
 export default function StatCard({ title, amountPaise, gstAmountPaise }: Props) {
 
     return (
-        <View className="flex-1 rounded-2xl bg-white p-4 shadow-sm border border-white/50" style={{ elevation: 2 }}>
+        <View 
+            className="flex-1 rounded-2xl bg-white p-4 shadow-sm border border-white/50" 
+            style={{ elevation: 2 }}
+            accessible={true}
+            accessibilityRole="summary"
+            accessibilityLabel={`${title}. Amount is ${amountPaise / 100} rupees plus ${gstAmountPaise / 100} rupees GST.`}
+        >
             <Text className="text-base font-sans-medium text-primary mb-2">
                 {title}
             </Text>

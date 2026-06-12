@@ -10,6 +10,7 @@ import { useAppStore } from "@/store";
 import "../../../../global.css";
 import AnimatedModal from "@/components/ui/AnimatedModal";
 import { formatINR } from "@/utils/money";
+import { SegmentedTabs } from "@/components/ui/SegmentedTabs";
 
 export default function CreateStockAdjustmentScreen() {
     const router = useRouter();
@@ -84,21 +85,12 @@ export default function CreateStockAdjustmentScreen() {
                 <ScrollView className="flex-1 px-5 pt-5" showsVerticalScrollIndicator={false}>
                     
                     {/* Type Selection */}
-                    <View className="flex-row mb-6 bg-white p-1 rounded-xl shadow-sm border border-border">
-                        <Pressable
-                            onPress={() => setType("Stock In")}
-                            className={`flex-1 py-3 items-center rounded-lg flex-row justify-center ${type === "Stock In" ? "bg-green-50 border border-green-200" : ""}`}
-                        >
-                            <ArrowDownRight color={type === "Stock In" ? "#16a34a" : "#64748b"} size={18} className="mr-2" />
-                            <Text className={`font-sans-bold ${type === "Stock In" ? "text-green-700" : "text-muted-foreground"}`}>Stock In (+)</Text>
-                        </Pressable>
-                        <Pressable
-                            onPress={() => setType("Stock Out")}
-                            className={`flex-1 py-3 items-center rounded-lg flex-row justify-center ${type === "Stock Out" ? "bg-amber-50 border border-amber-200" : ""}`}
-                        >
-                            <ArrowUpRight color={type === "Stock Out" ? "#d97706" : "#64748b"} size={18} className="mr-2" />
-                            <Text className={`font-sans-bold ${type === "Stock Out" ? "text-amber-700" : "text-muted-foreground"}`}>Stock Out (-)</Text>
-                        </Pressable>
+                    <View className="mb-6">
+                        <SegmentedTabs 
+                            tabs={["Stock In", "Stock Out"]} 
+                            activeTab={type} 
+                            onTabChange={(t) => setType(t as "Stock In" | "Stock Out")} 
+                        />
                     </View>
 
                     {/* InventoryItem Selection */}

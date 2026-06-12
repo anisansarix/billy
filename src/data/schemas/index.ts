@@ -162,7 +162,10 @@ export const SalesInvoiceSchema = DocumentBaseSchema.extend({
 export const PurchaseOrderSchema = DocumentBaseSchema.extend({
     documentType: z.literal(DocumentType.PURCHASE_ORDER),
     expectedDeliveryDate: z.string(),
-    vendorQuoteNumber: z.string().optional()
+    vendorQuoteNumber: z.string().optional(),
+    paymentMode: z.string().optional(),
+    paidAmountPaise: z.number().int().optional(),
+    balanceDuePaise: z.number().int().optional()
 });
 
 export const CreditNoteSchema = DocumentBaseSchema.extend({
