@@ -23,7 +23,8 @@ export const DEFAULT_BUSINESS: Business = {
     "email": "contact@billy.com",
     "bankDetails": [],
     "fiscalYearStart": "APRIL",
-    "defaultCurrency": "INR"
+    "defaultCurrency": "INR",
+    "upiVpa": "billy@ybl"
 };
 
 export const PARTIES: Party[] = [
