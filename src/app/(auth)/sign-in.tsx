@@ -60,7 +60,7 @@ export default function SignInScreen() {
             onChangeText={setPassword}
           />
 
-          <View className="flex-row justify-start mt-2 mb-8">
+          <View className="flex-row justify-start items-center mt-2 mb-8">
             <Text className="text-sm font-sans-regular text-muted-foreground">
               Forgot your password?{" "}
             </Text>
@@ -81,7 +81,7 @@ export default function SignInScreen() {
             className="w-full mb-6"
           />
 
-          <View className="flex-row justify-center mb-8">
+          <View className="flex-row justify-center items-center mb-8">
             <Text className="text-sm font-sans-regular text-muted-foreground">
               {"Don't have an account? "}
             </Text>
