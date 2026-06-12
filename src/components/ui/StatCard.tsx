@@ -1,7 +1,7 @@
 import { Text, View } from "react-native";
 import "../../../global.css";
 
-import { formatINR } from "@/utils/money";
+import { formatCompactINR } from "@/utils/money";
 
 type Props = {
     title: string;
@@ -27,11 +27,13 @@ export default function StatCard({ title, amountPaise, gstAmountPaise }: Props) 
                 numberOfLines={1} 
                 adjustsFontSizeToFit
             >
-                {formatINR(amountPaise)}
+                {formatCompactINR(amountPaise)}
             </Text>
-            <Text className="text-sm font-sans-medium text-muted-foreground">
-                +GST {formatINR(gstAmountPaise)}
-            </Text>
+            {gstAmountPaise !== undefined && (
+                <Text className="text-sm font-sans-medium text-muted-foreground">
+                    +GST {formatCompactINR(gstAmountPaise)}
+                </Text>
+            )}
         </View>
     );
 }

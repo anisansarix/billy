@@ -15,6 +15,7 @@ import { SegmentedTabs } from "@/components/ui/SegmentedTabs";
 import { SearchBar } from "@/components/ui/SearchBar";
 import "../../../../global.css";
 import { formatINR } from "@/utils/money";
+import { formatDate } from "@/utils/date";
 
 export default function SalesScreen() {
     const router = useRouter();
@@ -253,8 +254,8 @@ export default function SalesScreen() {
                                         <ReceiptText color="#9333ea" size={20} />
                                     </View>
                                     <View>
-                                        <Text className="font-sans-medium text-sm text-muted-foreground mb-1">SalesInvoice Date</Text>
-                                        <Text className="font-sans-bold text-base text-primary">{selectedInvoice.documentDate}</Text>
+                                        <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Date</Text>
+                                        <Text className="font-sans-bold text-base text-primary">{formatDate(selectedInvoice.documentDate)}</Text>
                                     </View>
                                 </View>
                             </View>

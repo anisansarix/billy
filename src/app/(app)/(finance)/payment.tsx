@@ -16,6 +16,7 @@ import Card from "@/components/ui/Card";
 import { useAppStore } from "@/store";
 import "../../../../global.css";
 import { formatINR } from "@/utils/money";
+import { formatDate } from "@/utils/date";
 
 
 
@@ -263,7 +264,7 @@ export default function PaymentScreen() {
                                     </View>
                                     <View>
                                         <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Transaction Date</Text>
-                                        <Text className="font-sans-bold text-base text-primary">{selectedPayment.date}</Text>
+                                        <Text className="font-sans-bold text-base text-primary">{formatDate(selectedPayment.date)}</Text>
                                     </View>
                                 </View>
                             </View>

@@ -79,28 +79,35 @@ export default function ProductsServicesScreen() {
     };
 
     const header = (
-        <>
-            <View className="bg-white pb-1 pt-3">
-                <SegmentedTabs 
-                    tabs={["Catalog", "Stock Adjustments"]} 
-                    activeTab={view === "catalog" ? "Catalog" : "Stock Adjustments"} 
-                    onTabChange={(t) => startTransition(() => setView(t === "Catalog" ? "catalog" : "adjustments"))} 
-                />
+        <View className="pt-4">
+            <SegmentedTabs 
+                tabs={["Catalog", "Stock Adjustments"]} 
+                activeTab={view === "catalog" ? "Catalog" : "Stock Adjustments"} 
+                onTabChange={(t) => startTransition(() => setView(t === "Catalog" ? "catalog" : "adjustments"))} 
+            />
 
-                {view === 'catalog' && (
-                    <SegmentedTabs 
-                        tabs={["Products", "Services"]} 
-                        activeTab={tab === "product" ? "Products" : "Services"} 
-                        onTabChange={(t) => startTransition(() => setTab(t === "Products" ? "product" : "service"))} 
-                    />
-                )}
-            </View>
+            {view === 'catalog' && (
+                <View className="flex-row px-5 mt-4 mb-2 gap-3">
+                    <Pressable 
+                        onPress={() => startTransition(() => setTab('product'))}
+                        className={`px-4 py-2 rounded-full border ${tab === 'product' ? 'bg-primary border-primary' : 'bg-transparent border-border'}`}
+                    >
+                        <Text className={`font-sans-medium text-sm ${tab === 'product' ? 'text-white' : 'text-muted-foreground'}`}>Products</Text>
+                    </Pressable>
+                    <Pressable 
+                        onPress={() => startTransition(() => setTab('service'))}
+                        className={`px-4 py-2 rounded-full border ${tab === 'service' ? 'bg-primary border-primary' : 'bg-transparent border-border'}`}
+                    >
+                        <Text className={`font-sans-medium text-sm ${tab === 'service' ? 'text-white' : 'text-muted-foreground'}`}>Services</Text>
+                    </Pressable>
+                </View>
+            )}
 
             {/* Summary Card */}
             {view === 'catalog' && (
                 <>
                     {tab === 'product' && lowStockItems.length > 0 && (
-                        <View className="px-5 mb-4">
+                        <View className="px-5 mb-4 mt-2">
                             <View className="bg-red-50 border border-red-200 rounded-2xl p-4 flex-row items-center shadow-sm">
                                 <View className="h-10 w-10 bg-red-100 rounded-full items-center justify-center mr-4">
                                     <AlertCircle color="#ef4444" size={20} />
@@ -149,7 +156,7 @@ export default function ProductsServicesScreen() {
                     </View>
                 </View>
             )}
-        </>
+        </View>
     );
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>

@@ -96,18 +96,16 @@ export default function CustomersVendorsScreen() {
     
 
     const header = (
-        <>
+        <View className="pt-4">
             {/* Tabs */}
-            <View className="bg-white pb-1 pt-3">
-                <SegmentedTabs 
-                    tabs={["Customers", "Vendors", "Both"]} 
-                    activeTab={tab === "customer" ? "Customers" : tab === "vendor" ? "Vendors" : "Both"} 
-                    onTabChange={(t) => startTransition(() => setTab(t === "Customers" ? "customer" : t === "Vendors" ? "vendor" : "both"))} 
-                />
-            </View>
+            <SegmentedTabs 
+                tabs={["Customers", "Vendors", "Both"]} 
+                activeTab={tab === "customer" ? "Customers" : tab === "vendor" ? "Vendors" : "Both"} 
+                onTabChange={(t) => startTransition(() => setTab(t === "Customers" ? "customer" : t === "Vendors" ? "vendor" : "both"))} 
+            />
 
             {/* Summary Card */}
-            <View className="px-5 mb-4">
+            <View className="px-5 mb-4 mt-4">
                 <View className="bg-white rounded-2xl p-4 flex-row border border-border shadow-sm">
                     <View className="flex-1 border-r border-border pl-2">
                         <Text className="font-sans-medium text-[10px] text-muted-foreground mb-1 uppercase tracking-wider">Total Receivable</Text>
@@ -139,7 +137,7 @@ export default function CustomersVendorsScreen() {
                     />
                 </View>
             </View>
-        </>
+        </View>
     );
 
     return (
