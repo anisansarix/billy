@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pressable, PressableProps } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import * as Haptics from 'expo-haptics';
 import "../../../global.css";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -16,7 +17,10 @@ export default function Card({ children, variant = 'elevated', className = '', i
   const scale = useSharedValue(1);
 
   const handlePressIn = (e: import("react-native").GestureResponderEvent) => {
-    if (isPressable) scale.value = withTiming(0.98, { duration: 100, easing: Easing.out(Easing.ease) });
+    if (isPressable) {
+      scale.value = withTiming(0.97, { duration: 100, easing: Easing.out(Easing.ease) });
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
     if (onPressIn) onPressIn(e);
   };
 

@@ -1,18 +1,21 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage, StateStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createMMKV } from 'react-native-mmkv';
 import { INVOICES, ITEMS, PARTIES, PURCHASES, EXPENSES, PAYMENTS } from '../../constants/data';
 import { Business, TaxRate, GSTType, SalesInvoice, PurchaseOrder, Party, InventoryItem, PaymentRecord, ExpenseRecord, StockAdjustmentRecord } from '../types/entities';
 
+const mmkv = createMMKV();
+
 const zustandStorage: StateStorage = {
   setItem: (name, value) => {
-    return AsyncStorage.setItem(name, value);
+    return mmkv.set(name, value);
   },
   getItem: (name) => {
-    return AsyncStorage.getItem(name);
+    const value = mmkv.getString(name);
+    return value ?? null;
   },
   removeItem: (name) => {
-    return AsyncStorage.removeItem(name);
+    return mmkv.remove(name);
   },
 };
 export const DEFAULT_BUSINESS: Business = {
@@ -97,7 +100,7 @@ export type AppStore = {
 export const useAppStore = create<AppStore>()(
   persist(
     (set) => ({
-      currentBusiness: DEFAULT_BUSINESS,
+      currentBusiness: null,
       taxRates: DEFAULT_TAX_RATES,
       invoices: INVOICES,
       items: ITEMS,
@@ -140,7 +143,7 @@ export const useAppStore = create<AppStore>()(
       deleteAdjustment: (id) => set((state) => ({ adjustments: state.adjustments.filter((a) => a.id !== id) })),
     }),
     {
-      name: 'billy-app-store-v2',
+      name: 'billy-app-store-v3',
       storage: createJSONStorage(() => zustandStorage),
       onRehydrateStorage: () => (state) => {
         if (state) {

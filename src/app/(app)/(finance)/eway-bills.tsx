@@ -1,10 +1,10 @@
-// @ts-nocheck
 import { useRouter } from "expo-router";
 import { useShallow } from 'zustand/react/shallow';
 import { ArrowLeft, Truck, AlertCircle } from "lucide-react-native";
 import { useMemo } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import {  Pressable, ScrollView, Text, View , Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+// import { EmptyState } from "@/components/ui/EmptyState";
 import { useAppStore } from "@/store";
 import { formatINR } from "@/utils/money";
 import { useDeferredRender } from "@/hooks/useDeferredRender";
@@ -25,7 +25,7 @@ export default function EWayBillsScreen() {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
             <View className="flex-row items-center p-5 bg-white shadow-sm z-10 border-b border-border">
-                <Pressable onPress={() => router.back()} className="mr-4">
+                <Pressable onPress={() => { Vibration.vibrate(10); router.back(); }} className="mr-4">
                     <ArrowLeft color="#081126" size={24} />
                 </Pressable>
                 <Text className="text-2xl font-sans-bold text-primary">E-Way Bills</Text>
@@ -33,7 +33,7 @@ export default function EWayBillsScreen() {
 
             <ScrollView className="flex-1 px-5 pt-5" showsVerticalScrollIndicator={false}>
                 
-                <View className="bg-white rounded-2xl p-5 mb-5 border border-border shadow-sm">
+                <View className="bg-white rounded-2xl p-4 mb-4 border border-border shadow-sm">
                     <View className="flex-row items-center mb-2">
                         <Truck color="#081126" size={24} className="mr-3" />
                         <Text className="font-sans-bold text-lg text-primary">E-Way Bill Tracker</Text>

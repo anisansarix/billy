@@ -1,9 +1,8 @@
-// @ts-nocheck
 import { LinearGradient } from "expo-linear-gradient";
 import { useShallow } from 'zustand/react/shallow';
-import { Bell, Boxes, ChevronDown, RefreshCcw, AlertCircle, FileText, ArrowUpRight, Receipt, Truck } from "lucide-react-native";
-import { useState, useMemo, useRef } from "react";
-import { Image, Pressable, ScrollView, Text, View, Dimensions } from "react-native";
+import { Bell, Boxes, ChevronDown, RefreshCcw } from "lucide-react-native";
+import { useState, useRef } from "react";
+import { Image, Pressable, ScrollView, Text, View, Dimensions, Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useAppStore } from "@/store";
@@ -13,10 +12,7 @@ import AreaChart from "@/components/charts/AreaChart";
 import FloatingMenu from "@/components/ui/FloatingMenu";
 import OutstandingList from "@/components/domain/OutstandingList";
 import StatCard from "@/components/ui/StatCard";
-import AnimatedModal from "@/components/ui/AnimatedModal";
 import "../../../../global.css";
-import { InventoryItem } from "@/types/entities";
-import { formatINR, formatCompactINR } from "@/utils/money";
 import { useDeferredRender } from "@/hooks/useDeferredRender";
 import { StatCardSkeleton } from "@/components/ui/skeletons/StatCardSkeleton";
 import MonthPickerModal from "@/components/domain/dashboard/MonthPickerModal";
@@ -24,24 +20,19 @@ import { SegmentedTabs } from "@/components/ui/SegmentedTabs";
 import { useTabTransition } from "@/hooks/useTabTransition";
 import { useDashboardData } from "@/hooks/useDashboardData";
 
+import GstLiabilityWidget from "@/components/domain/dashboard/GstLiabilityWidget";
+import QuickActionsWidget from "@/components/domain/dashboard/QuickActionsWidget";
+import NeedsAttentionWidget from "@/components/domain/dashboard/NeedsAttentionWidget";
+import InventoryInsightsWidget from "@/components/domain/dashboard/InventoryInsightsWidget";
+
 interface BalanceCardData {
   title: string;
   amountPaise: number;
   gstAmountPaise: number;
 }
 
-const QUICK_ACTIONS = [
-    { label: "SalesInvoice", icon: Receipt, route: "/(app)/sales" },
-    { label: "Products", icon: Boxes, route: "/(app)/products-services" },
-    { label: "GST", icon: FileText, route: "/(app)/gst-returns" },
-    { label: "E-Way", icon: Truck, route: "/(app)/eway-bills" },
-];
-
-
-
 export default function App() {
   const router = useRouter();
-  const currentBusiness = useAppStore(state => state.currentBusiness);
   const [menuVisible, setMenuVisible] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
   
@@ -74,7 +65,6 @@ export default function App() {
   const {
       dashboardBalances,
       outstandingData,
-      activeMonthsToDisplay,
       chartData,
       cashFlowData,
       estimatedLiability,
@@ -100,7 +90,10 @@ export default function App() {
                 <Bell color="#081126" fill="#081126" size={22} />
                 <View className="absolute right-0 top-0 size-2.5 rounded-full bg-red-600 border border-white" />
               </View>
-          <Pressable onPress={() => router.push("/(app)/(settings)/settings")}>
+          <Pressable style={({pressed})=>({opacity:pressed?0.7:1})} onPress={() => {
+            Vibration.vibrate(10);
+            router.push("/(app)/(settings)/settings");
+          }}>
               <Image source={images.avatar} className="size-12 rounded-full" />
           </Pressable>
             </View>
@@ -116,7 +109,10 @@ export default function App() {
                 accessibilityRole="button"
                 accessibilityLabel="Select Month"
                 className="flex-row items-center bg-white rounded-xl px-4 py-2 min-h-[44px] border border-white/50 shadow-sm"
-                onPress={() => setMonthModalVisible(true)}
+                onPress={() => {
+                  Vibration.vibrate(10);
+                  setMonthModalVisible(true);
+                }}
                 style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
               >
                 <ChevronDown color="#000" size={16} className="mr-2" />
@@ -125,40 +121,10 @@ export default function App() {
             </View>
 
             {/* GST Liability Widget */}
-            <Pressable 
-                onPress={() => router.push('/(app)/gst-returns')} 
-                className="bg-white rounded-2xl p-4 mb-6 border border-border shadow-sm flex-row items-center justify-between min-h-[44px]"
-                style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}
-            >
-                <View>
-                    <Text className="font-sans-medium text-xs text-muted-foreground uppercase tracking-wider mb-1">Est. GST Liability</Text>
-                    <Text className={`font-sans-bold text-2xl ${estimatedLiability > 0 ? 'text-red-600' : 'text-green-600'}`}>
-                        {estimatedLiability > 0 ? `Payable ${formatCompactINR(estimatedLiability)}` : `Refund ${formatCompactINR(Math.abs(estimatedLiability))}`}
-                    </Text>
-                </View>
-                <View className="h-10 w-10 bg-primary/10 rounded-full items-center justify-center">
-                    <ArrowUpRight color="#208AEF" size={20} />
-                </View>
-            </Pressable>
+            <GstLiabilityWidget estimatedLiability={estimatedLiability} />
 
             {/* Quick Actions */}
-            <View className="flex-row justify-between mb-6">
-                {QUICK_ACTIONS.map((action, i) => (
-                    <Pressable 
-                        key={i} 
-                        accessibilityRole="button"
-                        accessibilityLabel={`Go to ${action.label}`}
-                        onPress={() => router.push(action.route as never)} 
-                        className="items-center"
-                        style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
-                    >
-                        <View className="bg-white size-14 rounded-2xl items-center justify-center shadow-sm border border-border mb-2">
-                            <action.icon color="#081126" size={24} />
-                        </View>
-                        <Text className="font-sans-medium text-xs text-primary">{action.label}</Text>
-                    </Pressable>
-                ))}
-            </View>
+            <QuickActionsWidget />
 
             <View className="flex-row gap-4 mb-6">
               {!isReady ? (
@@ -174,65 +140,7 @@ export default function App() {
             </View>
 
             {/* Pending Actions / Alerts */}
-            <View className="mb-6">
-                <Text className="font-sans-bold text-lg text-primary mb-3">Needs Attention</Text>
-                
-                {lowStockItems.length > 0 && (
-                    <View className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-3">
-                        <View className="flex-row items-center gap-2 mb-3">
-                            <AlertCircle color="#d97706" size={20} />
-                            <Text className="font-sans-bold text-amber-800 text-base">Low Stock Alert</Text>
-                        </View>
-                        {lowStockItems.slice(0, 3).map((item, idx) => (
-                            <View key={item.id} className={`flex-row justify-between items-center py-2 ${idx !== Math.min(lowStockItems.length, 3) - 1 ? 'border-b border-amber-200/50' : ''}`}>
-                                <Text className="font-sans-medium text-amber-900 flex-1 mr-2" numberOfLines={1}>{item.name}</Text>
-                                <Text className="font-sans-bold text-amber-700">{item.stock || 0} left</Text>
-                            </View>
-                        ))}
-                        {lowStockItems.length > 3 && (
-                            <Pressable onPress={() => router.push('/(app)/products-services')} className="mt-2 pt-2 border-t border-amber-200/50 min-h-[44px] justify-center" style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
-                                <Text className="font-sans-medium text-amber-700 text-center text-xs">+ {lowStockItems.length - 3} more items need restocking</Text>
-                            </Pressable>
-                        )}
-                        {lowStockItems.length <= 3 && (
-                            <Pressable onPress={() => router.push('/(app)/products-services')} className="mt-2 pt-2 border-t border-amber-200/50 min-h-[44px] justify-center" style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
-                                <Text className="font-sans-medium text-amber-700 text-center text-xs">View all products</Text>
-                            </Pressable>
-                        )}
-                    </View>
-                )}
-
-                {unpaidInvoices.length > 0 && (
-                    <View className="bg-red-50 border border-red-200 rounded-xl p-4 mb-3">
-                        <View className="flex-row items-center gap-2 mb-3">
-                            <AlertCircle color="#ef4444" size={20} />
-                            <Text className="font-sans-bold text-red-800 text-base">Overdue Payments</Text>
-                        </View>
-                        {unpaidInvoices.slice(0, 3).map((inv, idx) => (
-                            <View key={inv.id} className={`flex-row justify-between items-center py-2 ${idx !== Math.min(unpaidInvoices.length, 3) - 1 ? 'border-b border-red-200/50' : ''}`}>
-                                <Text className="font-sans-medium text-primary" numberOfLines={1}>{inv.partyName}</Text>
-                                <Text className="font-sans-bold text-red-700">{formatCompactINR(inv.totalAmountPaise || 0)}</Text>
-                            </View>
-                        ))}
-                        {unpaidInvoices.length > 3 && (
-                            <Pressable onPress={() => router.push('/(app)/sales')} className="mt-2 pt-2 border-t border-red-200/50 min-h-[44px] justify-center" style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
-                                <Text className="font-sans-medium text-red-700 text-center text-xs">+ {unpaidInvoices.length - 3} more overdue invoices</Text>
-                            </Pressable>
-                        )}
-                        {unpaidInvoices.length <= 3 && (
-                            <Pressable onPress={() => router.push('/(app)/sales')} className="mt-2 pt-2 border-t border-red-200/50 min-h-[44px] justify-center" style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
-                                <Text className="font-sans-medium text-red-700 text-center text-xs">View all invoices</Text>
-                            </Pressable>
-                        )}
-                    </View>
-                )}
-                
-                {lowStockItems.length === 0 && unpaidInvoices.length === 0 && (
-                    <View className="bg-white border border-border rounded-xl p-4 items-center justify-center">
-                        <Text className="font-sans-medium text-muted-foreground">All caught up! 🎉</Text>
-                    </View>
-                )}
-            </View>
+            <NeedsAttentionWidget lowStockItems={lowStockItems} unpaidInvoices={unpaidInvoices} />
 
             {/* Segmented Control */}
             <View className="mb-4">
@@ -278,29 +186,7 @@ export default function App() {
             </View>
 
             {/* Top Movers vs Dead Stock */}
-            <View className="mt-6 flex-row gap-4 mb-4">
-               {/* Top Movers */}
-               <View className="flex-1 bg-white p-4 rounded-2xl shadow-sm border border-border">
-                 <Text className="font-sans-bold text-sm text-primary mb-3">Top Movers</Text>
-                 {inventoryStats.topMovers.map((item, idx) => (
-                   <View key={`top-${idx}`} className={`flex-row justify-between py-2 ${idx !== inventoryStats.topMovers.length - 1 ? 'border-b border-border' : ''}`}>
-                     <Text className="font-sans-medium text-xs text-primary flex-1 mr-2" numberOfLines={1}>{item.name}</Text>
-                     <Text className="font-sans-bold text-xs text-green-600">{(item as InventoryItem & { soldQuantity?: number }).soldQuantity} sold</Text>
-                   </View>
-                 ))}
-               </View>
-
-               {/* Dead Stock */}
-               <View className="flex-1 bg-white p-4 rounded-2xl shadow-sm border border-border">
-                 <Text className="font-sans-bold text-sm text-primary mb-3">Dead Stock</Text>
-                 {inventoryStats.deadStock.map((item, idx) => (
-                   <View key={`dead-${idx}`} className={`flex-row justify-between py-2 ${idx !== inventoryStats.deadStock.length - 1 ? 'border-b border-border' : ''}`}>
-                     <Text className="font-sans-medium text-xs text-primary flex-1 mr-2" numberOfLines={1}>{item.name}</Text>
-                     <Text className="font-sans-bold text-xs text-red-600">{item.stock} left</Text>
-                   </View>
-                 ))}
-               </View>
-            </View>
+            <InventoryInsightsWidget inventoryStats={inventoryStats} />
 
             <View className="items-center py-6 mt-2">
               <Text className="font-sans-medium text-xs text-muted-foreground/60 text-center">

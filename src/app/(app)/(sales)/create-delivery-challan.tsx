@@ -83,10 +83,10 @@ export default function CreateSalesInvoiceScreen() {
 
         if (editId) {
             updateInvoice(challanToSave as unknown as SalesInvoice);
-            console.log("Updated Delivery Challan!");
+            
         } else {
             addInvoice(challanToSave as unknown as SalesInvoice);
-            console.log("Saved Delivery Challan!");
+            
         }
         
         router.back();

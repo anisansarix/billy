@@ -76,10 +76,10 @@ export default function CreateQuotationScreen() {
 
         if (editId) {
             updateInvoice(quotationToSave as unknown as SalesInvoice);
-            console.log("Updated Quotation!");
+            
         } else {
             addInvoice(quotationToSave as unknown as SalesInvoice);
-            console.log("Saved Quotation!");
+            
         }
         
         router.back();

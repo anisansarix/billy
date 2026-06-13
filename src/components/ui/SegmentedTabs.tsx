@@ -1,5 +1,5 @@
 
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View, Vibration } from 'react-native';
 
 interface SegmentedTabsProps {
   tabs: string[];
@@ -14,7 +14,10 @@ export function SegmentedTabs({ tabs, activeTab, onTabChange, className = "" }: 
       {tabs.map((tab) => (
         <TouchableOpacity
           key={tab}
-          onPress={() => onTabChange(tab)}
+          onPress={() => {
+            if (activeTab !== tab) Vibration.vibrate(10);
+            onTabChange(tab);
+          }}
           className={`flex-1 py-2 rounded-lg items-center justify-center ${
             activeTab === tab ? "bg-white" : ""
           }`}

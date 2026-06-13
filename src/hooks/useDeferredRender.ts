@@ -9,7 +9,7 @@ export function useDeferredRender(delayMs = 300) {
 
     useEffect(() => {
         let isMounted = true;
-        let timeoutId: any;
+        let timeoutId: ReturnType<typeof setTimeout>;
 
         // Give the UI thread time to finish the navigation transition (typically 250-300ms).
         // Using setTimeout forces the JS thread to yield, avoiding the InteractionManager deprecation warning.

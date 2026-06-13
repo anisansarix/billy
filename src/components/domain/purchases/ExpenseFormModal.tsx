@@ -47,7 +47,7 @@ export default function ExpenseFormModal({ visible, onClose, expenseToEdit }: Ex
 
         const expData: ExpenseRecord = {
             id: expenseToEdit ? expenseToEdit.id : `exp-${Date.now()}`,
-            date: expenseToEdit ? expenseToEdit.date : new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+            date: expenseToEdit ? expenseToEdit.date : new Date().toISOString().split('T')[0],
             category: expenseFormData.category,
             amountPaise: isNaN(amountNum) ? 0 : Math.round(amountNum * 100),
             paymentMode: expenseFormData.paymentMode as ExpenseRecord["paymentMode"],

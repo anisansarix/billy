@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import { useShallow } from 'zustand/react/shallow';
 import { ArrowDownLeft, ArrowLeft, ArrowUpRight, Plus, Search, X, Edit, Trash2, CreditCard, Calendar } from "lucide-react-native";
 import { useState } from "react";
-import { Pressable, ScrollView, Text, TextInput, View, RefreshControl, Alert, FlatList } from "react-native";
+import {  Pressable, ScrollView, Text, TextInput, View, RefreshControl, Alert, FlatList , Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDeferredRender } from "@/hooks/useDeferredRender";
 import { useTabTransition } from "@/hooks/useTabTransition";
@@ -13,6 +13,7 @@ import { SegmentedTabs } from "@/components/ui/SegmentedTabs";
 import { ListCardSkeleton } from "@/components/ui/skeletons/ListCardSkeleton";
 import AnimatedModal from "@/components/ui/AnimatedModal";
 import Card from "@/components/ui/Card";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { useAppStore } from "@/store";
 import "../../../../global.css";
 import { formatINR } from "@/utils/money";
@@ -152,7 +153,7 @@ export default function PaymentScreen() {
         <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
             {/* Header */}
             <View className="flex-row items-center p-5 bg-white shadow-sm z-10">
-                <Pressable onPress={() => router.back()} className="mr-4">
+                <Pressable onPress={() => { Vibration.vibrate(10); router.back(); }} className="mr-4">
                     <ArrowLeft color="#081126" size={24} />
                 </Pressable>
                 <Text className="text-2xl font-sans-bold text-primary">Payments</Text>
@@ -178,8 +179,10 @@ export default function PaymentScreen() {
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#208AEF" />}
                     data={filteredPayments}
                     keyExtractor={(payment) => payment.id}
-                    initialNumToRender={15}
+                    initialNumToRender={10}
                     maxToRenderPerBatch={10}
+                    windowSize={10}
+                    removeClippedSubviews={true}
                     renderItem={({ item: payment }) => (
                         <Card className="flex-row items-center mb-4 mx-5" isPressable onPress={() => setSelectedPayment(payment)}>
                             <View className={`size-12 rounded-full items-center justify-center mr-4 ${payment.type === 'in' ? 'bg-green-100' : 'bg-red-100'}`}>
@@ -191,7 +194,7 @@ export default function PaymentScreen() {
                             </View>
                             <View className="flex-1">
                                 <Text className="font-sans-bold text-base text-primary mb-1">{payment.partyName}</Text>
-                                <Text className="font-sans-medium text-xs text-muted-foreground">{payment.mode} • {payment.date}</Text>
+                                <Text className="font-sans-medium text-xs text-muted-foreground">{payment.mode} • {formatDate(payment.date)}</Text>
                             </View>
                             <View className="items-end">
                                 <Text className={`font-sans-bold text-lg ${payment.type === 'in' ? 'text-green-600' : 'text-primary'}`}>
@@ -200,11 +203,7 @@ export default function PaymentScreen() {
                             </View>
                         </Card>
                     )}
-                    ListEmptyComponent={
-                        <View className="items-center justify-center py-10">
-                            <Text className="font-sans-medium text-muted-foreground">No payments found.</Text>
-                        </View>
-                    }
+                    ListEmptyComponent={<EmptyState title="No payments found" subtitle="You haven't made or received any payments yet." icon={<View />} />}
                 />
             )}
 
@@ -297,7 +296,7 @@ export default function PaymentScreen() {
                         <Text className="font-sans-bold text-xl text-primary">
                             {editingPayment ? 'Edit PaymentRecord' : 'Log PaymentRecord'}
                         </Text>
-                        <Pressable onPress={() => setIsFormVisible(false)} className="h-11 w-11 items-center justify-center bg-muted rounded-full">
+                        <Pressable onPress={() => { Vibration.vibrate(10); setIsFormVisible(false); }} className="h-11 w-11 items-center justify-center bg-muted rounded-full">
                             <X color="#64748b" size={20} />
                         </Pressable>
                     </View>

@@ -1,9 +1,8 @@
-// @ts-nocheck
 import { useRouter } from "expo-router";
 import { useShallow } from 'zustand/react/shallow';
 import { ArrowLeft, Download, FileText } from "lucide-react-native";
 import { useState, useMemo } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import {  Pressable, ScrollView, Text, View , Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDeferredRender } from "@/hooks/useDeferredRender";
 import { useTabTransition } from "@/hooks/useTabTransition";
@@ -66,7 +65,7 @@ export default function GSTReturnsScreen() {
         <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
             <View className="flex-row items-center justify-between p-5 bg-white shadow-sm z-10">
                 <View className="flex-row items-center">
-                    <Pressable onPress={() => router.back()} className="mr-4">
+                    <Pressable onPress={() => { Vibration.vibrate(10); router.back(); }} className="mr-4">
                         <ArrowLeft color="#081126" size={24} />
                     </Pressable>
                     <Text className="text-2xl font-sans-bold text-primary">GST Returns</Text>

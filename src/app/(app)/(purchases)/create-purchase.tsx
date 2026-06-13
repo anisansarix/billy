@@ -76,10 +76,10 @@ export default function CreatePurchaseScreen() {
 
         if (editId) {
             updatePurchase(purchaseToSave);
-            console.log("Updated Purchase!");
+            
         } else {
             addPurchase(purchaseToSave);
-            console.log("Saved Purchase!");
+            
         }
         
         router.back();

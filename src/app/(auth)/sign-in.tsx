@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View, Image, Alert } from "react-native";
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View, Image, Alert, Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppStore, DEFAULT_BUSINESS } from "@/store";
 import AuthInput from "@/components/ui/AuthInput";
@@ -70,6 +70,7 @@ export default function SignInScreen() {
               className="min-h-[44px] justify-center"
               accessibilityRole="button"
               accessibilityLabel="Reset your password"
+              onPress={() => Vibration.vibrate(10)}
             >
               <Text className="text-sm font-sans-medium text-primary underline">
                 Reset your password
@@ -88,7 +89,7 @@ export default function SignInScreen() {
               {"Don't have an account? "}
             </Text>
             <Pressable 
-              onPress={() => router.push("/(auth)/sign-up")} 
+              onPress={() => { Vibration.vibrate(10); router.push("/(auth)/sign-up"); }} 
               className="min-h-[44px] justify-center"
               accessibilityRole="button"
               accessibilityLabel="Join"
@@ -109,6 +110,7 @@ export default function SignInScreen() {
             className="w-full h-14 bg-white border border-border items-center justify-center rounded-xl flex-row"
             accessibilityRole="button"
             accessibilityLabel="Sign Up with Google"
+            onPress={() => Vibration.vibrate(10)}
           >
             <Image 
               source={icons.google} 

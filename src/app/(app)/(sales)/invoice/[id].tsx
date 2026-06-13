@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { View, Text, Pressable, ScrollView, ActivityIndicator, Alert, Share } from 'react-native';
+import { View, Text, Pressable, Vibration, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import * as Sharing from 'expo-sharing';
 import { ArrowLeft, Share2, Download } from 'lucide-react-native';
 import { useAppStore } from '@/store';
 import { formatINR } from '@/utils/money';
@@ -32,10 +33,14 @@ export default function InvoiceDetailScreen() {
         if (!invoice || !currentBusiness || !party) return;
         try {
             setIsSharing(true);
-            await generateInvoicePDF(invoice, currentBusiness, party);
-            Alert.alert('PDF Ready', 'Invoice has been saved.');
-        } catch (err: any) {
-            Alert.alert('Failed', err.message);
+            const pdfUri = await generateInvoicePDF(invoice, currentBusiness, party);
+            await Sharing.shareAsync(pdfUri, {
+                mimeType: 'application/pdf',
+                dialogTitle: 'Save Invoice PDF',
+                UTI: 'com.adobe.pdf'
+            });
+        } catch (err: unknown) {
+            Alert.alert('Failed', err instanceof Error ? err.message : String(err));
         } finally {
             setIsSharing(false);
         }
@@ -45,11 +50,14 @@ export default function InvoiceDetailScreen() {
         if (!invoice || !currentBusiness || !party) return;
         try {
             setIsSharing(true);
-            await Share.share({
-                message: `Invoice ${invoice.documentNumber} for ${formatINR(invoice.totalAmountPaise)}`
+            const pdfUri = await generateInvoicePDF(invoice, currentBusiness, party);
+            await Sharing.shareAsync(pdfUri, {
+                mimeType: 'application/pdf',
+                dialogTitle: `Share Invoice ${invoice.documentNumber}`,
+                UTI: 'com.adobe.pdf'
             });
-        } catch (err: any) {
-            Alert.alert('Failed', err.message);
+        } catch (err: unknown) {
+            Alert.alert('Failed', err instanceof Error ? err.message : String(err));
         } finally {
             setIsSharing(false);
         }
@@ -59,7 +67,7 @@ export default function InvoiceDetailScreen() {
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1', justifyContent: 'center', alignItems: 'center' }}>
                 <Text className="font-sans-bold text-xl text-primary mb-4">Invoice not found</Text>
-                <Pressable onPress={() => router.back()} className="bg-primary px-6 py-3 rounded-xl">
+                <Pressable onPress={() => { Vibration.vibrate(10); router.back(); }} className="bg-primary px-6 py-3 rounded-xl">
                     <Text className="font-sans-bold text-white">Go Back</Text>
                 </Pressable>
             </SafeAreaView>
@@ -89,7 +97,7 @@ export default function InvoiceDetailScreen() {
             {/* Header */}
             <View className="flex-row items-center justify-between p-4 bg-white shadow-sm z-10">
                 <Pressable 
-                    onPress={() => router.back()} 
+                    onPress={() => { Vibration.vibrate(10); router.back(); }} 
                     disabled={isSharing}
                     className="h-10 w-10 items-center justify-center rounded-full active:bg-gray-100"
                 >
@@ -118,7 +126,7 @@ export default function InvoiceDetailScreen() {
 
             <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
                 {/* Hero block */}
-                <View className="bg-white rounded-2xl p-5 mb-4 shadow-sm border border-border items-center">
+                <View className="bg-white rounded-2xl p-4 mb-4 shadow-sm border border-border items-center">
                     <View className={`px-3 py-1 rounded-md border ${getStatusColor(invoice.status)} mb-3`}>
                         <Text className="font-sans-bold text-xs uppercase">{invoice.status}</Text>
                     </View>
@@ -137,7 +145,7 @@ export default function InvoiceDetailScreen() {
 
                 {/* Bill To card */}
                 {party && (
-                    <View className="bg-white rounded-2xl p-5 mb-4 shadow-sm border border-border">
+                    <View className="bg-white rounded-2xl p-4 mb-4 shadow-sm border border-border">
                         <Text className="font-sans-medium text-xs text-muted-foreground uppercase tracking-wider mb-3">Bill To</Text>
                         <Text className="font-sans-bold text-base text-primary mb-1">{party.legalName}</Text>
                         {party.gstin && <Text className="font-sans-medium text-sm text-muted-foreground mb-1">GSTIN: {party.gstin}</Text>}
@@ -222,7 +230,7 @@ export default function InvoiceDetailScreen() {
 
                 {/* UPI pay section */}
                 {currentBusiness?.upiVpa && (
-                    <View className="bg-white rounded-2xl p-5 mb-8 shadow-sm border border-border items-center">
+                    <View className="bg-white rounded-2xl p-4 mb-8 shadow-sm border border-border items-center">
                         <Text className="font-sans-medium text-xs text-muted-foreground uppercase tracking-wider mb-2">Scan & Pay</Text>
                         <Text className="font-sans-bold text-2xl text-primary mb-4">{formatINR(invoice.totalAmountPaise)}</Text>
                         
@@ -247,9 +255,10 @@ export default function InvoiceDetailScreen() {
                     <Pressable 
                         onPress={handleShare}
                         disabled={disableActions}
-                        className={`bg-slate-100 py-3.5 rounded-xl items-center flex-row justify-center border border-slate-200 ${disableActions ? 'opacity-50' : ''}`}
+                        style={({ pressed }) => ({ opacity: pressed || disableActions ? 0.7 : 1 })}
+                        className={`bg-slate-100 py-3.5 rounded-xl items-center flex-row justify-center border border-slate-200`}
                     >
-                        <Share2 color="#081126" size={18} className="mr-2" />
+                        <Share2 color="#081126" size={20} className="mr-2" />
                         <Text className="font-sans-bold text-primary text-base">Share</Text>
                     </Pressable>
                 </View>
@@ -257,9 +266,10 @@ export default function InvoiceDetailScreen() {
                     <Pressable 
                         onPress={handleDownload}
                         disabled={disableActions}
-                        className={`bg-primary py-3.5 rounded-xl items-center flex-row justify-center ${disableActions ? 'opacity-50' : ''}`}
+                        style={({ pressed }) => ({ opacity: pressed || disableActions ? 0.7 : 1 })}
+                        className={`bg-primary py-3.5 rounded-xl items-center flex-row justify-center`}
                     >
-                        <Download color="white" size={18} className="mr-2" />
+                        <Download color="white" size={20} className="mr-2" />
                         <Text className="font-sans-bold text-white text-base">Download PDF</Text>
                     </Pressable>
                 </View>

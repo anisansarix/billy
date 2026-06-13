@@ -9,7 +9,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { useRouter } from "expo-router";
 import { ArrowLeft, Briefcase, Package, Plus, Search, AlertCircle, ArrowUpRight, ArrowDownRight } from "lucide-react-native";
 import { useState } from "react";
-import { Pressable, ScrollView, Text, TextInput, View, RefreshControl, FlatList } from "react-native";
+import {  Pressable, ScrollView, Text, TextInput, View, RefreshControl, FlatList , Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Card from "@/components/ui/Card";
 import { useAppStore } from "@/store";
@@ -162,7 +162,7 @@ export default function ProductsServicesScreen() {
         <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
             <View className="flex-row items-center justify-between p-5 bg-white shadow-sm z-10">
                 <View className="flex-row items-center">
-                    <Pressable onPress={() => router.back()} className="mr-4">
+                    <Pressable onPress={() => { Vibration.vibrate(10); router.back(); }} className="mr-4">
                         <ArrowLeft color="#081126" size={24} />
                     </Pressable>
                     <Text className="text-2xl font-sans-bold text-primary">Inventory</Text>
@@ -194,8 +194,10 @@ export default function ProductsServicesScreen() {
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#208AEF" />}
                     data={filteredItems}
                     keyExtractor={(item) => item.id}
-                    initialNumToRender={15}
+                    initialNumToRender={10}
                     maxToRenderPerBatch={10}
+                    windowSize={10}
+                    removeClippedSubviews={true}
                     renderItem={({ item }) => (
                         <Card className="flex-row items-center mb-4 p-4 mx-5" isPressable onPress={() => setSelectedItem(item)}>
                             <View className="size-12 rounded-lg bg-[#e3e8fc] items-center justify-center mr-4">

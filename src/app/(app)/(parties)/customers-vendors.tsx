@@ -1,15 +1,14 @@
-// @ts-nocheck
 import { Party } from "@/types/entities";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { ListCardSkeleton } from "@/components/ui/skeletons/ListCardSkeleton";
 import { useDeferredRender } from "@/hooks/useDeferredRender";
 import { useTabTransition } from "@/hooks/useTabTransition";
 import { SegmentedTabs } from "@/components/ui/SegmentedTabs";
-import AnimatedModal from "@/components/ui/AnimatedModal";
 import { useShallow } from 'zustand/react/shallow';
 import { useRouter } from "expo-router";
-import { ArrowLeft, Edit, Phone, Plus, Save, Search, Trash2, X } from "lucide-react-native";
+import { ArrowLeft, Plus, Search } from "lucide-react-native";
 import { useState } from "react";
-import { Alert, Linking, Pressable, RefreshControl, ScrollView, Text, TextInput, View, FlatList } from "react-native";
+import {  Pressable, RefreshControl, ScrollView, Text, TextInput, View, FlatList , Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Card from "@/components/ui/Card";
 import { useAppStore } from "@/store";
@@ -38,7 +37,7 @@ export default function CustomersVendorsScreen() {
     };
 
     // State for data
-    const {  parties, addParty, updateParty, deleteParty  } = useAppStore(useShallow(state => ({ parties: state.parties, addParty: state.addParty, updateParty: state.updateParty, deleteParty: state.deleteParty })));
+    const {  parties, deleteParty  } = useAppStore(useShallow(state => ({ parties: state.parties, deleteParty: state.deleteParty })));
 
     // State for Details Modal
     const [selectedParty, setSelectedParty] = useState<Party | null>(null);
@@ -48,8 +47,9 @@ export default function CustomersVendorsScreen() {
     const [isFormModalVisible, setIsFormModalVisible] = useState(false);
     const [editingParty, setEditingParty] = useState<Party | null>(null);
 
-    const filteredParties = parties.filter(
-        p => p.partyType === tab && p.legalName?.toLowerCase().includes(search.toLowerCase())
+    let filterTab = tab === "customer" ? "CUSTOMER" : tab === "vendor" ? "VENDOR" : null;
+    const filteredParties = parties.filter(p => 
+        (filterTab ? p.partyType === filterTab : true) && p.legalName?.toLowerCase().includes(search.toLowerCase())
     );
 
     const totalReceivable = filteredParties.reduce((sum, p) => p.openingBalancePaise > 0 ? sum + p.openingBalancePaise : sum, 0);
@@ -145,12 +145,12 @@ export default function CustomersVendorsScreen() {
             {/* Header */}
             <View className="flex-row items-center justify-between p-5 bg-white shadow-sm z-10">
                 <View className="flex-row items-center">
-                    <Pressable onPress={() => router.back()} className="mr-4 p-2 min-h-[44px] min-w-[44px] items-center justify-center">
+                    <Pressable onPress={() => { Vibration.vibrate(10); router.back(); }} className="mr-4 p-2 min-h-[44px] min-w-[44px] items-center justify-center">
                         <ArrowLeft color="#081126" size={24} />
                     </Pressable>
                     <Text className="text-2xl font-sans-bold text-primary">Directory</Text>
                 </View>
-                <Pressable onPress={() => openFormModal()} className="p-2 bg-primary rounded-full min-h-[44px] min-w-[44px] items-center justify-center">
+                <Pressable onPress={() => { Vibration.vibrate(10); openFormModal(); }} className="p-2 bg-primary rounded-full min-h-[44px] min-w-[44px] items-center justify-center">
                     <Plus color="white" size={20} />
                 </Pressable>
             </View>
@@ -175,8 +175,10 @@ export default function CustomersVendorsScreen() {
                 }
                 data={filteredParties}
                 keyExtractor={(party) => party.id}
-                initialNumToRender={15}
+                initialNumToRender={10}
                 maxToRenderPerBatch={10}
+                windowSize={10}
+                removeClippedSubviews={true}
                 renderItem={({ item: party }) => (
                     <Card className="flex-row justify-between items-center mb-4 mx-5" isPressable onPress={() => openDetailsModal(party)}>
                         <View className="flex-1 mr-2">
@@ -193,11 +195,7 @@ export default function CustomersVendorsScreen() {
                         </View>
                     </Card>
                 )}
-                ListEmptyComponent={
-                    <View className="items-center justify-center py-10">
-                        <Text className="font-sans-medium text-muted-foreground">No {tab}s found.</Text>
-                    </View>
-                }
+                ListEmptyComponent={<EmptyState title={`No ${tab}s found`} subtitle="Try adding a new party." icon={<View />} />}
             />
             )}
 

@@ -6,7 +6,7 @@ import { useRouter } from "expo-router";
 import { useShallow } from 'zustand/react/shallow';
 import { ArrowLeft, Plus, ReceiptText, X, Edit, Trash2, Box } from "lucide-react-native";
 import { useState } from "react";
-import { Pressable, Text, View, RefreshControl, Alert, FlatList, ScrollView } from "react-native";
+import {  Pressable, Text, View, RefreshControl, Alert, FlatList, ScrollView , Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AnimatedModal from "@/components/ui/AnimatedModal";
 import Card from "@/components/ui/Card";
@@ -14,6 +14,7 @@ import { useAppStore } from "@/store";
 import { SegmentedTabs } from "@/components/ui/SegmentedTabs";
 import { SearchBar } from "@/components/ui/SearchBar";
 import "../../../../global.css";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { formatINR } from "@/utils/money";
 import { formatDate } from "@/utils/date";
 
@@ -117,7 +118,7 @@ export default function SalesScreen() {
         <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
             {/* Header */}
             <View className="flex-row items-center p-5 bg-white shadow-sm z-10">
-                <Pressable onPress={() => router.back()} className="mr-4 p-2 min-h-[44px] min-w-[44px] items-center justify-center">
+                <Pressable onPress={() => { Vibration.vibrate(10); router.back(); }} className="mr-4 p-2 min-h-[44px] min-w-[44px] items-center justify-center">
                     <ArrowLeft color="#081126" size={24} />
                 </Pressable>
                 <Text className="text-2xl font-sans-bold text-primary">Sales Documents</Text>
@@ -142,14 +143,16 @@ export default function SalesScreen() {
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#208AEF" />}
                 data={filteredInvoices}
                 keyExtractor={(inv) => inv.id}
-                initialNumToRender={15}
+                initialNumToRender={10}
                 maxToRenderPerBatch={10}
+                windowSize={10}
+                removeClippedSubviews={true}
                 renderItem={({ item: inv }) => (
                     <Card className="mb-4 mx-5" isPressable onPress={() => setSelectedInvoice(inv)}>
                         <View className="flex-row justify-between items-start mb-3">
                             <View className="flex-1 mr-2">
                                 <Text className="font-sans-bold text-base text-primary">{inv.partyName}</Text>
-                                <Text className="font-sans-medium text-xs text-muted-foreground mt-1">{inv.documentNumber} • {inv.documentDate}</Text>
+                                <Text className="font-sans-medium text-xs text-muted-foreground mt-1">{inv.documentNumber} • {formatDate(inv.documentDate)}</Text>
                             </View>
                             <View className={`px-2 py-1 rounded-md border ${getStatusColor(inv.status)} flex-shrink-0`}>
                                 <Text className="font-sans-bold text-[10px] uppercase">
@@ -172,32 +175,13 @@ export default function SalesScreen() {
                         </View>
                     </Card>
                 )}
-                ListEmptyComponent={
-                    <View className="items-center justify-center py-20 px-5">
-                        <View className="h-24 w-24 bg-primary/5 rounded-full items-center justify-center mb-6">
-                            <ReceiptText color="#208AEF" size={40} opacity={0.5} />
-                        </View>
-                        <Text className="font-sans-bold text-xl text-primary mb-2 text-center">No Documents Found</Text>
-                        <Text className="font-sans-medium text-sm text-muted-foreground text-center mb-8">
-                            {search ? `We couldn't find any documents matching "${search}".` : "You haven't created any sales documents yet."}
-                        </Text>
-                        {!search && (
-                            <Pressable 
-                                onPress={() => setCreateModalVisible(true)}
-                                className="bg-primary flex-row items-center justify-center px-6 py-3 rounded-xl min-h-[44px]"
-                            >
-                                <Plus color="white" size={20} className="mr-2" />
-                                <Text className="font-sans-bold text-white text-base">Create Document</Text>
-                            </Pressable>
-                        )}
-                    </View>
-                }
+                ListEmptyComponent={<EmptyState title="No items found" subtitle="Nothing matches your search criteria." icon={<View />} />}
             />
             )}
 
             {/* FAB */}
             <Pressable
-                onPress={() => setCreateModalVisible(true)}
+                onPress={() => { Vibration.vibrate(10); setCreateModalVisible(true); }}
                 className="absolute bottom-8 right-6 h-16 w-16 items-center justify-center rounded-full bg-primary"
                 style={{
                     elevation: 12,
@@ -308,7 +292,7 @@ export default function SalesScreen() {
                 <View className="bg-white rounded-t-3xl p-6 pb-12 w-full">
                     <View className="flex-row justify-between items-center mb-6">
                         <Text className="font-sans-bold text-xl text-primary">Create Document</Text>
-                        <Pressable onPress={() => setCreateModalVisible(false)} className="h-10 w-10 items-center justify-center bg-muted rounded-full">
+                        <Pressable onPress={() => { Vibration.vibrate(10); setCreateModalVisible(false); }} className="h-10 w-10 items-center justify-center bg-muted rounded-full">
                             <X color="#64748b" size={18} />
                         </Pressable>
                     </View>

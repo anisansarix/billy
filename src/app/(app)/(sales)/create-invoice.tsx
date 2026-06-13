@@ -78,10 +78,10 @@ export default function CreateInvoiceScreen() {
 
         if (editId) {
             updateInvoice(invoiceToSave );
-            console.log("Updated SalesInvoice!");
+            
         } else {
             addInvoice(invoiceToSave );
-            console.log("Saved SalesInvoice!");
+            
         }
         
         router.back();

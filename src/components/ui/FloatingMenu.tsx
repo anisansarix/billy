@@ -4,6 +4,7 @@ import {
     Pressable,
     Text,
     View,
+    Vibration,
 } from "react-native";
 
 import { BlurView } from "expo-blur";
@@ -166,6 +167,7 @@ export default function FloatingMenu({
                                     accessibilityRole="menuitem"
                                     accessibilityLabel={`Navigate to ${item.label}`}
                                     onPress={() => {
+                                        Vibration.vibrate(10);
                                         onClose();
                                         if (item.label === "Dashboard" && (pathname === '/(app)/dashboard' || pathname === '/dashboard' || pathname === '/')) {
                                             if (onScrollToTop) {
@@ -191,7 +193,10 @@ export default function FloatingMenu({
 
                         <Pressable 
                             className="mt-2 flex-row items-center justify-center rounded-3xl border border-primary min-h-[44px] py-3"
-                            onPress={() => setFyModalVisible(true)}
+                            onPress={() => {
+                                Vibration.vibrate(10);
+                                setFyModalVisible(true);
+                            }}
                             accessibilityRole="button"
                             accessibilityLabel={`Select Financial Year, currently ${selectedFy}`}
                         >

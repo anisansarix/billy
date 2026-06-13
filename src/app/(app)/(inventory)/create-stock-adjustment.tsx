@@ -1,8 +1,7 @@
-// @ts-nocheck
 import { InventoryItem, StockAdjustmentRecord } from "@/types/entities";
 import { useRouter } from "expo-router";
 import { useShallow } from 'zustand/react/shallow';
-import { ArrowLeft, Save, Search, ArrowDownRight, ArrowUpRight } from "lucide-react-native";
+import { ArrowLeft, Save, Search } from "lucide-react-native";
 import { useState, useMemo } from "react";
 import { Pressable, ScrollView, Text, TextInput, View, Alert, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -66,7 +65,6 @@ export default function CreateStockAdjustmentScreen() {
         updateItem({ ...selectedItem, stock: newStock });
         addAdjustment(adjustment);
         
-        console.log("Stock Adjusted Successfully!");
         router.back();
     };
 

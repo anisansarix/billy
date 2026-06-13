@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { ArrowRight } from "lucide-react-native";
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View, Alert } from "react-native";
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View, Alert, Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AuthInput from "@/components/ui/AuthInput";
 import Button from "@/components/ui/Button";
@@ -139,7 +139,7 @@ export default function SignUpScreen() {
 
           <View className="flex-row justify-center mb-12">
             <Pressable 
-              onPress={() => router.push("/(auth)/sign-in")} 
+              onPress={() => { Vibration.vibrate(10); router.push("/(auth)/sign-in"); }} 
               className="min-h-[44px] justify-center"
               accessibilityRole="button"
               accessibilityLabel="Already registered?"

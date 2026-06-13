@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Dimensions, Pressable, ScrollView, Text, View, NativeSyntheticEvent, NativeScrollEvent, Image } from "react-native";
+import { Dimensions, Pressable, ScrollView, Text, View, NativeSyntheticEvent, NativeScrollEvent, Image, Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useRef } from "react";
 import { CheckCircle2, TrendingUp, AlertTriangle, ArrowRight, MousePointer2, Package, PieChart, Sparkles } from "lucide-react-native";
@@ -164,6 +164,7 @@ export default function OnboardingScreen() {
   };
 
   const handleNext = () => {
+    Vibration.vibrate(10);
     if (activeIndex < SLIDES.length - 1) {
       scrollRef.current?.scrollTo({ x: width * (activeIndex + 1), animated: true });
     } else {
@@ -178,7 +179,7 @@ export default function OnboardingScreen() {
       {/* Skip Button */}
       {activeIndex < SLIDES.length - 1 && (
         <View className="absolute top-14 right-6 z-50">
-          <Pressable onPress={() => router.push("/(auth)/sign-up")}>
+          <Pressable onPress={() => { Vibration.vibrate(10); router.push("/(auth)/sign-up"); }}>
             <Text className="font-sans-medium text-muted-foreground/60 text-base">Skip</Text>
           </Pressable>
         </View>

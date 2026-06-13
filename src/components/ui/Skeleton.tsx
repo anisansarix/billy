@@ -10,8 +10,8 @@ import Animated, {
 } from 'react-native-reanimated';
 
 interface SkeletonProps {
-  width?: any;
-  height?: any;
+  width?: number | `${number}%` | "auto";
+  height?: number | `${number}%` | "auto";
   borderRadius?: number;
   className?: string;
   style?: StyleProp<ViewStyle>;

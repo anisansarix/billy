@@ -76,10 +76,10 @@ export default function CreateEstimateScreen() {
 
         if (editId) {
             updateInvoice(estimateToSave as unknown as SalesInvoice);
-            console.log("Updated Estimate!");
+            
         } else {
             addInvoice(estimateToSave as unknown as SalesInvoice);
-            console.log("Saved Estimate!");
+            
         }
         
         router.back();

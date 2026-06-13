@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import { ArrowLeft, Plus, Receipt, Wallet, Search, Box } from "lucide-react-native";
 import { useState } from "react";
-import { Pressable, ScrollView, Text, TextInput, View, RefreshControl, FlatList } from "react-native";
+import {  Pressable, ScrollView, Text, TextInput, View, RefreshControl, FlatList , Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Card from "@/components/ui/Card";
 import { useAppStore } from "@/store";
@@ -12,7 +12,9 @@ import { useDeferredRender } from "@/hooks/useDeferredRender";
 import { useTabTransition } from "@/hooks/useTabTransition";
 import { SegmentedTabs } from "@/components/ui/SegmentedTabs";
 import "../../../../global.css";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { formatINR } from "@/utils/money";
+import { formatDate } from "@/utils/date";
 import ExpenseDetailsModal from "@/components/domain/purchases/ExpenseDetailsModal";
 import PurchaseDetailsModal from "@/components/domain/purchases/PurchaseDetailsModal";
 import ExpenseFormModal from "@/components/domain/purchases/ExpenseFormModal";
@@ -161,7 +163,7 @@ export default function ExpenseRecordsPurchasesScreen() {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
             <View className="flex-row items-center p-5 bg-white shadow-sm z-10">
-                <Pressable onPress={() => router.back()} className="mr-4 p-2 min-h-[44px] min-w-[44px] items-center justify-center">
+                <Pressable onPress={() => { Vibration.vibrate(10); router.back(); }} className="mr-4 p-2 min-h-[44px] min-w-[44px] items-center justify-center">
                     <ArrowLeft color="#081126" size={24} />
                 </Pressable>
                 <Text className="text-2xl font-sans-bold text-primary">ExpenseRecords & Purchases</Text>
@@ -186,8 +188,10 @@ export default function ExpenseRecordsPurchasesScreen() {
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#208AEF" />}
                     data={filteredExpenseRecords}
                     keyExtractor={(exp) => exp.id}
-                    initialNumToRender={15}
-                    maxToRenderPerBatch={10}
+                    initialNumToRender={10}
+                maxToRenderPerBatch={10}
+                windowSize={10}
+                removeClippedSubviews={true}
                     renderItem={({ item: exp }) => (
                         <Card className="mb-4 mx-5" isPressable onPress={() => setSelectedExpenseRecord(exp)}>
                             <View className="flex-row justify-between items-start mb-2">
@@ -204,7 +208,7 @@ export default function ExpenseRecordsPurchasesScreen() {
                                 </View>
                                 <View className="items-end flex-shrink-0">
                                     <Text className="font-sans-bold text-lg text-primary" numberOfLines={1} adjustsFontSizeToFit>{formatINR(exp.amountPaise || 0)}</Text>
-                                    <Text className="font-sans-medium text-xs text-muted-foreground mt-0.5">{exp.date}</Text>
+                                    <Text className="font-sans-medium text-xs text-muted-foreground mt-0.5">{formatDate(exp.date)}</Text>
                                 </View>
                             </View>
 
@@ -214,26 +218,7 @@ export default function ExpenseRecordsPurchasesScreen() {
                             </View>
                         </Card>
                     )}
-                    ListEmptyComponent={
-                        <View className="items-center justify-center py-20 px-5">
-                            <View className="h-24 w-24 bg-primary/5 rounded-full items-center justify-center mb-6">
-                                <Receipt color="#208AEF" size={40} opacity={0.5} />
-                            </View>
-                            <Text className="font-sans-bold text-xl text-primary mb-2 text-center">No ExpenseRecords Found</Text>
-                            <Text className="font-sans-medium text-sm text-muted-foreground text-center mb-8">
-                                {search ? `We couldn't find any expenses matching "${search}".` : "You haven't recorded any expenses yet. Keep track of your spending."}
-                            </Text>
-                            {!search && (
-                                <Pressable 
-                                    onPress={() => openExpenseRecordForm()}
-                                    className="bg-primary flex-row items-center justify-center px-6 py-3 rounded-xl min-h-[44px]"
-                                >
-                                    <Plus color="white" size={20} className="mr-2" />
-                                    <Text className="font-sans-bold text-white text-base">Add Expense</Text>
-                                </Pressable>
-                            )}
-                        </View>
-                    }
+                    ListEmptyComponent={<EmptyState title="No items found" subtitle="Nothing matches your search criteria." icon={<View />} />}
                 />
             )
             ) : (
@@ -257,8 +242,10 @@ export default function ExpenseRecordsPurchasesScreen() {
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#208AEF" />}
                     data={filteredPurchases}
                     keyExtractor={(pur) => pur.id}
-                    initialNumToRender={15}
-                    maxToRenderPerBatch={10}
+                    initialNumToRender={10}
+                maxToRenderPerBatch={10}
+                windowSize={10}
+                removeClippedSubviews={true}
                     renderItem={({ item: pur }) => (
                         <Card className="mb-4 mx-5" isPressable onPress={() => setSelectedPurchase(pur)}>
                             <View className="flex-row justify-between items-start mb-3">
