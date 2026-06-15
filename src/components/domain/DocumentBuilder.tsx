@@ -408,14 +408,14 @@ export default function DocumentBuilder({
 
                 {/* 4. PaymentRecord Info */}
                 <Section 
-                    title="PaymentRecord Information" 
+                    title="Payment Information" 
                     isExpanded={expandedSections.payment} 
                     onToggle={() => toggleSection('payment')}
                     summary={`${payment.mode} • ${payment.terms}`}
                 >
                     <View className="flex-row gap-4 mb-4">
                         <View className="flex-1">
-                            <Text className="font-sans-medium text-sm text-muted-foreground mb-1">PaymentRecord Mode</Text>
+                            <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Payment Mode</Text>
                             <TextInput 
                                 className="bg-slate-50 border border-border rounded-lg px-3 py-2 font-sans-medium text-primary"
                                 value={payment.mode}
@@ -423,7 +423,7 @@ export default function DocumentBuilder({
                             />
                         </View>
                         <View className="flex-1">
-                            <Text className="font-sans-medium text-sm text-muted-foreground mb-1">PaymentRecord Terms</Text>
+                            <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Payment Terms</Text>
                             <TextInput 
                                 className="bg-slate-50 border border-border rounded-lg px-3 py-2 font-sans-medium text-primary"
                                 value={payment.terms}

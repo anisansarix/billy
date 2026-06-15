@@ -87,7 +87,7 @@ export default function NewDeliveryChallanScreen() {
             />
 
             {/* Transport Details Overlay at Bottom */}
-            <View className="p-4 bg-white border-t border-border shadow-sm absolute bottom-0 left-0 right-0 z-20 pb-safe">
+            <View className="p-4 bg-white border-t border-border shadow-sm absolute bottom-0 left-0 right-0 z-20 pb-8">
                 <Text className="font-sans-bold text-base text-primary mb-3">Transport Details</Text>
                 
                 <View className="flex-row space-x-2 mb-2">
@@ -97,8 +97,10 @@ export default function NewDeliveryChallanScreen() {
                             value={vehicleNumber}
                             onChangeText={setVehicleNumber}
                             placeholder="GJ05AB1234"
+                            placeholderTextColor="#94a3b8"
                             autoCapitalize="characters"
-                            className="bg-slate-50 border border-border rounded-lg px-3 py-2 font-sans-medium text-sm text-primary h-10"
+                            style={{ color: '#0f172a' }}
+                            className="bg-slate-50 border border-border rounded-lg px-3 py-2 font-sans-medium text-sm h-10"
                         />
                     </View>
                     <View className="flex-1 ml-1">
@@ -107,7 +109,9 @@ export default function NewDeliveryChallanScreen() {
                             value={dispatchDate}
                             onChangeText={setDispatchDate}
                             placeholder="DD-MM-YYYY"
-                            className="bg-slate-50 border border-border rounded-lg px-3 py-2 font-sans-medium text-sm text-primary h-10"
+                            placeholderTextColor="#94a3b8"
+                            style={{ color: '#0f172a' }}
+                            className="bg-slate-50 border border-border rounded-lg px-3 py-2 font-sans-medium text-sm h-10"
                         />
                     </View>
                 </View>
@@ -118,7 +122,9 @@ export default function NewDeliveryChallanScreen() {
                         value={transporterName}
                         onChangeText={setTransporterName}
                         placeholder="Carrier name"
-                        className="bg-slate-50 border border-border rounded-lg px-3 py-2 font-sans-medium text-sm text-primary h-10"
+                        placeholderTextColor="#94a3b8"
+                        style={{ color: '#0f172a' }}
+                        className="bg-slate-50 border border-border rounded-lg px-3 py-2 font-sans-medium text-sm h-10"
                     />
                 </View>
                 

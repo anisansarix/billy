@@ -35,7 +35,7 @@ export default function NewCreditNoteScreen() {
             header: {
                 documentType: DocumentType.CREDIT_NOTE,
                 documentNumber: autoGenCNNumber,
-                documentDate: new Date().toISOString(),
+                documentDate: new Date().toISOString().split('T')[0],
                 dueDate: "",
                 status: "Draft",
             },

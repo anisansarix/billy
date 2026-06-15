@@ -67,7 +67,7 @@ export default function CreateInvoiceScreen() {
             header: {
                 documentType: DocumentType.SALES_INVOICE,
                 documentNumber: defaultDocNumber,
-                documentDate: new Date().toISOString(),
+                documentDate: new Date().toISOString().split('T')[0],
                 dueDate: "",
                 status: "Draft",
             },

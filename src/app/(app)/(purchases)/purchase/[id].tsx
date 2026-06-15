@@ -119,30 +119,28 @@ export default function PurchaseDetailScreen() {
                     <View className="p-4 border-b border-border">
                         <Text className="font-sans-medium text-xs text-muted-foreground uppercase tracking-wider">Line Items</Text>
                     </View>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                        <View>
-                            <View className="flex-row bg-gray-50 border-b border-border py-3 px-4">
-                                <Text className="font-sans-bold text-xs text-muted-foreground w-10">#</Text>
-                                <Text className="font-sans-bold text-xs text-muted-foreground w-40">Description</Text>
-                                <Text className="font-sans-bold text-xs text-muted-foreground w-20">HSN/SAC</Text>
-                                <Text className="font-sans-bold text-xs text-muted-foreground w-16 text-right">Qty</Text>
-                                <Text className="font-sans-bold text-xs text-muted-foreground w-16 text-center">Unit</Text>
-                                <Text className="font-sans-bold text-xs text-muted-foreground w-24 text-right">Rate</Text>
-                                <Text className="font-sans-bold text-xs text-muted-foreground w-28 text-right">Amount</Text>
-                            </View>
-                            {purchase.lineItems.map((item, idx) => (
-                                <View key={item.id} className={`flex-row py-3 px-4 border-b border-border ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
-                                    <Text className="font-sans-medium text-sm text-primary w-10">{idx + 1}</Text>
-                                    <Text className="font-sans-medium text-sm text-primary w-40" numberOfLines={2}>{item.description}</Text>
-                                    <Text className="font-sans-medium text-sm text-primary w-20">{item.hsnSacCode}</Text>
-                                    <Text className="font-sans-medium text-sm text-primary w-16 text-right">{item.quantityDecimal}</Text>
-                                    <Text className="font-sans-medium text-sm text-primary w-16 text-center">{item.unit}</Text>
-                                    <Text className="font-sans-medium text-sm text-primary w-24 text-right">{formatINR(item.unitPricePaise)}</Text>
-                                    <Text className="font-sans-bold text-sm text-primary w-28 text-right">{formatINR(item.totalAmountPaise)}</Text>
+                    <View>
+                        {purchase.lineItems.map((item, idx) => (
+                            <View key={item.id} className={`py-3 px-4 border-b border-border ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                                <View className="flex-row justify-between mb-1">
+                                    <Text className="font-sans-bold text-sm text-primary flex-1 mr-2" numberOfLines={2}>
+                                        {idx + 1}. {item.description}
+                                    </Text>
+                                    <Text className="font-sans-bold text-sm text-primary">{formatINR(item.totalAmountPaise)}</Text>
                                 </View>
-                            ))}
-                        </View>
-                    </ScrollView>
+                                <View className="flex-row justify-between items-center">
+                                    <View className="flex-row items-center">
+                                        <Text className="font-sans-medium text-xs text-muted-foreground">
+                                            {item.quantityDecimal} {item.unit} × {formatINR(item.unitPricePaise)}
+                                        </Text>
+                                    </View>
+                                    <Text className="font-sans-medium text-xs text-muted-foreground">
+                                        HSN: {item.hsnSacCode}
+                                    </Text>
+                                </View>
+                            </View>
+                        ))}
+                    </View>
                 </View>
 
                 {/* GST summary section */}
