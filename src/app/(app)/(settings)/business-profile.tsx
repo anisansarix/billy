@@ -50,6 +50,14 @@ export default function BusinessProfileScreen() {
             return;
         }
 
+        if (formData.gstin?.trim()) {
+            const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+            if (!gstinRegex.test(formData.gstin.trim().toUpperCase())) {
+                Alert.alert("Invalid GSTIN", "Please enter a valid 15-character GSTIN.");
+                return;
+            }
+        }
+
         // Merge with existing business to keep un-edited fields like bankDetails
         const updatedBusiness = {
             ...currentBusiness,

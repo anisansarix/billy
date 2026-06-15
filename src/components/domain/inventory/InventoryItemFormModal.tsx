@@ -100,6 +100,14 @@ export default function InventoryItemFormModal({ visible, onClose, itemToEdit, i
             return;
         }
 
+        if (formData.hsnSacCode?.trim()) {
+            const hsn = formData.hsnSacCode.trim();
+            if (!/^\d{4}$|^\d{6}$|^\d{8}$/.test(hsn)) {
+                Alert.alert("Invalid HSN/SAC", "HSN/SAC code must be exactly 4, 6, or 8 digits.");
+                return;
+            }
+        }
+
         const gstRate = formData.gstRate || 0;
         const taxRateObj: TaxRate = {
             id: `tax-${gstRate}`,

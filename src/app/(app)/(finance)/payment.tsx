@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { PaymentRecord } from "@/types/entities";
 
 import { useRouter } from "expo-router";
@@ -87,7 +86,7 @@ export default function PaymentScreen() {
 
         const payData: PaymentRecord = {
             id: editingPayment ? editingPayment.id : `pay-${Date.now()}`,
-            date: editingPayment ? editingPayment.date : new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+            date: editingPayment ? editingPayment.date : new Date().toISOString(),
             partyName: formData.partyName,
             amountPaise: Math.round(parseFloat(formData.amount) * 100),
             mode: formData.mode as PaymentRecord["mode"],
