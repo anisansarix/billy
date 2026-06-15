@@ -1,8 +1,8 @@
 "use no memo";
 import { useRouter } from "expo-router";
-import { Save, Plus, ChevronDown, ChevronUp, Trash2, X } from "lucide-react-native";
+import { ArrowLeft, Save, Plus, ChevronDown, ChevronUp, Trash2, X } from "lucide-react-native";
 import { useState, useMemo } from "react";
-import { Pressable, ScrollView, Text, TextInput, View, KeyboardAvoidingView, Platform, Alert } from "react-native";
+import { Vibration, Pressable, ScrollView, Text, TextInput, View, KeyboardAvoidingView, Platform, Alert } from "react-native";
 import AnimatedModal from "@/components/ui/AnimatedModal";
 import { useAppStore } from "@/store";
 import { useShallow } from 'zustand/react/shallow';
@@ -225,14 +225,14 @@ export default function DocumentBuilder({
         <KeyboardAvoidingView style={{ flex: 1 }} className="flex-1" behavior="padding" keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
             <View style={{ flex: 1 }} className="flex-1 bg-slate-50">
             {/* Header */}
-            <View className="flex-row justify-between items-center px-6 pt-6 pb-4 bg-white border-b border-border shadow-sm z-10">
-                <View className="flex-1 mr-4">
-                    <Text className="font-sans-bold text-3xl text-primary mb-1">{title}</Text>
-                    {subtitle && <Text className="font-sans-medium text-sm text-muted-foreground">{subtitle}</Text>}
-                </View>
-                <Pressable onPress={() => router.back()} className="h-11 w-11 bg-slate-50 items-center justify-center rounded-full">
-                    <X color="#081126" size={24} />
+            <View className="flex-row items-center p-4 bg-white shadow-sm z-10 border-b border-border">
+                <Pressable onPress={() => { Vibration.vibrate(10); router.back(); }} className="h-10 w-10 items-center justify-center rounded-full active:bg-gray-100">
+                    <ArrowLeft color="#081126" size={24} />
                 </Pressable>
+                <View className="ml-2">
+                    <Text className="text-lg font-sans-bold text-primary">{title}</Text>
+                    {subtitle && <Text className="text-xs font-sans-medium text-muted-foreground">{subtitle}</Text>}
+                </View>
             </View>
 
             <ScrollView className="flex-1 px-5 pt-4" showsVerticalScrollIndicator={false} contentContainerClassName="pb-32">

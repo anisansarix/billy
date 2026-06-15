@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ArrowLeft, Download } from "lucide-react-native";
-import { Pressable, ScrollView, Text, View, Alert, ActivityIndicator } from "react-native";
+import { View, Text, ScrollView, Pressable, Alert, ActivityIndicator, Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppStore } from "@/store";
 import { formatINR } from "@/utils/money";
@@ -69,12 +69,15 @@ export default function PurchaseDetailScreen() {
     return (
         <SafeAreaView style={{ flex: 1 }} className="bg-slate-50">
             {/* Header */}
-            <View className="flex-row justify-between items-center px-4 py-3 bg-white shadow-sm z-10 border-b border-border">
-                <Pressable onPress={() => router.back()} className="p-2 -ml-2 min-h-[44px] min-w-[44px] items-center justify-center">
-                    <ArrowLeft color="#0f172a" size={24} />
+            <View className="flex-row items-center p-4 bg-white shadow-sm z-10 border-b border-border">
+                <Pressable onPress={() => { Vibration.vibrate(10); router.back(); }} className="h-10 w-10 items-center justify-center rounded-full active:bg-gray-100">
+                    <ArrowLeft color="#081126" size={24} />
                 </Pressable>
-                <Text className="font-sans-bold text-lg text-primary flex-1 text-center" numberOfLines={1}>{purchase.documentNumber}</Text>
-                <Pressable onPress={handleDownload} disabled={isDownloading} className="p-2 -mr-2 min-h-[44px] min-w-[44px] items-center justify-center">
+                <View className="ml-2 flex-1">
+                    <Text className="text-lg font-sans-bold text-primary" numberOfLines={1}>{purchase.documentNumber}</Text>
+                    <Text className="text-xs font-sans-medium text-muted-foreground">Purchase Order Details</Text>
+                </View>
+                <Pressable onPress={handleDownload} disabled={isDownloading} className="h-10 w-10 items-center justify-center rounded-full active:bg-gray-100">
                     {isDownloading ? <ActivityIndicator size="small" color="#208AEF" /> : <Download color="#208AEF" size={24} />}
                 </Pressable>
             </View>

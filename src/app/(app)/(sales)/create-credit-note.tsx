@@ -1,35 +1,35 @@
 import { useAppStore } from "@/store";
 import { getCurrentFinancialYear } from "@/utils/date";
-import { useShallow } from 'zustand/react/shallow';
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { ArrowLeft, Ban, ChevronRight, ReceiptText, Search } from "lucide-react-native";
 import { useState } from "react";
-import { View, Text, Pressable, FlatList, Vibration, TextInput } from "react-native";
+import { FlatList, Pressable, Text, TextInput, Vibration, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ArrowLeft, Search, ReceiptText, ChevronRight, Ban } from "lucide-react-native";
+import { useShallow } from 'zustand/react/shallow';
 
-import { Party, DocumentType, CreditNote, SalesInvoice } from "@/types/entities";
 import DocumentBuilder, { DocumentData } from "@/components/domain/DocumentBuilder";
-import { buildGSTSummary, amountInIndianWords } from "@/utils/gst";
-import { formatINR } from "@/utils/money";
+import { CreditNote, DocumentType, Party, SalesInvoice } from "@/types/entities";
 import { formatDate } from "@/utils/date";
+import { amountInIndianWords, buildGSTSummary } from "@/utils/gst";
+import { formatINR } from "@/utils/money";
 
 export default function CreateCreditNoteScreen() {
     const router = useRouter();
     const params = useLocalSearchParams();
-    const { creditNotes, invoices, parties, addCreditNote, updateCreditNote, documentCounters, incrementDocumentCounter, currentBusiness } = useAppStore(useShallow(state => ({ 
-        creditNotes: state.creditNotes, 
+    const { creditNotes, invoices, parties, addCreditNote, updateCreditNote, documentCounters, incrementDocumentCounter, currentBusiness } = useAppStore(useShallow(state => ({
+        creditNotes: state.creditNotes,
         invoices: state.invoices,
-        parties: state.parties, 
-        addCreditNote: state.addCreditNote, 
-        updateCreditNote: state.updateCreditNote, 
-        documentCounters: state.documentCounters, 
-        incrementDocumentCounter: state.incrementDocumentCounter, 
-        currentBusiness: state.currentBusiness 
+        parties: state.parties,
+        addCreditNote: state.addCreditNote,
+        updateCreditNote: state.updateCreditNote,
+        documentCounters: state.documentCounters,
+        incrementDocumentCounter: state.incrementDocumentCounter,
+        currentBusiness: state.currentBusiness
     })));
 
     const editId = params.id as string | undefined;
     const existingDoc = editId ? creditNotes.find(i => i.id === editId) : undefined;
-    
+
     // UI State for 2-step flow
     const [step, setStep] = useState<"PICK_INVOICE" | "BUILD_DOCUMENT">(existingDoc ? "BUILD_DOCUMENT" : "PICK_INVOICE");
     const [searchQuery, setSearchQuery] = useState("");
@@ -40,7 +40,7 @@ export default function CreateCreditNoteScreen() {
     const counterKey = `${docPrefix}-${fy}`;
     const nextNum = String((documentCounters?.[counterKey] || 0) + 1).padStart(4, '0');
     const defaultDocNumber = `${counterKey}-${nextNum}`;
-    
+
     // Prepare initial data based on either existing doc or selected original invoice
     let initialData = undefined;
     if (existingDoc) {
@@ -123,7 +123,7 @@ export default function CreateCreditNoteScreen() {
             addCreditNote(cnToSave);
             incrementDocumentCounter(docPrefix, fy);
         }
-        
+
         router.back();
     };
 
@@ -148,7 +148,7 @@ export default function CreateCreditNoteScreen() {
                 </View>
 
                 <View className="p-4">
-                    <Pressable 
+                    <Pressable
                         onPress={() => {
                             Vibration.vibrate(10);
                             setSelectedOriginalInvoice(null);
@@ -167,7 +167,7 @@ export default function CreateCreditNoteScreen() {
                     </Pressable>
 
                     <Text className="font-sans-bold text-sm text-primary mb-3">Or select an existing invoice to return against:</Text>
-                    
+
                     <View className="bg-white flex-row items-center px-4 h-12 rounded-xl border border-border mb-4">
                         <Search color="#94a3b8" size={18} />
                         <TextInput
@@ -195,7 +195,7 @@ export default function CreateCreditNoteScreen() {
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
                     renderItem={({ item }) => (
-                        <Pressable 
+                        <Pressable
                             className="bg-white border border-border rounded-xl p-4 mb-3 flex-row items-center shadow-sm active:bg-slate-50"
                             onPress={() => {
                                 Vibration.vibrate(10);
