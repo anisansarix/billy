@@ -38,7 +38,7 @@ export default function ProductsServicesScreen() {
 
     const filteredItems = items.filter(
         i => i.type === tab && i.name.toLowerCase().includes(search.toLowerCase())
-    );
+    ).sort((a, b) => new Date(b.updatedAt || b.createdAt || 0).getTime() - new Date(a.updatedAt || a.createdAt || 0).getTime());
 
     // Summary Logic
     const totalInventoryValue = filteredItems.reduce((sum, item) => sum + (item.unitPricePaise * (item.stock || 0)), 0);
@@ -167,12 +167,6 @@ export default function ProductsServicesScreen() {
                     </Pressable>
                     <Text className="text-2xl font-sans-bold text-primary">Inventory</Text>
                 </View>
-                <Pressable onPress={() => {
-                    if (view === 'catalog') openFormModal();
-                    else router.push('/(app)/(inventory)/create-stock-adjustment' as any);
-                }} className="p-2 bg-primary rounded-full">
-                    <Plus color="white" size={20} />
-                </Pressable>
             </View>
 
             {view === 'catalog' ? (
@@ -249,7 +243,7 @@ export default function ProductsServicesScreen() {
                     className="flex-1" 
                     showsVerticalScrollIndicator={false}
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#208AEF" />}
-                    data={adjustments}
+                    data={[...adjustments].sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime())}
                     keyExtractor={(adj) => adj.id}
                     initialNumToRender={15}
                     maxToRenderPerBatch={10}
@@ -283,6 +277,14 @@ export default function ProductsServicesScreen() {
                 />
             )
             )}
+
+            <Pressable 
+                onPress={() => { Vibration.vibrate(10); if (view === 'catalog') openFormModal(); else router.push('/(app)/(inventory)/create-stock-adjustment' as any); }}
+                className="absolute bottom-6 right-6 h-14 w-14 bg-primary rounded-full items-center justify-center shadow-lg active:scale-95"
+                style={{ elevation: 5, shadowColor: '#081126', shadowOpacity: 0.3, shadowRadius: 5, shadowOffset: { width: 0, height: 3 } }}
+            >
+                <Plus color="white" size={24} />
+            </Pressable>
 
             <InventoryItemDetailsModal
                 visible={!!selectedItem}

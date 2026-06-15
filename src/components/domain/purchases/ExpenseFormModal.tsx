@@ -62,10 +62,10 @@ export default function ExpenseFormModal({ visible, onClose, expenseToEdit }: Ex
 
     return (
         <AnimatedModal visible={visible} onClose={onClose} avoidKeyboard>
-            <View className="bg-white rounded-t-3xl h-[75%] p-5 pb-12 shadow-xl flex-col">
+            <View className="bg-white rounded-t-3xl min-h-[60%] max-h-[90%] p-5 pb-12 shadow-xl flex-col">
                 <View className="flex-row justify-between items-center mb-6">
                     <Text className="font-sans-bold text-xl text-primary">
-                        {expenseToEdit ? 'Edit ExpenseRecord' : 'Add Expense'}
+                        {expenseToEdit ? 'Edit Expense' : 'Add Expense'}
                     </Text>
                     <Pressable onPress={onClose} className="h-11 w-11 items-center justify-center bg-muted rounded-full">
                         <X color="#64748b" size={20} />
@@ -126,7 +126,7 @@ export default function ExpenseFormModal({ visible, onClose, expenseToEdit }: Ex
                     onPress={handleSave}
                     className="bg-primary rounded-xl py-4 items-center justify-center min-h-[44px] shadow-md shadow-primary/30"
                 >
-                    <Text className="font-sans-bold text-white text-lg">Save ExpenseRecord</Text>
+                    <Text className="font-sans-bold text-white text-lg">Save Expense</Text>
                 </Pressable>
             </View>
         </AnimatedModal>

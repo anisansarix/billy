@@ -1,10 +1,10 @@
-import { SalesInvoice } from "@/types/entities";
+
 import { ListCardSkeleton } from "@/components/ui/skeletons/ListCardSkeleton";
 import { useDeferredRender } from "@/hooks/useDeferredRender";
 import { useTabTransition } from "@/hooks/useTabTransition";
 import { useRouter } from "expo-router";
 import { useShallow } from 'zustand/react/shallow';
-import { ArrowLeft, Plus, ReceiptText, X, Edit, Trash2, Box } from "lucide-react-native";
+import { ArrowLeft, Plus, ReceiptText, X, Edit, Trash2, Box, Undo2 } from "lucide-react-native";
 import { useState } from "react";
 import {  Pressable, Text, View, RefreshControl, Alert, FlatList, ScrollView , Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -21,17 +21,24 @@ import { formatDate } from "@/utils/date";
 export default function SalesScreen() {
     const router = useRouter();
     const [search, setSearch] = useState("");
-    const [tab, setTab] = useState<"All" | "Invoices" | "Estimates" | "Quotations" | "Challans">("All");
+    const [tab, setTab] = useState<"All" | "Invoices" | "Estimates" | "Quotations" | "Challans" | "Credit Notes">("All");
     const [refreshing, setRefreshing] = useState(false);
     const [createModalVisible, setCreateModalVisible] = useState(false);
     
     // Details Modal State
-    const [selectedInvoice, setSelectedInvoice] = useState<SalesInvoice | null>(null);
+    const [selectedInvoice, setSelectedInvoice] = useState<any | null>(null);
 
     const isReady = useDeferredRender();
     const { isTabReady, startTransition } = useTabTransition();
     const isFullyReady = isReady && isTabReady;
-    const {  invoices, deleteInvoice  } = useAppStore(useShallow(state => ({ invoices: state.invoices, deleteInvoice: state.deleteInvoice })));
+    const { invoices, creditNotes, deliveryChallans, deleteInvoice, deleteCreditNote, deleteDeliveryChallan } = useAppStore(useShallow(state => ({ 
+        invoices: state.invoices, 
+        creditNotes: state.creditNotes, 
+        deliveryChallans: state.deliveryChallans, 
+        deleteInvoice: state.deleteInvoice,
+        deleteCreditNote: state.deleteCreditNote,
+        deleteDeliveryChallan: state.deleteDeliveryChallan
+    })));
 
     const onRefresh = () => {
         setRefreshing(true);
@@ -48,28 +55,33 @@ export default function SalesScreen() {
         }
     };
 
-    const filteredInvoices = invoices.filter(inv => {
+    const allDocuments = [...invoices, ...creditNotes, ...deliveryChallans].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    const filteredInvoices = allDocuments.filter(inv => {
         let matchesTab = true;
-        if (tab === "Invoices") matchesTab = inv.documentType === "SALES_INVOICE" || (inv.documentType as any) === "PROFORMA_INVOICE";
+        if (tab === "Invoices") matchesTab = inv.documentType === "SALES_INVOICE";
         else if (tab === "Estimates") matchesTab = (inv.documentType as any) === "PROFORMA_INVOICE";
-        else if (tab === "Quotations") matchesTab = (inv.documentType as any) === "PROFORMA_INVOICE";
+        else if (tab === "Quotations") matchesTab = (inv.documentType as any) === "QUOTATION";
         else if (tab === "Challans") matchesTab = (inv.documentType as any) === "DELIVERY_CHALLAN";
+        else if (tab === "Credit Notes") matchesTab = (inv.documentType as any) === "CREDIT_NOTE";
 
         const matchesSearch = inv.partyName?.toLowerCase().includes(search.toLowerCase()) || inv.documentNumber?.toLowerCase().includes(search.toLowerCase());
         return matchesTab && matchesSearch;
-    });
+    }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
     // Summary Calculations
     const totalInvoicesValue = filteredInvoices.reduce((sum, inv) => sum + inv.totalAmountPaise, 0);
 
-    const handleDelete = (id: string) => {
-        Alert.alert("Delete SalesInvoice", "Are you sure you want to delete this invoice?", [
+    const handleDelete = (id: string, type: string) => {
+        Alert.alert("Delete Document", "Are you sure you want to delete this document?", [
             { text: "Cancel", style: "cancel" },
             { 
                 text: "Delete", 
                 style: "destructive", 
                 onPress: () => { 
-                    deleteInvoice(id); 
+                    if (type === 'CREDIT_NOTE') deleteCreditNote(id);
+                    else if (type === 'DELIVERY_CHALLAN') deleteDeliveryChallan(id);
+                    else deleteInvoice(id); 
                     setSelectedInvoice(null);
                 } 
             }
@@ -81,7 +93,7 @@ export default function SalesScreen() {
             {/* Tabs */}
             <View className="bg-white pb-3 pt-3">
                 <SegmentedTabs 
-                    tabs={["All", "Invoices", "Estimates", "Quotations", "Challans"]} 
+                    tabs={["All", "Invoices", "Estimates", "Quotations", "Challans", "Credit Notes"]} 
                     activeTab={tab} 
                     onTabChange={(t) => startTransition(() => setTab(t as any))} 
                 />
@@ -255,6 +267,7 @@ export default function SalesScreen() {
                                         if ((type as any) === 'PROFORMA_INVOICE') route = '/(app)/create-estimate';
                                         if ((type as any) === 'PROFORMA_INVOICE') route = '/(app)/create-quotation';
                                         if ((type as any) === 'DELIVERY_CHALLAN') route = '/(app)/create-delivery-challan';
+                                        if ((type as any) === 'CREDIT_NOTE') route = '/(app)/create-credit-note';
                                         
                                         router.push({ pathname: route, params: { id } } as never);
                                     }}
@@ -264,7 +277,7 @@ export default function SalesScreen() {
                                     <Text className="font-sans-bold text-primary text-base">Edit</Text>
                                 </Pressable>
                                 <Pressable
-                                    onPress={() => handleDelete(selectedInvoice.id)}
+                                    onPress={() => handleDelete(selectedInvoice.id, selectedInvoice.documentType as string)}
                                     className="flex-1 border border-red-200 py-4 rounded-xl flex-row justify-center items-center ml-2"
                                 >
                                     <Trash2 color="#ef4444" size={18} className="mr-2" />
@@ -298,10 +311,11 @@ export default function SalesScreen() {
                     </View>
                     <View className="space-y-4">
                         {[
-                            { title: "Tax SalesInvoice", route: "/(app)/create-invoice", icon: <ReceiptText color="#208AEF" size={20} />, bg: "bg-blue-50" },
+                            { title: "Tax Invoice", route: "/(app)/create-invoice", icon: <ReceiptText color="#208AEF" size={20} />, bg: "bg-blue-50" },
                             { title: "Estimate", route: "/(app)/create-estimate", icon: <ReceiptText color="#f59e0b" size={20} />, bg: "bg-amber-50" },
                             { title: "Quotation", route: "/(app)/create-quotation", icon: <ReceiptText color="#8b5cf6" size={20} />, bg: "bg-purple-50" },
                             { title: "Delivery Challan", route: "/(app)/create-delivery-challan", icon: <Box color="#10b981" size={20} />, bg: "bg-emerald-50" },
+                            { title: "Credit Note", route: "/(app)/create-credit-note", icon: <Undo2 color="#ef4444" size={20} />, bg: "bg-red-50" },
                         ].map((item, idx) => (
                             <Pressable 
                                 key={idx} 

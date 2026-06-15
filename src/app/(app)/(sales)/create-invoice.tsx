@@ -1,4 +1,5 @@
 import { useAppStore } from "@/store";
+import { getCurrentFinancialYear } from "@/utils/date";
 import { useShallow } from 'zustand/react/shallow';
 import { useLocalSearchParams, useRouter } from "expo-router";
 
@@ -9,12 +10,28 @@ import { buildGSTSummary, amountInIndianWords } from "@/utils/gst";
 export default function CreateInvoiceScreen() {
     const router = useRouter();
     const params = useLocalSearchParams();
-    const {  invoices, parties, addInvoice, updateInvoice  } = useAppStore(useShallow(state => ({ invoices: state.invoices, parties: state.parties, addInvoice: state.addInvoice, updateInvoice: state.updateInvoice })));
+    const { invoices, deliveryChallans, parties, addInvoice, updateInvoice, documentCounters, incrementDocumentCounter, currentBusiness } = useAppStore(useShallow(state => ({ 
+        invoices: state.invoices, 
+        deliveryChallans: state.deliveryChallans,
+        parties: state.parties, 
+        addInvoice: state.addInvoice, 
+        updateInvoice: state.updateInvoice, 
+        documentCounters: state.documentCounters, 
+        incrementDocumentCounter: state.incrementDocumentCounter, 
+        currentBusiness: state.currentBusiness 
+    })));
 
     const editId = params.id as string | undefined;
+    const linkedChallanId = params.linkedChallanId as string | undefined;
     const existingDoc = editId ? invoices.find(i => i.id === editId) : undefined;
+    const linkedChallan = linkedChallanId ? deliveryChallans.find(c => c.id === linkedChallanId) : undefined;
     
-    // For edit mode, reconstruct the initial data to match what DocumentBuilder expects
+    const fy = getCurrentFinancialYear(currentBusiness?.fiscalYearStart || 'APRIL');
+    const docPrefix = "INV";
+    const counterKey = `${docPrefix}-${fy}`;
+    const nextNum = String((documentCounters?.[counterKey] || 0) + 1).padStart(4, '0');
+    const defaultDocNumber = `${counterKey}-${nextNum}`;
+    
     let initialData = undefined;
     if (existingDoc) {
         const party = parties.find(p => p.id === existingDoc.partyId);
@@ -39,6 +56,32 @@ export default function CreateInvoiceScreen() {
             } : undefined,
             notes: {
                 external: existingDoc.notes || "",
+                internal: ""
+            }
+        } as any;
+    } else if (linkedChallan) {
+        const party = parties.find(p => p.id === linkedChallan.partyId);
+        initialData = {
+            selectedParty: party || ({ id: linkedChallan.partyId || "", legalName: "", partyType: "CUSTOMER" } as unknown as Party),
+            header: {
+                documentType: DocumentType.SALES_INVOICE,
+                documentNumber: defaultDocNumber,
+                documentDate: new Date().toISOString(),
+                dueDate: "",
+                status: "Draft",
+            },
+            items: linkedChallan.lineItems,
+            payment: {
+                mode: "UPI",
+                terms: "Immediate"
+            },
+            transport: {
+                vehicleNo: linkedChallan.vehicleNumber || "",
+                ewayBill: "",
+                deliveryDate: linkedChallan.dispatchDate || ""
+            },
+            notes: {
+                external: `Converted from Delivery Challan: ${linkedChallan.documentNumber}`,
                 internal: ""
             }
         } as any;
@@ -74,6 +117,7 @@ export default function CreateInvoiceScreen() {
             paidAmountPaise: 0,
             balanceDuePaise: documentData.totals.totalAmountPaise,
             eWayBillNumber: documentData.transport?.ewayBill,
+            linkedChallanId: linkedChallanId || existingDoc?.linkedChallanId,
         };
 
         if (editId) {
@@ -81,6 +125,7 @@ export default function CreateInvoiceScreen() {
             
         } else {
             addInvoice(invoiceToSave );
+            incrementDocumentCounter(docPrefix, fy);
             
         }
         
@@ -89,6 +134,7 @@ export default function CreateInvoiceScreen() {
 
     return (
         <DocumentBuilder
+            defaultDocNumber={defaultDocNumber}
             title={editId ? "Edit SalesInvoice" : "New SalesInvoice"}
             defaultType="Tax SalesInvoice"
             defaultPrefix="INV-"

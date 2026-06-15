@@ -83,8 +83,8 @@ export default function AnimatedModal({ visible, onClose, children, avoidKeyboar
 
     return (
         <Modal visible={show} transparent={true} animationType="none" onRequestClose={onClose} statusBarTranslucent>
-            {avoidKeyboard && Platform.OS === 'ios' ? (
-                <KeyboardAvoidingView behavior="padding" className="flex-1 m-0 p-0">
+            {avoidKeyboard ? (
+                <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} className="flex-1 m-0 p-0">
                     {content}
                 </KeyboardAvoidingView>
             ) : (

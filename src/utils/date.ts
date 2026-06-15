@@ -21,3 +21,20 @@ export const formatDate = (dateStr?: string | Date | null): string => {
     
     return str; // Fallback
 };
+
+export const getCurrentFinancialYear = (fiscalYearStart: 'APRIL' | 'JANUARY' = 'APRIL', date?: Date): string => {
+    const d = date || new Date();
+    const year = d.getFullYear();
+    const month = d.getMonth(); // 0-11
+    
+    if (fiscalYearStart === 'JANUARY') {
+        return `${year.toString().slice(-2)}`;
+    }
+    
+    // APRIL start (Indian FY)
+    if (month >= 3) { // Apr to Dec
+        return `${year.toString().slice(-2)}-${(year + 1).toString().slice(-2)}`;
+    } else { // Jan to Mar
+        return `${(year - 1).toString().slice(-2)}-${year.toString().slice(-2)}`;
+    }
+};

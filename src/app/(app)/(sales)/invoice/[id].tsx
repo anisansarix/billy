@@ -8,16 +8,23 @@ import { useAppStore } from '@/store';
 import { formatINR } from '@/utils/money';
 import { generateInvoicePDF } from '@/utils/pdf';
 import QRCode from 'react-native-qrcode-svg';
+import RecordPaymentModal from '@/components/domain/sales/RecordPaymentModal';
 
 export default function InvoiceDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const router = useRouter();
-    const invoice = useAppStore(s => s.invoices.find(inv => inv.id === id));
+    const invoice = useAppStore(s => 
+        s.invoices.find(inv => inv.id === id) || 
+        s.creditNotes.find(cn => cn.id === id) || 
+        s.deliveryChallans.find(dc => dc.id === id)
+    );
     const currentBusiness = useAppStore(s => s.currentBusiness);
     const parties = useAppStore(s => s.parties);
     const party = parties.find(p => p.id === invoice?.partyId);
     
     const [isSharing, setIsSharing] = useState(false);
+    const [paymentModalVisible, setPaymentModalVisible] = useState(false);
+    const recordInvoicePayment = useAppStore(s => s.recordInvoicePayment);
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -30,13 +37,18 @@ export default function InvoiceDetailScreen() {
     };
 
     const handleDownload = async () => {
-        if (!invoice || !currentBusiness || !party) return;
+        if (!invoice || !currentBusiness || !party || invoice.documentType !== "SALES_INVOICE") {
+            if (invoice && invoice.documentType !== "SALES_INVOICE") {
+                Alert.alert("Not Supported", "PDF generation is currently only supported for Sales Invoices.");
+            }
+            return;
+        }
         try {
             setIsSharing(true);
-            const pdfUri = await generateInvoicePDF(invoice, currentBusiness, party);
+            const pdfUri = await generateInvoicePDF(invoice as any, currentBusiness, party);
             await Sharing.shareAsync(pdfUri, {
                 mimeType: 'application/pdf',
-                dialogTitle: 'Save Invoice PDF',
+                dialogTitle: 'Save Document PDF',
                 UTI: 'com.adobe.pdf'
             });
         } catch (err: unknown) {
@@ -47,13 +59,18 @@ export default function InvoiceDetailScreen() {
     };
 
     const handleShare = async () => {
-        if (!invoice || !currentBusiness || !party) return;
+        if (!invoice || !currentBusiness || !party || invoice.documentType !== "SALES_INVOICE") {
+            if (invoice && invoice.documentType !== "SALES_INVOICE") {
+                Alert.alert("Not Supported", "Sharing is currently only supported for Sales Invoices.");
+            }
+            return;
+        }
         try {
             setIsSharing(true);
-            const pdfUri = await generateInvoicePDF(invoice, currentBusiness, party);
+            const pdfUri = await generateInvoicePDF(invoice as any, currentBusiness, party);
             await Sharing.shareAsync(pdfUri, {
                 mimeType: 'application/pdf',
-                dialogTitle: `Share Invoice ${invoice.documentNumber}`,
+                dialogTitle: `Share Document ${invoice.documentNumber}`,
                 UTI: 'com.adobe.pdf'
             });
         } catch (err: unknown) {
@@ -130,16 +147,26 @@ export default function InvoiceDetailScreen() {
                     <View className={`px-3 py-1 rounded-md border ${getStatusColor(invoice.status)} mb-3`}>
                         <Text className="font-sans-bold text-xs uppercase">{invoice.status}</Text>
                     </View>
-                    <Text className="font-sans-bold text-4xl text-primary mb-4">{formatINR(invoice.totalAmountPaise)}</Text>
+                    {invoice.documentType === 'SALES_INVOICE' && (invoice as any).balanceDuePaise < invoice.totalAmountPaise && invoice.status !== 'PAID' && invoice.status !== 'Paid' ? (
+                        <View className="items-center mb-4">
+                            <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Balance Due</Text>
+                            <Text className="font-sans-bold text-4xl text-primary">{formatINR((invoice as any).balanceDuePaise)}</Text>
+                            <Text className="font-sans-medium text-xs text-muted-foreground mt-1">Total: {formatINR(invoice.totalAmountPaise)}</Text>
+                        </View>
+                    ) : (
+                        <Text className="font-sans-bold text-4xl text-primary mb-4">{formatINR(invoice.totalAmountPaise)}</Text>
+                    )}
                     <View className="flex-row justify-between w-full border-t border-border pt-4">
                         <View>
-                            <Text className="font-sans-medium text-xs text-muted-foreground uppercase tracking-wider mb-1">Invoice Date</Text>
+                            <Text className="font-sans-medium text-xs text-muted-foreground uppercase tracking-wider mb-1">Date</Text>
                             <Text className="font-sans-bold text-sm text-primary">{formatDate(invoice.documentDate)}</Text>
                         </View>
-                        <View className="items-end">
-                            <Text className="font-sans-medium text-xs text-muted-foreground uppercase tracking-wider mb-1">Due Date</Text>
-                            <Text className="font-sans-bold text-sm text-primary">{formatDate(invoice.dueDate)}</Text>
-                        </View>
+                        {invoice.dueDate && (
+                            <View className="items-end">
+                                <Text className="font-sans-medium text-xs text-muted-foreground uppercase tracking-wider mb-1">Due Date</Text>
+                                <Text className="font-sans-bold text-sm text-primary">{formatDate(invoice.dueDate)}</Text>
+                            </View>
+                        )}
                     </View>
                 </View>
 
@@ -229,7 +256,7 @@ export default function InvoiceDetailScreen() {
                 )}
 
                 {/* UPI pay section */}
-                {currentBusiness?.upiVpa && (
+                {currentBusiness?.upiVpa && invoice.documentType === 'SALES_INVOICE' && (
                     <View className="bg-white rounded-2xl p-4 mb-8 shadow-sm border border-border items-center">
                         <Text className="font-sans-medium text-xs text-muted-foreground uppercase tracking-wider mb-2">Scan & Pay</Text>
                         <Text className="font-sans-bold text-2xl text-primary mb-4">{formatINR(invoice.totalAmountPaise)}</Text>
@@ -279,7 +306,41 @@ export default function InvoiceDetailScreen() {
                         <Text className="text-white font-sans-medium text-xs">Set up your business profile first</Text>
                     </View>
                 )}
+                {invoice.documentType === 'DELIVERY_CHALLAN' && (
+                    <View className="absolute -top-[52px] right-4">
+                        <Pressable 
+                            onPress={() => router.push({ pathname: '/(app)/create-invoice', params: { linkedChallanId: invoice.id } } as never)}
+                            className="bg-blue-600 px-4 py-2.5 rounded-full shadow-md flex-row items-center"
+                        >
+                            <Text className="text-white font-sans-bold text-sm">Convert to Invoice</Text>
+                        </Pressable>
+                    </View>
+                )}
+                {invoice.documentType === 'SALES_INVOICE' && invoice.status !== 'PAID' && invoice.status !== 'Paid' && (
+                    <View className="absolute -top-[52px] right-4">
+                        <Pressable 
+                            onPress={() => setPaymentModalVisible(true)}
+                            className="bg-green-600 px-4 py-2.5 rounded-full shadow-md flex-row items-center"
+                        >
+                            <Text className="text-white font-sans-bold text-sm">Record Payment</Text>
+                        </Pressable>
+                    </View>
+                )}
             </View>
+
+            {party && invoice.documentType === 'SALES_INVOICE' && invoice.status !== 'PAID' && invoice.status !== 'Paid' && (
+                <RecordPaymentModal
+                    visible={paymentModalVisible}
+                    onClose={() => setPaymentModalVisible(false)}
+                    invoiceId={invoice.id}
+                    partyId={party.id}
+                    partyName={party.legalName}
+                    balanceDuePaise={(invoice as any).balanceDuePaise ?? invoice.totalAmountPaise}
+                    onSave={(paymentData) => {
+                        recordInvoicePayment(invoice.id, paymentData);
+                    }}
+                />
+            )}
         </SafeAreaView>
     );
 }

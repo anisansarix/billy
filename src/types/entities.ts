@@ -93,6 +93,8 @@ export interface Party {
     openingBalancePaise: number;
     openingBalanceType: 'DEBIT' | 'CREDIT';
     notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 export interface GSTComponent {
@@ -113,6 +115,7 @@ export interface TaxRate {
 
 export interface LineItem {
     id: string;
+    inventoryItemId?: string;
     description: string;
     hsnSacCode: string;
     taxRate: TaxRate;
@@ -186,6 +189,7 @@ export interface SalesInvoice extends DocumentBase {
     paidAmountPaise: number;
     balanceDuePaise: number;
     eWayBillNumber?: string;
+    linkedChallanId?: string;
 }
 
 export interface PurchaseOrder extends DocumentBase {
@@ -225,6 +229,8 @@ export interface InventoryItem {
     sku?: string;
     barcode?: string;
     description?: string;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 export interface PaymentRecord {
@@ -235,6 +241,8 @@ export interface PaymentRecord {
     type: 'in' | 'out';
     partyId: string;
     partyName: string;
+    documentId?: string;
+    documentNumber?: string;
 }
 
 export interface ExpenseRecord {
@@ -246,6 +254,8 @@ export interface ExpenseRecord {
     vendorName?: string;
     notes?: string;
     receiptImage?: string;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 export interface StockAdjustmentRecord {

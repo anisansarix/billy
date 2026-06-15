@@ -50,7 +50,7 @@ export default function CustomersVendorsScreen() {
     let filterTab = tab === "customer" ? "CUSTOMER" : tab === "vendor" ? "VENDOR" : null;
     const filteredParties = parties.filter(p => 
         (filterTab ? p.partyType === filterTab : true) && p.legalName?.toLowerCase().includes(search.toLowerCase())
-    );
+    ).sort((a, b) => new Date(b.updatedAt || b.createdAt || 0).getTime() - new Date(a.updatedAt || a.createdAt || 0).getTime());
 
     const totalReceivable = filteredParties.reduce((sum, p) => p.openingBalancePaise > 0 ? sum + p.openingBalancePaise : sum, 0);
     const totalPayable = filteredParties.reduce((sum, p) => p.openingBalancePaise < 0 ? sum + Math.abs(p.openingBalancePaise) : sum, 0);
@@ -150,9 +150,6 @@ export default function CustomersVendorsScreen() {
                     </Pressable>
                     <Text className="text-2xl font-sans-bold text-primary">Directory</Text>
                 </View>
-                <Pressable onPress={() => { Vibration.vibrate(10); openFormModal(); }} className="p-2 bg-primary rounded-full min-h-[44px] min-w-[44px] items-center justify-center">
-                    <Plus color="white" size={20} />
-                </Pressable>
             </View>
 
             {!isFullyReady ? (
@@ -198,6 +195,14 @@ export default function CustomersVendorsScreen() {
                 ListEmptyComponent={<EmptyState title={`No ${tab}s found`} subtitle="Try adding a new party." icon={<View />} />}
             />
             )}
+
+            <Pressable 
+                onPress={() => { Vibration.vibrate(10); openFormModal(); }}
+                className="absolute bottom-6 right-6 h-14 w-14 bg-primary rounded-full items-center justify-center shadow-lg active:scale-95"
+                style={{ elevation: 5, shadowColor: '#081126', shadowOpacity: 0.3, shadowRadius: 5, shadowOffset: { width: 0, height: 3 } }}
+            >
+                <Plus color="white" size={24} />
+            </Pressable>
 
             <PartyDetailsModal
                 visible={isDetailsModalVisible}

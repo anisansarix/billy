@@ -56,14 +56,14 @@ export default function ExpenseRecordsPurchasesScreen() {
         const vendor = exp.vendorName || "";
         const cat = exp.category || "";
         return vendor.toLowerCase().includes(search.toLowerCase()) || cat.toLowerCase().includes(search.toLowerCase());
-    });
+    }).sort((a, b) => new Date(b.updatedAt || b.createdAt || 0).getTime() - new Date(a.updatedAt || a.createdAt || 0).getTime());
 
     const filteredPurchases = purchases.filter(pur => {
         const matchesTab = purchaseTab === "All" || pur.status === purchaseTab;
         const vendorName = pur.partyName || pur.partyName || "";
         const matchesSearch = vendorName.toLowerCase().includes(search.toLowerCase()) || pur.documentNumber?.toLowerCase().includes(search.toLowerCase());
         return matchesTab && matchesSearch;
-    });
+    }).sort((a, b) => new Date(b.updatedAt || b.createdAt || 0).getTime() - new Date(a.updatedAt || a.createdAt || 0).getTime());
 
     // Summaries
     const totalExpenseRecords = filteredExpenseRecords.reduce((sum, exp) => sum + (exp.amountPaise || 0), 0);
@@ -131,7 +131,7 @@ export default function ExpenseRecordsPurchasesScreen() {
                 <View className="bg-white rounded-2xl p-4 flex-row border border-border shadow-sm">
                     {mainTab === 'expenses' ? (
                         <View className="flex-1 pl-2">
-                            <Text className="font-sans-medium text-[10px] text-muted-foreground mb-1 uppercase tracking-wider">Total ExpenseRecords</Text>
+                            <Text className="font-sans-medium text-[10px] text-muted-foreground mb-1 uppercase tracking-wider">Total Expenses</Text>
                             <Text className="font-sans-bold text-lg text-primary">{formatINR(totalExpenseRecords)}</Text>
                             <Text className="font-sans-medium text-[10px] text-muted-foreground mt-1">Based on current filters</Text>
                         </View>
@@ -166,7 +166,7 @@ export default function ExpenseRecordsPurchasesScreen() {
                 <Pressable onPress={() => { Vibration.vibrate(10); router.back(); }} className="mr-4 p-2 min-h-[44px] min-w-[44px] items-center justify-center">
                     <ArrowLeft color="#081126" size={24} />
                 </Pressable>
-                <Text className="text-2xl font-sans-bold text-primary">ExpenseRecords & Purchases</Text>
+                <Text className="text-2xl font-sans-bold text-primary">Expenses & Purchases</Text>
             </View>
             {mainTab === 'expenses' ? (
                 !isFullyReady ? (

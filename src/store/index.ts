@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage, StateStorage } from 'zustand/middleware';
 import { createMMKV } from 'react-native-mmkv';
 import { INVOICES, ITEMS, PARTIES, PURCHASES, EXPENSES, PAYMENTS } from '../../constants/data';
-import { Business, TaxRate, GSTType, SalesInvoice, PurchaseOrder, Party, InventoryItem, PaymentRecord, ExpenseRecord, StockAdjustmentRecord } from '../types/entities';
+import { Business, TaxRate, GSTType, SalesInvoice, PurchaseOrder, Party, InventoryItem, PaymentRecord, ExpenseRecord, StockAdjustmentRecord, CreditNote, DeliveryChallan } from '../types/entities';
 
 const mmkv = createMMKV();
 
@@ -71,6 +71,9 @@ export type AppStore = {
   expenses: ExpenseRecord[];
   payments: PaymentRecord[];
   adjustments: StockAdjustmentRecord[];
+  creditNotes: CreditNote[];
+  deliveryChallans: DeliveryChallan[];
+  documentCounters: Record<string, number>;
   hasHydrated: boolean;
   setHasHydrated: (state: boolean) => void;
   setCurrentBusiness: (business: Business | null) => void;
@@ -95,6 +98,15 @@ export type AppStore = {
   addAdjustment: (adjustment: StockAdjustmentRecord) => void;
   updateAdjustment: (adjustment: StockAdjustmentRecord) => void;
   deleteAdjustment: (id: string) => void;
+  incrementDocumentCounter: (prefix: string, fy: string) => void;
+  recordInvoicePayment: (invoiceId: string, payment: Omit<PaymentRecord, 'id'>) => void;
+  markPurchaseAsReceived: (purchaseId: string) => void;
+  addCreditNote: (creditNote: CreditNote) => void;
+  updateCreditNote: (creditNote: CreditNote) => void;
+  deleteCreditNote: (id: string) => void;
+  addDeliveryChallan: (challan: DeliveryChallan) => void;
+  updateDeliveryChallan: (challan: DeliveryChallan) => void;
+  deleteDeliveryChallan: (id: string) => void;
 };
 
 export const useAppStore = create<AppStore>()(
@@ -109,12 +121,32 @@ export const useAppStore = create<AppStore>()(
       expenses: EXPENSES,
       payments: PAYMENTS,
       adjustments: [],
+      creditNotes: [],
+      deliveryChallans: [],
+      documentCounters: {},
       hasHydrated: false,
       
       setHasHydrated: (state) => set({ hasHydrated: state }),
       setCurrentBusiness: (b) => set({ currentBusiness: b }),
 
-      addInvoice: (invoice) => set((state) => ({ invoices: [invoice, ...state.invoices] })),
+      addInvoice: (invoice) => set((state) => {
+        // Deduct stock for all items, unless it's linked to a delivery challan
+        const updatedItems = [...state.items];
+        if (!invoice.linkedChallanId) {
+          invoice.lineItems.forEach(lineItem => {
+            if (lineItem.inventoryItemId) {
+              const itemIndex = updatedItems.findIndex(i => i.id === lineItem.inventoryItemId);
+              if (itemIndex >= 0) {
+                updatedItems[itemIndex] = {
+                  ...updatedItems[itemIndex],
+                  stock: (updatedItems[itemIndex].stock || 0) - lineItem.quantityDecimal
+                };
+              }
+            }
+          });
+        }
+        return { invoices: [invoice, ...state.invoices], items: updatedItems };
+      }),
       updateInvoice: (invoice) => set((state) => ({ invoices: state.invoices.map((i) => (i.id === invoice.id ? invoice : i)) })),
       deleteInvoice: (id) => set((state) => ({ invoices: state.invoices.filter((i) => i.id !== id) })),
 
@@ -141,6 +173,142 @@ export const useAppStore = create<AppStore>()(
       addAdjustment: (adjustment) => set((state) => ({ adjustments: [adjustment, ...state.adjustments] })),
       updateAdjustment: (adjustment) => set((state) => ({ adjustments: state.adjustments.map((a) => (a.id === adjustment.id ? adjustment : a)) })),
       deleteAdjustment: (id) => set((state) => ({ adjustments: state.adjustments.filter((a) => a.id !== id) })),
+
+      addCreditNote: (creditNote) => set((state) => {
+        // 1. Increase stock (items returned)
+        const updatedItems = [...state.items];
+        creditNote.lineItems.forEach(lineItem => {
+          if (lineItem.inventoryItemId) {
+            const itemIndex = updatedItems.findIndex(i => i.id === lineItem.inventoryItemId);
+            if (itemIndex >= 0) {
+              updatedItems[itemIndex] = {
+                ...updatedItems[itemIndex],
+                stock: (updatedItems[itemIndex].stock || 0) + lineItem.quantityDecimal
+              };
+            }
+          }
+        });
+
+        // 2. Reduce invoice balanceDue
+        const updatedInvoices = [...state.invoices];
+        if (creditNote.originalInvoiceId) {
+          const invoiceIndex = updatedInvoices.findIndex(i => i.id === creditNote.originalInvoiceId);
+          if (invoiceIndex >= 0) {
+            const invoice = updatedInvoices[invoiceIndex];
+            const newBalance = invoice.balanceDuePaise - creditNote.totalAmountPaise;
+            let newStatus = invoice.status;
+            if (newBalance <= 0) newStatus = 'PAID';
+            else if (invoice.paidAmountPaise > 0 || newBalance < invoice.totalAmountPaise) newStatus = 'PARTIAL';
+
+            updatedInvoices[invoiceIndex] = {
+              ...invoice,
+              balanceDuePaise: newBalance > 0 ? newBalance : 0,
+              status: newStatus
+            };
+          }
+        }
+
+        return { creditNotes: [creditNote, ...state.creditNotes], items: updatedItems, invoices: updatedInvoices };
+      }),
+      updateCreditNote: (creditNote) => set((state) => ({ creditNotes: state.creditNotes.map((c) => (c.id === creditNote.id ? creditNote : c)) })),
+      deleteCreditNote: (id) => set((state) => ({ creditNotes: state.creditNotes.filter((c) => c.id !== id) })),
+
+      addDeliveryChallan: (challan) => set((state) => {
+        // Decrease stock
+        const updatedItems = [...state.items];
+        challan.lineItems.forEach(lineItem => {
+          if (lineItem.inventoryItemId) {
+            const itemIndex = updatedItems.findIndex(i => i.id === lineItem.inventoryItemId);
+            if (itemIndex >= 0) {
+              updatedItems[itemIndex] = {
+                ...updatedItems[itemIndex],
+                stock: (updatedItems[itemIndex].stock || 0) - lineItem.quantityDecimal
+              };
+            }
+          }
+        });
+        return { deliveryChallans: [challan, ...state.deliveryChallans], items: updatedItems };
+      }),
+      updateDeliveryChallan: (challan) => set((state) => ({ deliveryChallans: state.deliveryChallans.map((c) => (c.id === challan.id ? challan : c)) })),
+      deleteDeliveryChallan: (id) => set((state) => ({ deliveryChallans: state.deliveryChallans.filter((c) => c.id !== id) })),
+
+      incrementDocumentCounter: (prefix, fy) => set((state) => {
+        const key = `${prefix}-${fy}`;
+        return {
+          documentCounters: {
+            ...state.documentCounters,
+            [key]: (state.documentCounters[key] || 1) + 1
+          }
+        };
+      }),
+
+      recordInvoicePayment: (invoiceId, paymentData) => set((state) => {
+        const invoiceIndex = state.invoices.findIndex(i => i.id === invoiceId);
+        if (invoiceIndex === -1) return state;
+
+        const invoice = state.invoices[invoiceIndex];
+        const newPaidAmount = (invoice.paidAmountPaise || 0) + paymentData.amountPaise;
+        const newBalance = invoice.totalAmountPaise - newPaidAmount;
+        
+        let newStatus = invoice.status;
+        if (newBalance <= 0) newStatus = 'PAID';
+        else if (newPaidAmount > 0) newStatus = 'PARTIAL';
+
+        const updatedInvoice = {
+          ...invoice,
+          paidAmountPaise: newPaidAmount,
+          balanceDuePaise: newBalance > 0 ? newBalance : 0,
+          status: newStatus
+        };
+
+        const newPayment: PaymentRecord = {
+          ...paymentData,
+          id: `pay-${Date.now()}`,
+          documentId: invoice.id,
+          documentNumber: invoice.documentNumber
+        };
+
+        const updatedInvoices = [...state.invoices];
+        updatedInvoices[invoiceIndex] = updatedInvoice;
+
+        return {
+          invoices: updatedInvoices,
+          payments: [newPayment, ...state.payments]
+        };
+      }),
+
+      markPurchaseAsReceived: (purchaseId) => set((state) => {
+        const purchaseIndex = state.purchases.findIndex(p => p.id === purchaseId);
+        if (purchaseIndex === -1) return state;
+
+        const purchase = state.purchases[purchaseIndex];
+        if (purchase.status === 'RECEIVED') return state; // Already received
+
+        // Increase stock
+        const updatedItems = [...state.items];
+        purchase.lineItems.forEach(lineItem => {
+          if (lineItem.inventoryItemId) {
+            const itemIndex = updatedItems.findIndex(i => i.id === lineItem.inventoryItemId);
+            if (itemIndex >= 0) {
+              updatedItems[itemIndex] = {
+                ...updatedItems[itemIndex],
+                stock: (updatedItems[itemIndex].stock || 0) + lineItem.quantityDecimal
+              };
+            }
+          }
+        });
+
+        const updatedPurchases = [...state.purchases];
+        updatedPurchases[purchaseIndex] = {
+          ...purchase,
+          status: 'RECEIVED'
+        };
+
+        return {
+          purchases: updatedPurchases,
+          items: updatedItems
+        };
+      }),
     }),
     {
       name: 'billy-app-store-v3',

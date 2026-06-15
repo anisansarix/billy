@@ -1,9 +1,11 @@
 import {  } from 'react';
 import { View, Text, Pressable } from "react-native";
-import { X, Trash2, Calendar, Box, Wallet } from "lucide-react-native";
+import { X, Trash2, Calendar, Box } from "lucide-react-native";
 import AnimatedModal from "@/components/ui/AnimatedModal";
 import { PurchaseOrder } from "@/types/entities";
 import { formatINR } from "@/utils/money";
+import { useAppStore } from "@/store";
+import { CheckCircle2 } from "lucide-react-native";
 
 interface PurchaseDetailsModalProps {
     visible: boolean;
@@ -13,6 +15,8 @@ interface PurchaseDetailsModalProps {
 }
 
 export default function PurchaseDetailsModal({ visible, onClose, purchase, onDelete }: PurchaseDetailsModalProps) {
+    const markPurchaseAsReceived = useAppStore(s => s.markPurchaseAsReceived);
+
     if (!purchase) return null;
 
     const getStatusColor = (status: string) => {
@@ -22,6 +26,7 @@ export default function PurchaseDetailsModal({ visible, onClose, purchase, onDel
             case "Overdue": return "bg-red-100 text-red-700";
             case "Draft": return "bg-slate-100 text-slate-700";
             case "Sent": return "bg-blue-100 text-blue-700";
+            case "RECEIVED": return "bg-teal-100 text-teal-700";
             default: return "bg-gray-100 text-gray-700";
         }
     };
@@ -76,19 +81,24 @@ export default function PurchaseDetailsModal({ visible, onClose, purchase, onDel
                 </View>
 
                 <View className="flex-row space-x-4">
-                    <Pressable
-                        onPress={() => alert("Marking as Paid is mocked for now.")}
-                        className="flex-1 bg-primary py-4 rounded-xl flex-row justify-center items-center mr-2 min-h-[44px]"
-                    >
-                        <Wallet color="white" size={18} className="mr-2" />
-                        <Text className="font-sans-bold text-white text-base">Mark Paid</Text>
-                    </Pressable>
+                    {purchase.status !== 'RECEIVED' && (
+                        <Pressable
+                            onPress={() => {
+                                markPurchaseAsReceived(purchase.id);
+                                onClose();
+                            }}
+                            className="flex-1 bg-teal-600 py-4 rounded-xl flex-row justify-center items-center mr-2 min-h-[44px]"
+                        >
+                            <CheckCircle2 color="white" size={18} className="mr-2" />
+                            <Text className="font-sans-bold text-white text-base">Receive Items</Text>
+                        </Pressable>
+                    )}
                     <Pressable
                         onPress={() => {
                             onClose();
                             onDelete(purchase.id);
                         }}
-                        className="flex-1 border border-red-200 py-4 rounded-xl flex-row justify-center items-center ml-2 min-h-[44px]"
+                        className={`flex-1 border border-red-200 py-4 rounded-xl flex-row justify-center items-center ${purchase.status !== 'RECEIVED' ? 'ml-2' : ''} min-h-[44px]`}
                     >
                         <Trash2 color="#ef4444" size={18} className="mr-2" />
                         <Text className="font-sans-bold text-red-500 text-base">Delete</Text>

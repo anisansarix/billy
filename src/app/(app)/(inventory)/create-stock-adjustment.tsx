@@ -13,7 +13,7 @@ import { SegmentedTabs } from "@/components/ui/SegmentedTabs";
 
 export default function CreateStockAdjustmentScreen() {
     const router = useRouter();
-    const {  items, addAdjustment, updateItem  } = useAppStore(useShallow(state => ({ items: state.items, addAdjustment: state.addAdjustment, updateItem: state.updateItem })));
+    const { items, addAdjustment, updateItem } = useAppStore(useShallow(state => ({ items: state.items, addAdjustment: state.addAdjustment, updateItem: state.updateItem })));
     
     const [type, setType] = useState<"Stock In" | "Stock Out">("Stock In");
     const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);

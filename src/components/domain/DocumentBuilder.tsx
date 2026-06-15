@@ -1,3 +1,4 @@
+"use no memo";
 import { useRouter } from "expo-router";
 import { ArrowLeft, Save, Plus, ChevronDown, ChevronUp, Trash2, X } from "lucide-react-native";
 import { useState, useMemo } from "react";
@@ -77,6 +78,7 @@ export interface DocumentBuilderProps {
     title: string;
     defaultType: string;
     defaultPrefix: string;
+    defaultDocNumber?: string;
     partyLabel: string;
     partyFilter: 'customer' | 'vendor' | 'both';
     hasTransport?: boolean;
@@ -89,6 +91,7 @@ export default function DocumentBuilder({
     title,
     defaultType,
     defaultPrefix,
+    defaultDocNumber,
     partyLabel,
     partyFilter,
     hasTransport = false,
@@ -115,7 +118,7 @@ export default function DocumentBuilder({
     // Form State
     const [header, setHeader] = useState<DocumentData['header']>(() => initialData?.header || {
         documentType: defaultType,
-        documentNumber: `${defaultPrefix}${new Date().getFullYear()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
+        documentNumber: defaultDocNumber || `${defaultPrefix}${new Date().getFullYear()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
         documentDate: new Date().toISOString().split('T')[0],
         dueDate: "",
         status: "Draft",
@@ -218,8 +221,8 @@ export default function DocumentBuilder({
     };
 
     return (
-        <KeyboardAvoidingView className="flex-1" behavior="padding" keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
-            <SafeAreaView className="flex-1 bg-slate-50">
+        <KeyboardAvoidingView style={{ flex: 1 }} className="flex-1" behavior="padding" keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
+            <SafeAreaView style={{ flex: 1 }} className="flex-1 bg-slate-50">
             <View className="flex-row items-center justify-between p-5 bg-white shadow-sm z-10">
                 <View className="flex-row items-center">
                     <Pressable onPress={() => router.back()} className="mr-4 p-2 min-h-[44px] min-w-[44px] items-center justify-center">
@@ -300,61 +303,68 @@ export default function DocumentBuilder({
                     onToggle={() => toggleSection('items')}
                     summary={`${documentItems.length} items • ${formatINR(totals.totalAmountPaise)}`}
                 >
-                    {documentItems.map((item, index) => (
-                        <View key={index} className="bg-slate-50 border border-border rounded-lg p-3 mb-3">
-                            <View className="flex-row justify-between items-start mb-2">
-                                <View className="flex-1">
-                                    <Text className="font-sans-bold text-primary">{item.description}</Text>
-                                    <Text className="font-sans-medium text-xs text-muted-foreground">HSN/SAC: {item.hsnSacCode}</Text>
-                                </View>
-                                <Pressable onPress={() => setDocumentItems(documentItems.filter((_, i) => i !== index))} className="h-11 w-11 items-center justify-center -mr-2 -mt-2">
-                                    <Trash2 color="#ef4444" size={18} />
-                                </Pressable>
-                            </View>
-                            <View className="flex-row flex-wrap justify-between items-end mt-2 border-t border-border pt-2 gap-y-2">
-                                <View className="flex-1 min-w-[30%]">
-                                    <Text className="font-sans-medium text-xs text-muted-foreground">Qty</Text>
-                                    <View className="flex-row items-center mt-1">
-                                        <TextInput 
-                                            className="bg-white border border-slate-200 rounded-lg px-2 py-1.5 w-16 text-center text-primary font-sans-bold"
-                                            value={item.quantityDecimal !== undefined ? String(item.quantityDecimal) : ''}
-                                            keyboardType="numeric"
-                                            onChangeText={t => {
-                                                const newItems = [...documentItems];
-                                                const parsed = parseFloat(t);
-                                                newItems[index].quantityDecimal = isNaN(parsed) ? 0 : parsed;
-                                                newItems[index] = computeLineItem(newItems[index], isInterState);
-                                                setDocumentItems(newItems);
-                                            }}
-                                        />
-                                        <Text className="font-sans-medium text-xs text-muted-foreground ml-1">{item.unit}</Text>
+                    {documentItems.map((item, index) => {
+                        try {
+                            return (
+                                <View key={index} className="bg-slate-50 border border-border rounded-lg p-3 mb-3">
+                                    <View className="flex-row justify-between items-start mb-2">
+                                        <View className="flex-1">
+                                            <Text className="font-sans-bold text-primary">{item.description}</Text>
+                                            <Text className="font-sans-medium text-xs text-muted-foreground">HSN/SAC: {item.hsnSacCode}</Text>
+                                        </View>
+                                        <Pressable onPress={() => setDocumentItems(documentItems.filter((_, i) => i !== index))} className="h-11 w-11 items-center justify-center -mr-2 -mt-2">
+                                            <Trash2 color="#ef4444" size={18} />
+                                        </Pressable>
+                                    </View>
+                                    <View className="flex-row flex-wrap justify-between items-end mt-2 border-t border-border pt-2 gap-y-2">
+                                        <View className="flex-1 min-w-[30%]">
+                                            <Text className="font-sans-medium text-xs text-muted-foreground">Qty</Text>
+                                            <View className="flex-row items-center mt-1">
+                                                <TextInput 
+                                                    style={{ backgroundColor: 'white', borderColor: '#e2e8f0', borderWidth: 1, borderRadius: 8, paddingHorizontal: 8, paddingVertical: 6, width: 64, textAlign: 'center', color: '#081126', fontWeight: 'bold' }}
+                                                    value={item.quantityDecimal !== undefined ? String(item.quantityDecimal) : ''}
+                                                    keyboardType="numeric"
+                                                    onChangeText={t => {
+                                                        const newItems = [...documentItems];
+                                                        const parsed = parseFloat(t);
+                                                        newItems[index].quantityDecimal = isNaN(parsed) ? 0 : parsed;
+                                                        newItems[index] = computeLineItem(newItems[index], isInterState);
+                                                        setDocumentItems(newItems);
+                                                    }}
+                                                />
+                                                <Text className="font-sans-medium text-xs text-muted-foreground ml-1">{item.unit}</Text>
+                                            </View>
+                                        </View>
+                                        <View className="flex-1 min-w-[30%]">
+                                            <Text className="font-sans-medium text-xs text-muted-foreground">Rate</Text>
+                                            <TextInput 
+                                                style={{ backgroundColor: 'white', borderColor: '#e2e8f0', borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6, width: 96, marginTop: 4, color: '#081126', fontWeight: 'bold' }}
+                                                keyboardType="numeric"
+                                                placeholder="0.00"
+                                                value={item.unitPricePaise !== undefined ? String(item.unitPricePaise / 100) : ''}
+                                                onChangeText={val => {
+                                                    const newItems = [...documentItems];
+                                                    const parsed = parseFloat(val);
+                                                    newItems[index].unitPricePaise = isNaN(parsed) ? 0 : Math.round(parsed * 100);
+                                                    newItems[index] = computeLineItem(newItems[index], isInterState);
+                                                    setDocumentItems(newItems);
+                                                }}
+                                            />
+                                        </View>
+                                        <View className="flex-1 min-w-[30%] items-end pb-1">
+                                            <Text className="font-sans-medium text-xs text-muted-foreground">Total (incl. GST)</Text>
+                                            <Text className="font-sans-bold text-primary mt-1">
+                                                {formatINR(item.totalAmountPaise || 0)}
+                                            </Text>
+                                        </View>
                                     </View>
                                 </View>
-                                <View className="flex-1 min-w-[30%]">
-                                    <Text className="font-sans-medium text-xs text-muted-foreground">Rate</Text>
-                                    <TextInput 
-                                        className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 w-24 mt-1 text-primary font-sans-bold"
-                                        keyboardType="numeric"
-                                        placeholder="0.00"
-                                        value={item.unitPricePaise !== undefined ? String(item.unitPricePaise / 100) : ''}
-                                        onChangeText={val => {
-                                            const newItems = [...documentItems];
-                                            const parsed = parseFloat(val);
-                                            newItems[index].unitPricePaise = isNaN(parsed) ? 0 : Math.round(parsed * 100);
-                                            newItems[index] = computeLineItem(newItems[index], isInterState);
-                                            setDocumentItems(newItems);
-                                        }}
-                                    />
-                                </View>
-                                <View className="flex-1 min-w-[30%] items-end pb-1">
-                                    <Text className="font-sans-medium text-xs text-muted-foreground">Total (incl. GST)</Text>
-                                    <Text className="font-sans-bold text-primary mt-1">
-                                        {formatINR(item.totalAmountPaise || 0)}
-                                    </Text>
-                                </View>
-                            </View>
-                        </View>
-                    ))}
+                            );
+                        } catch (e) {
+                            console.error('Error rendering item:', e);
+                            return <Text key={index}>Error rendering item</Text>;
+                        }
+                    })}
 
                     <Pressable 
                         className="bg-primary/10 border border-primary/20 rounded-lg p-3 min-h-[44px] items-center justify-center flex-row mb-4"
@@ -518,6 +528,7 @@ export default function DocumentBuilder({
                                 onPress={() => { 
                                     const newItem = computeLineItem({
                                         id: `item-${Date.now()}`,
+                                        inventoryItemId: item.id,
                                         description: item.name,
                                         hsnSacCode: item.hsnSacCode,
                                         taxRate: item.taxRate,

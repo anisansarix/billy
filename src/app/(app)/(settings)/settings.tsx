@@ -52,7 +52,13 @@ export default function SettingsScreen() {
                     <Text className="font-sans-bold text-xs text-muted-foreground uppercase mb-2 tracking-wider ml-2">Account & Business</Text>
                     <View className="bg-white rounded-2xl border border-border overflow-hidden shadow-sm">
                         <SettingItem icon={User} title="Personal Profile" subtitle="Update your name, phone, password" />
-                        <SettingItem icon={Building2} title="Business Details" subtitle="GSTIN, Address, Bank Accounts" isLast />
+                        <SettingItem 
+                            icon={Building2} 
+                            title="Business Details" 
+                            subtitle="GSTIN, Address, Bank Accounts" 
+                            isLast 
+                            onPress={() => router.push('/business-profile' as any)}
+                        />
                     </View>
                 </View>
 
@@ -60,7 +66,12 @@ export default function SettingsScreen() {
                 <View className="mb-6 px-5">
                     <Text className="font-sans-bold text-xs text-muted-foreground uppercase mb-2 tracking-wider ml-2">Preferences</Text>
                     <View className="bg-white rounded-2xl border border-border overflow-hidden shadow-sm">
-                        <SettingItem icon={Receipt} title="SalesInvoice Customization" subtitle="Prefixes, Terms & Conditions, Logo" />
+                        <SettingItem 
+                            icon={Receipt} 
+                            title="SalesInvoice Customization" 
+                            subtitle="Prefixes, Terms & Conditions, Logo" 
+                            onPress={() => router.push('/invoice-settings' as any)}
+                        />
                         <SettingItem icon={Users} title="User Management" subtitle="Manage staff roles and permissions" isLast />
                     </View>
                 </View>

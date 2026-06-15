@@ -1,18 +1,26 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useShallow } from 'zustand/react/shallow';
 import { useAppStore } from "@/store";
+import { getCurrentFinancialYear } from "@/utils/date";
 import DocumentBuilder, { DocumentData } from "@/components/domain/DocumentBuilder";
 import { PurchaseOrder, Party } from "@/types/entities";
 
 export default function CreatePurchaseScreen() {
     const router = useRouter();
     const params = useLocalSearchParams();
-    const {  purchases, parties, addPurchase, updatePurchase  } = useAppStore(useShallow(state => ({ purchases: state.purchases, parties: state.parties, addPurchase: state.addPurchase, updatePurchase: state.updatePurchase })));
+    const { purchases, parties, addPurchase, updatePurchase, documentCounters, incrementDocumentCounter, currentBusiness } = useAppStore(useShallow(state => ({ purchases: state.purchases, parties: state.parties, addPurchase: state.addPurchase, updatePurchase: state.updatePurchase, documentCounters: state.documentCounters, incrementDocumentCounter: state.incrementDocumentCounter, currentBusiness: state.currentBusiness })));
 
     const editId = params.id as string | undefined;
     const existingPurchase = editId ? purchases.find(p => p.id === editId) : undefined;
     
     // For edit mode, reconstruct the initial data to match what DocumentBuilder expects
+    
+    const fy = getCurrentFinancialYear(currentBusiness?.fiscalYearStart || 'APRIL');
+    const docPrefix = "PO";
+    const counterKey = `${docPrefix}-${fy}`;
+    const nextNum = String((documentCounters?.[counterKey] || 0) + 1).padStart(4, '0');
+    const defaultDocNumber = `${counterKey}-${nextNum}`;
+    
     let initialData = undefined;
     if (existingPurchase) {
         const party = parties.find(p => p.id === existingPurchase.partyId);
@@ -79,6 +87,7 @@ export default function CreatePurchaseScreen() {
             
         } else {
             addPurchase(purchaseToSave);
+            incrementDocumentCounter(docPrefix, fy);
             
         }
         
@@ -87,6 +96,7 @@ export default function CreatePurchaseScreen() {
 
     return (
         <DocumentBuilder
+            defaultDocNumber={defaultDocNumber}
             title={editId ? "Edit Purchase" : "New Purchase"}
             defaultType="Purchase Order"
             defaultPrefix="PO-"
