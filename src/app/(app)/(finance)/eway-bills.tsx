@@ -4,7 +4,6 @@ import { ArrowLeft, Truck, AlertCircle } from "lucide-react-native";
 import { useMemo } from "react";
 import {  Pressable, ScrollView, Text, View , Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-// import { EmptyState } from "@/components/ui/EmptyState";
 import { useAppStore } from "@/store";
 import { formatINR } from "@/utils/money";
 import { useDeferredRender } from "@/hooks/useDeferredRender";

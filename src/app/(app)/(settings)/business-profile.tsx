@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Pressable, ScrollView, Text, TextInput, View, KeyboardAvoidingView, Platform, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppStore } from "@/store";
+import { useShallow } from 'zustand/react/shallow';
 import { Business, GSTType } from "@/types/entities";
 import "../../../../global.css";
 
@@ -23,7 +24,10 @@ const FormField = ({ label, value, onChangeText, placeholder, keyboardType = 'de
 
 export default function BusinessProfileScreen() {
     const router = useRouter();
-    const { currentBusiness, setCurrentBusiness } = useAppStore();
+    const { currentBusiness, setCurrentBusiness } = useAppStore(useShallow(state => ({
+        currentBusiness: state.currentBusiness,
+        setCurrentBusiness: state.setCurrentBusiness
+    })));
 
     // Local form state
     const [formData, setFormData] = useState<Partial<Business>>(currentBusiness || {

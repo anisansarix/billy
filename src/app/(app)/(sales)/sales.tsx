@@ -5,7 +5,7 @@ import { useTabTransition } from "@/hooks/useTabTransition";
 import { useRouter } from "expo-router";
 import { useShallow } from 'zustand/react/shallow';
 import { ArrowLeft, Plus, ReceiptText, X, Edit, Trash2, Box, Undo2 } from "lucide-react-native";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {  Pressable, Text, View, RefreshControl, Alert, FlatList, ScrollView , Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AnimatedModal from "@/components/ui/AnimatedModal";
@@ -55,22 +55,28 @@ export default function SalesScreen() {
         }
     };
 
-    const allDocuments = [...invoices, ...creditNotes, ...deliveryChallans].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    const allDocuments = useMemo(() => {
+        return [...invoices, ...creditNotes, ...deliveryChallans].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    }, [invoices, creditNotes, deliveryChallans]);
 
-    const filteredInvoices = allDocuments.filter(inv => {
-        let matchesTab = true;
-        if (tab === "Invoices") matchesTab = inv.documentType === "SALES_INVOICE";
-        else if (tab === "Estimates") matchesTab = (inv.documentType as any) === "PROFORMA_INVOICE";
-        else if (tab === "Quotations") matchesTab = (inv.documentType as any) === "QUOTATION";
-        else if (tab === "Challans") matchesTab = (inv.documentType as any) === "DELIVERY_CHALLAN";
-        else if (tab === "Credit Notes") matchesTab = (inv.documentType as any) === "CREDIT_NOTE";
+    const filteredInvoices = useMemo(() => {
+        return allDocuments.filter(inv => {
+            let matchesTab = true;
+            if (tab === "Invoices") matchesTab = inv.documentType === "SALES_INVOICE";
+            else if (tab === "Estimates") matchesTab = (inv.documentType as any) === "PROFORMA_INVOICE";
+            else if (tab === "Quotations") matchesTab = (inv.documentType as any) === "QUOTATION";
+            else if (tab === "Challans") matchesTab = (inv.documentType as any) === "DELIVERY_CHALLAN";
+            else if (tab === "Credit Notes") matchesTab = (inv.documentType as any) === "CREDIT_NOTE";
 
-        const matchesSearch = inv.partyName?.toLowerCase().includes(search.toLowerCase()) || inv.documentNumber?.toLowerCase().includes(search.toLowerCase());
-        return matchesTab && matchesSearch;
-    }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+            const matchesSearch = inv.partyName?.toLowerCase().includes(search.toLowerCase()) || inv.documentNumber?.toLowerCase().includes(search.toLowerCase());
+            return matchesTab && matchesSearch;
+        }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    }, [allDocuments, tab, search]);
 
     // Summary Calculations
-    const totalInvoicesValue = filteredInvoices.reduce((sum, inv) => sum + inv.totalAmountPaise, 0);
+    const totalInvoicesValue = useMemo(() => {
+        return filteredInvoices.reduce((sum, inv) => sum + inv.totalAmountPaise, 0);
+    }, [filteredInvoices]);
 
     const handleDelete = (id: string, type: string) => {
         Alert.alert("Delete Document", "Are you sure you want to delete this document?", [

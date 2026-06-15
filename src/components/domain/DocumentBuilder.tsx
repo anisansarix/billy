@@ -361,7 +361,6 @@ export default function DocumentBuilder({
                                 </View>
                             );
                         } catch (e) {
-                            console.error('Error rendering item:', e);
                             return <Text key={index}>Error rendering item</Text>;
                         }
                     })}

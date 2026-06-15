@@ -148,7 +148,23 @@ export const useAppStore = create<AppStore>()(
         return { invoices: [invoice, ...state.invoices], items: updatedItems };
       }),
       updateInvoice: (invoice) => set((state) => ({ invoices: state.invoices.map((i) => (i.id === invoice.id ? invoice : i)) })),
-      deleteInvoice: (id) => set((state) => ({ invoices: state.invoices.filter((i) => i.id !== id) })),
+      deleteInvoice: (id) => set((state) => {
+        const invoice = state.invoices.find(i => i.id === id);
+        if (!invoice) return state;
+        const updatedItems = [...state.items];
+        invoice.lineItems.forEach(lineItem => {
+          if (lineItem.inventoryItemId) {
+            const itemIndex = updatedItems.findIndex(i => i.id === lineItem.inventoryItemId);
+            if (itemIndex >= 0) {
+              updatedItems[itemIndex] = {
+                ...updatedItems[itemIndex],
+                stock: (updatedItems[itemIndex].stock || 0) + lineItem.quantityDecimal
+              };
+            }
+          }
+        });
+        return { invoices: state.invoices.filter((i) => i.id !== id), items: updatedItems };
+      }),
 
       addItem: (item) => set((state) => ({ items: [item, ...state.items] })),
       updateItem: (item) => set((state) => ({ items: state.items.map((i) => (i.id === item.id ? item : i)) })),

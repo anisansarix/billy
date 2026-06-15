@@ -188,6 +188,10 @@ export default function CreateCreditNoteScreen() {
                 <FlatList
                     data={filteredInvoices}
                     keyExtractor={item => item.id}
+                    initialNumToRender={10}
+                    windowSize={10}
+                    maxToRenderPerBatch={5}
+                    removeClippedSubviews={true}
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
                     renderItem={({ item }) => (
