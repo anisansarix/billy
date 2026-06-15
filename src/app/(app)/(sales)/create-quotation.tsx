@@ -94,10 +94,11 @@ export default function CreateQuotationScreen() {
     };
 
     return (
-        <DocumentBuilder
+        <DocumentBuilder 
+            title="Create Quotation"
+            subtitle="Formalize your offerings"
             defaultDocNumber={defaultDocNumber}
-            title={editId ? "Edit Quotation" : "New Quotation"}
-            defaultType="Quotation"
+            defaultType="QUOTATION"
             defaultPrefix="QT-"
             partyLabel="Customer"
             partyFilter="customer"

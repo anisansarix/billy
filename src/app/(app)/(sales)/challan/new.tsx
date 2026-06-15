@@ -33,6 +33,7 @@ export default function NewDeliveryChallanScreen() {
         <SafeAreaView style={{ flex: 1 }} className="bg-slate-50">
             <DocumentBuilder
                 title="New Delivery Challan"
+                subtitle="Record outward stock movements"
                 defaultType="DELIVERY_CHALLAN"
                 defaultPrefix={docPrefix}
                 defaultDocNumber={autoGenDCNumber}

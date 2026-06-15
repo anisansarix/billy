@@ -96,8 +96,9 @@ export default function CreateEstimateScreen() {
     return (
         <DocumentBuilder
             defaultDocNumber={defaultDocNumber}
-            title={editId ? "Edit Estimate" : "New Estimate"}
-            defaultType="Estimate"
+            title={editId ? "Edit Estimate" : "Create Estimate"}
+            subtitle="Provide a quote to your customers"
+            defaultType="ESTIMATE"
             defaultPrefix="EST-"
             partyLabel="Customer"
             partyFilter="customer"

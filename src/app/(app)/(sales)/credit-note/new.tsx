@@ -74,6 +74,7 @@ export default function NewCreditNoteScreen() {
 
             <DocumentBuilder
                 title="New Credit Note"
+                subtitle="Record returns and refunds"
                 defaultType="CREDIT_NOTE"
                 defaultPrefix={docPrefix}
                 defaultDocNumber={autoGenCNNumber}

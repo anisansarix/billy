@@ -137,6 +137,7 @@ export default function CreateInvoiceScreen() {
         <DocumentBuilder
             defaultDocNumber={defaultDocNumber}
             title={editId ? "Edit SalesInvoice" : "New SalesInvoice"}
+            subtitle={editId ? undefined : "Record sales and request payments"}
             defaultType="Tax SalesInvoice"
             defaultPrefix={`${docPrefix}-`}
             partyLabel="Customer"

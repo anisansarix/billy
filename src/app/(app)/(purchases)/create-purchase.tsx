@@ -97,8 +97,9 @@ export default function CreatePurchaseScreen() {
     return (
         <DocumentBuilder
             defaultDocNumber={defaultDocNumber}
-            title={editId ? "Edit Purchase" : "New Purchase"}
-            defaultType="Purchase Order"
+            title={editId ? "Edit Purchase" : "Create Purchase"}
+            subtitle="Record inbound inventory and expenses"
+            defaultType="PURCHASE_ORDER"
             defaultPrefix="PO-"
             partyLabel="Vendor"
             partyFilter="vendor"

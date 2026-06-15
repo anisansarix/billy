@@ -1,9 +1,8 @@
 "use no memo";
 import { useRouter } from "expo-router";
-import { ArrowLeft, Save, Plus, ChevronDown, ChevronUp, Trash2, X } from "lucide-react-native";
+import { Save, Plus, ChevronDown, ChevronUp, Trash2, X } from "lucide-react-native";
 import { useState, useMemo } from "react";
 import { Pressable, ScrollView, Text, TextInput, View, KeyboardAvoidingView, Platform, Alert } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import AnimatedModal from "@/components/ui/AnimatedModal";
 import { useAppStore } from "@/store";
 import { useShallow } from 'zustand/react/shallow';
@@ -85,6 +84,7 @@ export interface DocumentBuilderProps {
     defaultNotes?: string;
     initialData?: Partial<DocumentData>;
     onSave: (documentData: DocumentData) => void;
+    subtitle?: string;
 }
 
 export default function DocumentBuilder({
@@ -97,7 +97,8 @@ export default function DocumentBuilder({
     hasTransport = false,
     defaultNotes = "",
     initialData,
-    onSave
+    onSave,
+    subtitle
 }: DocumentBuilderProps) {
     const router = useRouter();
     const { parties, items, currentBusiness } = useAppStore(useShallow(state => ({ parties: state.parties, items: state.items, currentBusiness: state.currentBusiness })));
@@ -222,17 +223,15 @@ export default function DocumentBuilder({
 
     return (
         <KeyboardAvoidingView style={{ flex: 1 }} className="flex-1" behavior="padding" keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
-            <SafeAreaView style={{ flex: 1 }} className="flex-1 bg-slate-50">
-            <View className="flex-row items-center justify-between p-5 bg-white shadow-sm z-10">
-                <View className="flex-row items-center">
-                    <Pressable onPress={() => router.back()} className="mr-4 p-2 min-h-[44px] min-w-[44px] items-center justify-center">
-                        <ArrowLeft color="#081126" size={24} />
-                    </Pressable>
-                    <Text className="text-2xl font-sans-bold text-primary">{title}</Text>
+            <View style={{ flex: 1 }} className="flex-1 bg-slate-50">
+            {/* Header */}
+            <View className="flex-row justify-between items-center px-6 pt-6 pb-4 bg-white border-b border-border shadow-sm z-10">
+                <View className="flex-1 mr-4">
+                    <Text className="font-sans-bold text-3xl text-primary mb-1">{title}</Text>
+                    {subtitle && <Text className="font-sans-medium text-sm text-muted-foreground">{subtitle}</Text>}
                 </View>
-                <Pressable onPress={handleSave} className="flex-row items-center bg-primary px-4 py-2 min-h-[44px] rounded-full">
-                    <Save color="white" size={16} className="mr-2" />
-                    <Text className="font-sans-bold text-white">Save</Text>
+                <Pressable onPress={() => router.back()} className="h-11 w-11 bg-slate-50 items-center justify-center rounded-full">
+                    <X color="#081126" size={24} />
                 </Pressable>
             </View>
 
@@ -555,7 +554,14 @@ export default function DocumentBuilder({
                 </View>
             </AnimatedModal>
 
-            </SafeAreaView>
+            {/* Bottom Action Bar */}
+            <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-border px-4 py-3 flex-row shadow-lg pb-8 z-20">
+                <Pressable onPress={handleSave} className="flex-1 bg-primary items-center justify-center rounded-xl min-h-[48px] flex-row">
+                    <Save color="white" size={16} className="mr-2" />
+                    <Text className="font-sans-bold text-white">Save {title.replace('New ', '').replace('Create ', '')}</Text>
+                </Pressable>
+            </View>
+            </View>
         </KeyboardAvoidingView>
     );
 }
