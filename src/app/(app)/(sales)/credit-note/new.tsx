@@ -19,11 +19,13 @@ export default function NewCreditNoteScreen() {
     const incrementDocumentCounter = useAppStore(s => s.incrementDocumentCounter);
     const documentCounters = useAppStore(s => s.documentCounters);
     const currentBusiness = useAppStore(s => s.currentBusiness);
+    const invoiceSettings = useAppStore(s => s.invoiceSettings);
 
     // Auto-generate document number
     const currentFY = currentBusiness?.fiscalYearStart || 'APRIL';
-    const nextCNNumber = (documentCounters[`CN-${currentFY}`] || 1).toString().padStart(3, '0');
-    const autoGenCNNumber = `CN/${new Date().getFullYear()}/${nextCNNumber}`;
+    const docPrefix = invoiceSettings?.cnPrefix || "CN";
+    const nextCNNumber = (documentCounters[`${docPrefix}-${currentFY}`] || 1).toString().padStart(3, '0');
+    const autoGenCNNumber = `${docPrefix}/${new Date().getFullYear()}/${nextCNNumber}`;
 
     const initialData = useMemo(() => {
         if (!originalInvoice) return undefined;
@@ -81,7 +83,7 @@ export default function NewCreditNoteScreen() {
             <DocumentBuilder
                 title="New Credit Note"
                 defaultType="CREDIT_NOTE"
-                defaultPrefix="CN"
+                defaultPrefix={docPrefix}
                 defaultDocNumber={autoGenCNNumber}
                 partyLabel="Customer"
                 partyFilter="customer"
@@ -116,7 +118,7 @@ export default function NewCreditNoteScreen() {
                         updatedAt: new Date().toISOString(),
                     };
                     
-                    incrementDocumentCounter('CN', currentFY);
+                    incrementDocumentCounter(docPrefix, currentFY);
                     addCreditNote(creditNote);
                     router.back();
                     Alert.alert('Credit Note Created', `${creditNote.documentNumber} raised against ${originalInvoice.documentNumber}`);

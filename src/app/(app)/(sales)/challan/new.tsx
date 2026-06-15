@@ -16,6 +16,7 @@ export default function NewDeliveryChallanScreen() {
     const incrementDocumentCounter = useAppStore(s => s.incrementDocumentCounter);
     const documentCounters = useAppStore(s => s.documentCounters);
     const currentBusiness = useAppStore(s => s.currentBusiness);
+    const invoiceSettings = useAppStore(s => s.invoiceSettings);
 
     // Form state for Transport Details
     const [vehicleNumber, setVehicleNumber] = useState("");
@@ -25,8 +26,9 @@ export default function NewDeliveryChallanScreen() {
 
     // Auto-generate document number
     const currentFY = currentBusiness?.fiscalYearStart || 'APRIL';
-    const nextDCNumber = (documentCounters[`DC-${currentFY}`] || 1).toString().padStart(3, '0');
-    const autoGenDCNumber = `DC/${new Date().getFullYear()}/${nextDCNumber}`;
+    const docPrefix = invoiceSettings?.dcPrefix || "DC";
+    const nextDCNumber = (documentCounters[`${docPrefix}-${currentFY}`] || 1).toString().padStart(3, '0');
+    const autoGenDCNumber = `${docPrefix}/${new Date().getFullYear()}/${nextDCNumber}`;
 
     return (
         <SafeAreaView style={{ flex: 1 }} className="bg-slate-50">
@@ -41,7 +43,7 @@ export default function NewDeliveryChallanScreen() {
             <DocumentBuilder
                 title="New Delivery Challan"
                 defaultType="DELIVERY_CHALLAN"
-                defaultPrefix="DC"
+                defaultPrefix={docPrefix}
                 defaultDocNumber={autoGenDCNumber}
                 partyLabel="Customer"
                 partyFilter="customer"
@@ -77,7 +79,7 @@ export default function NewDeliveryChallanScreen() {
                         updatedAt: new Date().toISOString(),
                     };
                     
-                    incrementDocumentCounter('DC', currentFY);
+                    incrementDocumentCounter(docPrefix, currentFY);
                     addDeliveryChallan(challan);
                     router.back();
                     Alert.alert('Challan Created', `Delivery Challan ${challan.documentNumber} created successfully.`);

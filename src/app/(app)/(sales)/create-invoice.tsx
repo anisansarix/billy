@@ -10,7 +10,7 @@ import { buildGSTSummary, amountInIndianWords } from "@/utils/gst";
 export default function CreateInvoiceScreen() {
     const router = useRouter();
     const params = useLocalSearchParams();
-    const { invoices, deliveryChallans, parties, addInvoice, updateInvoice, documentCounters, incrementDocumentCounter, currentBusiness } = useAppStore(useShallow(state => ({ 
+    const { invoices, deliveryChallans, parties, addInvoice, updateInvoice, documentCounters, incrementDocumentCounter, currentBusiness, invoiceSettings } = useAppStore(useShallow(state => ({ 
         invoices: state.invoices, 
         deliveryChallans: state.deliveryChallans,
         parties: state.parties, 
@@ -18,7 +18,8 @@ export default function CreateInvoiceScreen() {
         updateInvoice: state.updateInvoice, 
         documentCounters: state.documentCounters, 
         incrementDocumentCounter: state.incrementDocumentCounter, 
-        currentBusiness: state.currentBusiness 
+        currentBusiness: state.currentBusiness,
+        invoiceSettings: state.invoiceSettings 
     })));
 
     const editId = params.id as string | undefined;
@@ -27,7 +28,7 @@ export default function CreateInvoiceScreen() {
     const linkedChallan = linkedChallanId ? deliveryChallans.find(c => c.id === linkedChallanId) : undefined;
     
     const fy = getCurrentFinancialYear(currentBusiness?.fiscalYearStart || 'APRIL');
-    const docPrefix = "INV";
+    const docPrefix = invoiceSettings?.invoicePrefix || "INV";
     const counterKey = `${docPrefix}-${fy}`;
     const nextNum = String((documentCounters?.[counterKey] || 0) + 1).padStart(4, '0');
     const defaultDocNumber = `${counterKey}-${nextNum}`;
@@ -137,7 +138,7 @@ export default function CreateInvoiceScreen() {
             defaultDocNumber={defaultDocNumber}
             title={editId ? "Edit SalesInvoice" : "New SalesInvoice"}
             defaultType="Tax SalesInvoice"
-            defaultPrefix="INV-"
+            defaultPrefix={`${docPrefix}-`}
             partyLabel="Customer"
             partyFilter="customer"
             hasTransport={true}
