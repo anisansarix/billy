@@ -277,29 +277,39 @@ export default function InvoiceDetailScreen() {
             </ScrollView>
 
             {/* Sticky bottom action bar */}
-            <View className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-border flex-row space-x-3">
-                <View className="flex-1 pr-1">
-                    <Pressable 
-                        onPress={handleShare}
-                        disabled={disableActions}
-                        style={({ pressed }) => ({ opacity: pressed || disableActions ? 0.7 : 1 })}
-                        className={`bg-slate-100 py-3.5 rounded-xl items-center flex-row justify-center border border-slate-200`}
-                    >
-                        <Share2 color="#081126" size={20} className="mr-2" />
-                        <Text className="font-sans-bold text-primary text-base">Share</Text>
-                    </Pressable>
+            <View className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-border flex-col pb-safe">
+                <View className="flex-row justify-between w-full space-x-3 mb-2">
+                    <View className="flex-1 pr-1">
+                        <Pressable 
+                            onPress={handleShare}
+                            disabled={disableActions}
+                            style={({ pressed }) => ({ opacity: pressed || disableActions ? 0.7 : 1 })}
+                            className={`bg-slate-100 py-3.5 rounded-xl items-center flex-row justify-center border border-slate-200`}
+                        >
+                            <Share2 color="#081126" size={20} className="mr-2" />
+                            <Text className="font-sans-bold text-primary text-base">Share</Text>
+                        </Pressable>
+                    </View>
+                    <View className="flex-1 pl-1">
+                        <Pressable 
+                            onPress={handleDownload}
+                            disabled={disableActions}
+                            style={({ pressed }) => ({ opacity: pressed || disableActions ? 0.7 : 1 })}
+                            className={`bg-primary py-3.5 rounded-xl items-center flex-row justify-center`}
+                        >
+                            <Download color="white" size={20} className="mr-2" />
+                            <Text className="font-sans-bold text-white text-base">Download PDF</Text>
+                        </Pressable>
+                    </View>
                 </View>
-                <View className="flex-1 pl-1">
+                {invoice.documentType === 'SALES_INVOICE' && (invoice.status === 'PAID' || invoice.status === 'PARTIAL' || invoice.status === 'Paid') && (
                     <Pressable 
-                        onPress={handleDownload}
-                        disabled={disableActions}
-                        style={({ pressed }) => ({ opacity: pressed || disableActions ? 0.7 : 1 })}
-                        className={`bg-primary py-3.5 rounded-xl items-center flex-row justify-center`}
+                        onPress={() => router.push(`/(app)/(sales)/credit-note/new?invoiceId=${invoice.id}` as never)}
+                        className="bg-amber-100 py-3.5 rounded-xl items-center flex-row justify-center border border-amber-200 w-full"
                     >
-                        <Download color="white" size={20} className="mr-2" />
-                        <Text className="font-sans-bold text-white text-base">Download PDF</Text>
+                        <Text className="font-sans-bold text-amber-700 text-base">Raise Credit Note</Text>
                     </Pressable>
-                </View>
+                )}
                 
                 {!currentBusiness && (
                     <View className="absolute -top-10 self-center bg-gray-800 px-4 py-2 rounded-full shadow-md">

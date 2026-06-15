@@ -74,6 +74,15 @@ export type AppStore = {
   creditNotes: CreditNote[];
   deliveryChallans: DeliveryChallan[];
   documentCounters: Record<string, number>;
+  invoiceSettings: {
+    invoicePrefix: string;
+    poPrefix: string;
+    cnPrefix: string;
+    dcPrefix: string;
+    defaultPaymentTermsDays: number;
+    defaultTnC: string;
+  };
+  setInvoiceSettings: (settings: Partial<{ invoicePrefix: string; poPrefix: string; cnPrefix: string; dcPrefix: string; defaultPaymentTermsDays: number; defaultTnC: string; }>) => void;
   hasHydrated: boolean;
   setHasHydrated: (state: boolean) => void;
   setCurrentBusiness: (business: Business | null) => void;
@@ -124,8 +133,10 @@ export const useAppStore = create<AppStore>()(
       creditNotes: [],
       deliveryChallans: [],
       documentCounters: {},
+      invoiceSettings: { invoicePrefix: 'INV', poPrefix: 'PO', cnPrefix: 'CN', dcPrefix: 'DC', defaultPaymentTermsDays: 30, defaultTnC: 'Goods once sold will not be taken back. Subject to Surat jurisdiction.' },
       hasHydrated: false,
       
+      setInvoiceSettings: (settings) => set((state) => ({ invoiceSettings: { ...state.invoiceSettings, ...settings } })),
       setHasHydrated: (state) => set({ hasHydrated: state }),
       setCurrentBusiness: (b) => set({ currentBusiness: b }),
 
@@ -150,20 +161,24 @@ export const useAppStore = create<AppStore>()(
       updateInvoice: (invoice) => set((state) => ({ invoices: state.invoices.map((i) => (i.id === invoice.id ? invoice : i)) })),
       deleteInvoice: (id) => set((state) => {
         const invoice = state.invoices.find(i => i.id === id);
-        if (!invoice) return state;
         const updatedItems = [...state.items];
-        invoice.lineItems.forEach(lineItem => {
-          if (lineItem.inventoryItemId) {
-            const itemIndex = updatedItems.findIndex(i => i.id === lineItem.inventoryItemId);
-            if (itemIndex >= 0) {
-              updatedItems[itemIndex] = {
-                ...updatedItems[itemIndex],
-                stock: (updatedItems[itemIndex].stock || 0) + lineItem.quantityDecimal
-              };
+        if (invoice && !invoice.linkedChallanId) {
+          invoice.lineItems.forEach(lineItem => {
+            if (lineItem.inventoryItemId) {
+              const itemIndex = updatedItems.findIndex(i => i.id === lineItem.inventoryItemId);
+              if (itemIndex >= 0) {
+                updatedItems[itemIndex] = {
+                  ...updatedItems[itemIndex],
+                  stock: (updatedItems[itemIndex].stock || 0) + lineItem.quantityDecimal
+                };
+              }
             }
-          }
-        });
-        return { invoices: state.invoices.filter((i) => i.id !== id), items: updatedItems };
+          });
+        }
+        return {
+          invoices: state.invoices.filter(i => i.id !== id),
+          items: updatedItems
+        };
       }),
 
       addItem: (item) => set((state) => ({ items: [item, ...state.items] })),

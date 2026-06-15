@@ -57,7 +57,7 @@ export default function SettingsScreen() {
                             title="Business Details" 
                             subtitle="GSTIN, Address, Bank Accounts" 
                             isLast 
-                            onPress={() => router.push('/business-profile' as any)}
+                            onPress={() => router.push('/(app)/(settings)/business-profile')}
                         />
                     </View>
                 </View>
@@ -70,7 +70,7 @@ export default function SettingsScreen() {
                             icon={Receipt} 
                             title="SalesInvoice Customization" 
                             subtitle="Prefixes, Terms & Conditions, Logo" 
-                            onPress={() => router.push('/invoice-settings' as any)}
+                            onPress={() => router.push('/(app)/(settings)/invoice-settings')}
                         />
                         <SettingItem icon={Users} title="User Management" subtitle="Manage staff roles and permissions" isLast />
                     </View>

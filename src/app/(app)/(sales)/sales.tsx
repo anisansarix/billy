@@ -4,7 +4,7 @@ import { useDeferredRender } from "@/hooks/useDeferredRender";
 import { useTabTransition } from "@/hooks/useTabTransition";
 import { useRouter } from "expo-router";
 import { useShallow } from 'zustand/react/shallow';
-import { ArrowLeft, Plus, ReceiptText, X, Edit, Trash2, Box, Undo2 } from "lucide-react-native";
+import { ArrowLeft, Plus, ReceiptText, X, Edit, Trash2, Box, Undo2, Truck } from "lucide-react-native";
 import { useState, useMemo } from "react";
 import {  Pressable, Text, View, RefreshControl, Alert, FlatList, ScrollView , Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -321,6 +321,7 @@ export default function SalesScreen() {
                             { title: "Estimate", route: "/(app)/create-estimate", icon: <ReceiptText color="#f59e0b" size={20} />, bg: "bg-amber-50" },
                             { title: "Quotation", route: "/(app)/create-quotation", icon: <ReceiptText color="#8b5cf6" size={20} />, bg: "bg-purple-50" },
                             { title: "Delivery Challan", route: "/(app)/create-delivery-challan", icon: <Box color="#10b981" size={20} />, bg: "bg-emerald-50" },
+                            { title: "New Challan", route: "/(app)/(sales)/challan/new", icon: <Truck color="#10b981" size={20} />, bg: "bg-teal-50" },
                             { title: "Credit Note", route: "/(app)/create-credit-note", icon: <Undo2 color="#ef4444" size={20} />, bg: "bg-red-50" },
                         ].map((item, idx) => (
                             <Pressable 

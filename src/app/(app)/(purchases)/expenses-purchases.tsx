@@ -247,7 +247,7 @@ export default function ExpenseRecordsPurchasesScreen() {
                 windowSize={10}
                 removeClippedSubviews={true}
                     renderItem={({ item: pur }) => (
-                        <Card className="mb-4 mx-5" isPressable onPress={() => setSelectedPurchase(pur)}>
+                        <Card className="mb-4 mx-5" isPressable onPress={() => router.push(`/(app)/(purchases)/purchase/${pur.id}` as never)}>
                             <View className="flex-row justify-between items-start mb-3">
                                 <View className="flex-1 mr-2">
                                     <Text className="font-sans-bold text-base text-primary" numberOfLines={1}>{pur.partyName || pur.partyName}</Text>
