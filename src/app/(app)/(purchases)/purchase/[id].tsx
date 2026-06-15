@@ -8,7 +8,7 @@ import { formatDate } from "@/utils/date";
 import { generateInvoicePDF } from "@/utils/pdf";
 import * as Sharing from 'expo-sharing';
 import { useState } from "react";
-import "../../../../global.css";
+import "../../../../../global.css";
 
 export default function PurchaseDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
