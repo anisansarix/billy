@@ -246,9 +246,13 @@ export default function SalesScreen() {
                                     <View className="w-10 h-10 bg-blue-100 rounded-full items-center justify-center mr-4">
                                         <Box color="#208AEF" size={20} />
                                     </View>
-                                    <View>
+                                    <View className="flex-1 pr-4">
                                         <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Items Included</Text>
-                                        <Text className="font-sans-bold text-base text-primary">{selectedInvoice.lineItems?.length || 0} Products/Services</Text>
+                                        <Text className="font-sans-bold text-base text-primary" numberOfLines={1}>
+                                            {selectedInvoice.lineItems?.length 
+                                                ? selectedInvoice.lineItems.map((i: any) => i.description).join(', ') 
+                                                : "No items"}
+                                        </Text>
                                     </View>
                                 </View>
                                 <View className="flex-row items-center">

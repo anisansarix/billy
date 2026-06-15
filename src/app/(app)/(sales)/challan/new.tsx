@@ -1,6 +1,5 @@
 import { useRouter } from "expo-router";
-import { ArrowLeft } from "lucide-react-native";
-import { Pressable, Text, View, Alert, TextInput } from "react-native";
+import { View, Text, TextInput, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppStore } from "@/store";
 import { DeliveryChallan, DocumentType } from "@/types/entities";
@@ -32,14 +31,6 @@ export default function NewDeliveryChallanScreen() {
 
     return (
         <SafeAreaView style={{ flex: 1 }} className="bg-slate-50">
-            {/* Header */}
-            <View className="flex-row items-center px-4 py-3 bg-white shadow-sm z-10 border-b border-border">
-                <Pressable onPress={() => router.back()} className="p-2 -ml-2 min-h-[44px] min-w-[44px] items-center justify-center mr-2">
-                    <ArrowLeft color="#0f172a" size={24} />
-                </Pressable>
-                <Text className="font-sans-bold text-lg text-primary flex-1">New Delivery Challan</Text>
-            </View>
-
             <DocumentBuilder
                 title="New Delivery Challan"
                 defaultType="DELIVERY_CHALLAN"

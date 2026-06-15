@@ -185,7 +185,7 @@ export default function PurchaseDetailScreen() {
             </ScrollView>
 
             {/* Bottom Action Bar */}
-            <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-border px-4 py-3 flex-row shadow-lg pb-safe">
+            <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-border px-4 py-3 flex-row shadow-lg pb-8">
                 <Pressable onPress={handleDownload} disabled={isDownloading} className="flex-1 bg-primary/10 border border-primary/20 items-center justify-center rounded-xl min-h-[48px] mr-2 flex-row">
                     {isDownloading ? <ActivityIndicator size="small" color="#208AEF" /> : <Download color="#208AEF" size={20} />}
                     <Text className="font-sans-bold text-primary ml-2">Download PDF</Text>
