@@ -255,7 +255,7 @@ export default function ExpenseRecordsPurchasesScreen() {
                             <View className="flex-row justify-between items-start mb-3">
                                 <View className="flex-1 mr-2">
                                     <Text className="font-sans-bold text-base text-primary" numberOfLines={1}>{pur.partyName || pur.partyName}</Text>
-                                    <Text className="font-sans-medium text-xs text-muted-foreground mt-1">{pur.documentNumber} • {pur.documentDate}</Text>
+                                    <Text className="font-sans-medium text-xs text-muted-foreground mt-1">{pur.documentNumber} • {formatDate(pur.documentDate)}</Text>
                                 </View>
                                 <View className={`px-2 py-1 rounded-md ${getStatusColor(pur.status).split(' ')[0]} flex-shrink-0`}>
                                     <Text className={`font-sans-bold text-[10px] uppercase ${getStatusColor(pur.status).split(' ')[1]}`}>

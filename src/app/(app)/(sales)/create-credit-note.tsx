@@ -230,17 +230,19 @@ export default function CreateCreditNoteScreen() {
 
     // --- STEP 2 UI: Document Builder ---
     return (
-        <DocumentBuilder
-            defaultDocNumber={defaultDocNumber}
-            title={editId ? "Edit Credit Note" : "New Credit Note"}
-            defaultType="Credit Note"
-            defaultPrefix="CN-"
-            partyLabel="Customer"
-            partyFilter="customer"
-            hasTransport={false}
-            defaultNotes="Sales Return"
-            initialData={initialData}
-            onSave={handleSave}
-        />
+        <SafeAreaView style={{ flex: 1 }} className="bg-slate-50">
+            <DocumentBuilder
+                defaultDocNumber={defaultDocNumber}
+                title={editId ? "Edit Credit Note" : "New Credit Note"}
+                defaultType="Credit Note"
+                defaultPrefix="CN-"
+                partyLabel="Customer"
+                partyFilter="customer"
+                hasTransport={false}
+                defaultNotes="Sales Return"
+                initialData={initialData}
+                onSave={handleSave}
+            />
+        </SafeAreaView>
     );
 }

@@ -5,7 +5,7 @@ import { useAppStore } from "@/store";
 import { DeliveryChallan, DocumentType } from "@/types/entities";
 import DocumentBuilder, { DocumentData } from "@/components/domain/DocumentBuilder";
 import { buildGSTSummary, amountInIndianWords } from "@/utils/gst";
-import { useState } from "react";
+
 import "../../../../../global.css";
 
 export default function NewDeliveryChallanScreen() {
@@ -17,11 +17,7 @@ export default function NewDeliveryChallanScreen() {
     const currentBusiness = useAppStore(s => s.currentBusiness);
     const invoiceSettings = useAppStore(s => s.invoiceSettings);
 
-    // Form state for Transport Details
-    const [vehicleNumber, setVehicleNumber] = useState("");
-    const [transporterName, setTransporterName] = useState("");
-    const todayFormatted = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
-    const [dispatchDate, setDispatchDate] = useState(todayFormatted);
+
 
     // Auto-generate document number
     const currentFY = currentBusiness?.fiscalYearStart || 'APRIL';
@@ -60,13 +56,17 @@ export default function NewDeliveryChallanScreen() {
                         totalGSTAmountPaise: documentData.totals.cgstPaise + documentData.totals.sgstPaise + documentData.totals.igstPaise,
                         totalAmountPaise: documentData.totals.totalAmountPaise,
                         totalAmountInWords: amountInIndianWords(documentData.totals.totalAmountPaise),
-                        notes: JSON.stringify({ vehicleNumber, transporterName, dispatchDate }),
+                        notes: JSON.stringify({ 
+                            vehicleNumber: documentData.transport?.vehicleNo || "", 
+                            transporterName: documentData.transport?.transporterName || "", 
+                            dispatchDate: documentData.transport?.deliveryDate || "" 
+                        }),
                         isInterState: documentData.totals.isInterState,
                         placeOfSupply: documentData.selectedParty.billingAddress?.state || "",
                         status: 'ISSUED',
-                        vehicleNumber,
-                        transporterName,
-                        dispatchDate,
+                        vehicleNumber: documentData.transport?.vehicleNo || "",
+                        transporterName: documentData.transport?.transporterName || "",
+                        dispatchDate: documentData.transport?.deliveryDate || "",
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString(),
                     };
@@ -78,50 +78,6 @@ export default function NewDeliveryChallanScreen() {
                 }}
             />
 
-            {/* Transport Details Overlay at Bottom */}
-            <View className="p-4 bg-white border-t border-border shadow-sm absolute bottom-0 left-0 right-0 z-20 pb-8">
-                <Text className="font-sans-bold text-base text-primary mb-3">Transport Details</Text>
-                
-                <View className="flex-row space-x-2 mb-2">
-                    <View className="flex-1 mr-1">
-                        <Text className="font-sans-medium text-xs text-muted-foreground mb-1">Vehicle Number</Text>
-                        <TextInput 
-                            value={vehicleNumber}
-                            onChangeText={setVehicleNumber}
-                            placeholder="GJ05AB1234"
-                            placeholderTextColor="#94a3b8"
-                            autoCapitalize="characters"
-                            style={{ color: '#0f172a' }}
-                            className="bg-slate-50 border border-border rounded-lg px-3 py-2 font-sans-medium text-sm h-10"
-                        />
-                    </View>
-                    <View className="flex-1 ml-1">
-                        <Text className="font-sans-medium text-xs text-muted-foreground mb-1">Dispatch Date</Text>
-                        <TextInput 
-                            value={dispatchDate}
-                            onChangeText={setDispatchDate}
-                            placeholder="DD-MM-YYYY"
-                            placeholderTextColor="#94a3b8"
-                            style={{ color: '#0f172a' }}
-                            className="bg-slate-50 border border-border rounded-lg px-3 py-2 font-sans-medium text-sm h-10"
-                        />
-                    </View>
-                </View>
-
-                <View className="mb-2">
-                    <Text className="font-sans-medium text-xs text-muted-foreground mb-1">Transporter Name</Text>
-                    <TextInput 
-                        value={transporterName}
-                        onChangeText={setTransporterName}
-                        placeholder="Carrier name"
-                        placeholderTextColor="#94a3b8"
-                        style={{ color: '#0f172a' }}
-                        className="bg-slate-50 border border-border rounded-lg px-3 py-2 font-sans-medium text-sm h-10"
-                    />
-                </View>
-                
-                <Text className="font-sans-medium text-xs text-amber-600 mt-2 text-center">Save document above to finalize challan</Text>
-            </View>
         </SafeAreaView>
     );
 }
