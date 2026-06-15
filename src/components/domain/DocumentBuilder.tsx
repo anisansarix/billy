@@ -66,6 +66,7 @@ export interface DocumentData {
         vehicleNo: string;
         ewayBill: string;
         deliveryDate: string;
+        transporterName: string;
     };
     notes: {
         internal: string;
@@ -132,7 +133,12 @@ export default function DocumentBuilder({
     const [itemModalVisible, setItemModalVisible] = useState(false);
 
     const [payment, setPayment] = useState<DocumentData['payment']>(initialData?.payment || { mode: "UPI", terms: "Immediate" });
-    const [transport, setTransport] = useState<NonNullable<DocumentData['transport']>>(initialData?.transport || { vehicleNo: "", ewayBill: "", deliveryDate: "" });
+    const [transport, setTransport] = useState({
+        vehicleNo: initialData?.transport?.vehicleNo || "",
+        ewayBill: initialData?.transport?.ewayBill || "",
+        deliveryDate: initialData?.transport?.deliveryDate || "",
+        transporterName: initialData?.transport?.transporterName || "",
+    });
     const [notes, setNotes] = useState<DocumentData['notes']>(initialData?.notes || { internal: "", external: defaultNotes });
 
     const isInterState = useMemo(() => {
@@ -455,6 +461,25 @@ export default function DocumentBuilder({
                                     className="bg-slate-50 border border-border rounded-lg px-3 py-2 font-sans-medium text-primary"
                                     value={transport.ewayBill}
                                     onChangeText={t => setTransport({...transport, ewayBill: t})}
+                                />
+                            </View>
+                        </View>
+                        <View className="flex-row gap-4 mb-4">
+                            <View className="flex-1">
+                                <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Dispatch Date</Text>
+                                <TextInput 
+                                    className="bg-slate-50 border border-border rounded-lg px-3 py-2 font-sans-medium text-primary"
+                                    value={transport.deliveryDate}
+                                    onChangeText={t => setTransport({...transport, deliveryDate: t})}
+                                    placeholder="DD-MM-YYYY"
+                                />
+                            </View>
+                            <View className="flex-1">
+                                <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Transporter Name</Text>
+                                <TextInput 
+                                    className="bg-slate-50 border border-border rounded-lg px-3 py-2 font-sans-medium text-primary"
+                                    value={transport.transporterName}
+                                    onChangeText={t => setTransport({...transport, transporterName: t})}
                                 />
                             </View>
                         </View>

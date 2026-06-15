@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { View, Text, TextInput, Alert } from "react-native";
+import { Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppStore } from "@/store";
 import { DeliveryChallan, DocumentType } from "@/types/entities";
