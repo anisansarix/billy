@@ -1,15 +1,14 @@
 import React from 'react';
-import { Pressable, PressableProps, View } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import { Pressable, PressableProps } from 'react-native';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
-import { BlurView } from 'expo-blur';
 import "../../../global.css";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 interface CardProps extends PressableProps {
   children: React.ReactNode;
-  variant?: 'elevated' | 'flat' | 'outline' | 'glass';
+  variant?: 'elevated' | 'flat' | 'outline';
   className?: string;
   isPressable?: boolean;
 }
@@ -19,14 +18,14 @@ export default function Card({ children, variant = 'elevated', className = '', i
 
   const handlePressIn = (e: import("react-native").GestureResponderEvent) => {
     if (isPressable) {
-      scale.value = withSpring(0.97, { damping: 15, stiffness: 300 });
+      scale.value = withTiming(0.97, { duration: 100, easing: Easing.out(Easing.ease) });
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     if (onPressIn) onPressIn(e);
   };
 
   const handlePressOut = (e: import("react-native").GestureResponderEvent) => {
-    if (isPressable) scale.value = withSpring(1, { damping: 15, stiffness: 300 });
+    if (isPressable) scale.value = withTiming(1, { duration: 150, easing: Easing.out(Easing.ease) });
     if (onPressOut) onPressOut(e);
   };
 
@@ -34,24 +33,19 @@ export default function Card({ children, variant = 'elevated', className = '', i
     transform: [{ scale: scale.value }],
   }));
 
-  let baseClass = "p-4 rounded-3xl mb-4 overflow-hidden ";
+  let baseClass = "p-4 rounded-xl mb-3 bg-white ";
 
   switch (variant) {
     case 'elevated':
-      baseClass += "bg-card shadow-lg shadow-black/5 border border-white/20 ";
+      baseClass += "shadow-sm border border-white/50 ";
       break;
     case 'outline':
-      baseClass += "bg-card border-2 border-border ";
+      baseClass += "border border-border ";
       break;
     case 'flat':
-      baseClass += "bg-muted ";
-      break;
-    case 'glass':
-      baseClass += "bg-glass border border-glass-border ";
+      baseClass += "bg-white ";
       break;
   }
-
-  const isGlass = variant === 'glass';
 
   return (
     <AnimatedPressable
@@ -63,10 +57,7 @@ export default function Card({ children, variant = 'elevated', className = '', i
       accessibilityRole={isPressable || props.onPress ? 'button' : 'none'}
       {...props}
     >
-      {isGlass ? (
-        <BlurView intensity={20} tint="default" className="absolute inset-0" />
-      ) : null}
-      <View className="z-10">{children}</View>
+      {children}
     </AnimatedPressable>
   );
 }

@@ -1,15 +1,14 @@
 import React from 'react';
-import { Pressable, Text, PressableProps, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import { Pressable, Text, PressableProps } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming, Easing } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
-import { BlurView } from 'expo-blur';
 import "../../../global.css";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 interface ButtonProps extends PressableProps {
   title: string;
-  variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'glass';
+  variant?: 'primary' | 'secondary' | 'outline' | 'danger';
   icon?: React.ReactNode;
   className?: string;
   textClassName?: string;
@@ -29,14 +28,14 @@ export default function Button({
   const opacity = useSharedValue(1);
 
   const handlePressIn = (e: import("react-native").GestureResponderEvent) => {
-    scale.value = withSpring(0.94, { damping: 15, stiffness: 300 });
-    opacity.value = withTiming(0.8, { duration: 150 });
+    scale.value = withTiming(0.96, { duration: 100, easing: Easing.out(Easing.ease) });
+    opacity.value = withTiming(0.8, { duration: 100 });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     if (onPressIn) onPressIn(e);
   };
 
   const handlePressOut = (e: import("react-native").GestureResponderEvent) => {
-    scale.value = withSpring(1, { damping: 15, stiffness: 300 });
+    scale.value = withTiming(1, { duration: 150, easing: Easing.out(Easing.ease) });
     opacity.value = withTiming(1, { duration: 150 });
     if (onPressOut) onPressOut(e);
   };
@@ -46,40 +45,27 @@ export default function Button({
     opacity: opacity.value,
   }));
 
-  let baseClass = "h-14 flex-row items-center justify-center rounded-2xl px-4 overflow-hidden ";
-  let textClass = "text-base font-sans-semibold ";
+  let baseClass = "h-14 flex-row items-center justify-center rounded-xl px-4 ";
+  let textClass = "text-base font-sans-medium ";
 
   switch (variant) {
     case 'primary':
-      baseClass += "bg-primary shadow-lg shadow-primary/30";
-      textClass += "text-primary-foreground";
+      baseClass += "bg-primary border border-transparent";
+      textClass += "text-white";
       break;
     case 'secondary':
-      baseClass += "bg-muted shadow-sm";
-      textClass += "text-foreground font-sans-bold";
+      baseClass += "bg-[#e3e8fc] border border-transparent";
+      textClass += "text-primary font-sans-bold";
       break;
     case 'outline':
-      baseClass += "bg-transparent border-2 border-border";
-      textClass += "text-foreground";
+      baseClass += "bg-transparent border border-border";
+      textClass += "text-primary";
       break;
     case 'danger':
-      baseClass += "bg-destructive/10 border border-transparent";
-      textClass += "text-destructive font-sans-bold";
-      break;
-    case 'glass':
-      baseClass += "bg-transparent border border-glass-border";
-      textClass += "text-foreground";
+      baseClass += "bg-red-50 border border-transparent";
+      textClass += "text-red-600 font-sans-bold";
       break;
   }
-
-  const InnerContent = () => (
-    <>
-      {icon && <View className="mr-2">{icon}</View>}
-      <Text className={`${textClass} ${textClassName}`}>
-        {title}
-      </Text>
-    </>
-  );
 
   return (
     <AnimatedPressable
@@ -91,10 +77,10 @@ export default function Button({
       accessibilityLabel={title}
       {...props}
     >
-      {variant === 'glass' ? (
-        <BlurView intensity={30} tint="light" className="absolute inset-0" />
-      ) : null}
-      <InnerContent />
+      {icon && <React.Fragment>{icon}</React.Fragment>}
+      <Text className={`${textClass} ${icon ? 'ml-2' : ''} ${textClassName}`}>
+        {title}
+      </Text>
     </AnimatedPressable>
   );
 }
