@@ -198,7 +198,7 @@ export default function CustomersVendorsScreen() {
 
             <Pressable 
                 onPress={() => { Vibration.vibrate(10); openFormModal(); }}
-                className="absolute bottom-6 right-6 h-14 w-14 bg-primary rounded-full items-center justify-center shadow-lg active:scale-95"
+                className="absolute bottom-6 right-6 h-14 w-14 bg-primary rounded-full items-center justify-center shadow-lg"
                 style={{ elevation: 5, shadowColor: '#081126', shadowOpacity: 0.3, shadowRadius: 5, shadowOffset: { width: 0, height: 3 } }}
             >
                 <Plus color="white" size={24} />
