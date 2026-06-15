@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 import { useShallow } from 'zustand/react/shallow';
 import { ArrowLeft, Save, Search } from "lucide-react-native";
 import { useState, useMemo } from "react";
-import { Pressable, ScrollView, Text, TextInput, View, Alert, KeyboardAvoidingView, Platform } from "react-native";
+import { Pressable, ScrollView, Text, TextInput, View, Alert, KeyboardAvoidingView, Platform, Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppStore } from "@/store";
 import "../../../../global.css";
@@ -70,12 +70,14 @@ export default function CreateStockAdjustmentScreen() {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
-            <View className="flex-row items-center justify-between p-5 bg-white shadow-sm z-10">
-                <View className="flex-row items-center">
-                    <Pressable onPress={() => router.back()} className="mr-4">
-                        <ArrowLeft color="#081126" size={24} />
-                    </Pressable>
-                    <Text className="text-xl font-sans-bold text-primary">New Stock Adjustment</Text>
+            {/* Header */}
+            <View className="flex-row items-center p-4 bg-white shadow-sm z-10 border-b border-border">
+                <Pressable onPress={() => { Vibration.vibrate(10); router.back(); }} className="h-10 w-10 items-center justify-center rounded-full active:bg-gray-100">
+                    <ArrowLeft color="#081126" size={24} />
+                </Pressable>
+                <View className="ml-2 flex-1">
+                    <Text className="text-lg font-sans-bold text-primary">New Stock Adjustment</Text>
+                    <Text className="text-xs font-sans-medium text-muted-foreground">Adjust inventory quantities</Text>
                 </View>
             </View>
 

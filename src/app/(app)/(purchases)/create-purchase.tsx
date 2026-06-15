@@ -4,6 +4,7 @@ import { useAppStore } from "@/store";
 import { getCurrentFinancialYear } from "@/utils/date";
 import DocumentBuilder, { DocumentData } from "@/components/domain/DocumentBuilder";
 import { PurchaseOrder, Party } from "@/types/entities";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CreatePurchaseScreen() {
     const router = useRouter();
@@ -95,6 +96,7 @@ export default function CreatePurchaseScreen() {
     };
 
     return (
+        <SafeAreaView style={{ flex: 1 }} className="bg-slate-50">
         <DocumentBuilder
             defaultDocNumber={defaultDocNumber}
             title={editId ? "Edit Purchase" : "Create Purchase"}
@@ -108,5 +110,6 @@ export default function CreatePurchaseScreen() {
             initialData={initialData as any}
             onSave={handleSave}
         />
+        </SafeAreaView>
     );
 }

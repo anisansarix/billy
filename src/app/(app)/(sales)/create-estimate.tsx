@@ -5,6 +5,7 @@ import { getCurrentFinancialYear } from "@/utils/date";
 import { Party, DocumentType, DocumentBase, SalesInvoice } from "@/types/entities";
 import DocumentBuilder, { DocumentData } from "@/components/domain/DocumentBuilder";
 import { buildGSTSummary, amountInIndianWords } from "@/utils/gst";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CreateEstimateScreen() {
     const router = useRouter();
@@ -94,18 +95,20 @@ export default function CreateEstimateScreen() {
     };
 
     return (
-        <DocumentBuilder
-            defaultDocNumber={defaultDocNumber}
-            title={editId ? "Edit Estimate" : "Create Estimate"}
-            subtitle="Provide a quote to your customers"
-            defaultType="ESTIMATE"
-            defaultPrefix="EST-"
-            partyLabel="Customer"
-            partyFilter="customer"
-            hasTransport={false}
-            defaultNotes="This estimate is valid for 30 days."
-            initialData={initialData}
-            onSave={handleSave}
-        />
+        <SafeAreaView style={{ flex: 1 }} className="bg-slate-50">
+            <DocumentBuilder
+                defaultDocNumber={defaultDocNumber}
+                title={editId ? "Edit Estimate" : "Create Estimate"}
+                subtitle="Provide a quote to your customers"
+                defaultType="ESTIMATE"
+                defaultPrefix="EST-"
+                partyLabel="Customer"
+                partyFilter="customer"
+                hasTransport={false}
+                defaultNotes="This estimate is valid for 30 days."
+                initialData={initialData}
+                onSave={handleSave}
+            />
+        </SafeAreaView>
     );
 }

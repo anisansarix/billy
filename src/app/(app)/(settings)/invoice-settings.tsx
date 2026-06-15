@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import { ArrowLeft, Save, FileText, LayoutTemplate } from "lucide-react-native";
 import { useState } from "react";
-import { Pressable, ScrollView, Text, TextInput, View, KeyboardAvoidingView, Platform, Alert } from "react-native";
+import { Pressable, ScrollView, Text, TextInput, View, KeyboardAvoidingView, Platform, Alert, Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppStore } from "@/store";
 import { useShallow } from 'zustand/react/shallow';
@@ -57,18 +57,20 @@ export default function InvoiceSettingsScreen() {
     return (
         <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
             <SafeAreaView style={{ flex: 1 }} className="bg-slate-50">
-                <View className="flex-row items-center justify-between p-5 bg-white shadow-sm z-10">
-                    <View className="flex-row items-center">
-                        <Pressable onPress={() => router.back()} className="mr-4 p-2 min-h-[44px] min-w-[44px] items-center justify-center">
-                            <ArrowLeft color="#081126" size={24} />
-                        </Pressable>
-                        <Text className="text-2xl font-sans-bold text-primary">Invoice Settings</Text>
-                    </View>
-                    <Pressable onPress={handleSave} className="flex-row items-center bg-primary px-4 py-2 min-h-[44px] rounded-full">
-                        <Save color="white" size={16} className="mr-2" />
-                        <Text className="font-sans-bold text-white">Save</Text>
-                    </Pressable>
+            {/* Header */}
+            <View className="flex-row items-center p-4 bg-white shadow-sm z-10 border-b border-border">
+                <Pressable onPress={() => { Vibration.vibrate(10); router.back(); }} className="h-10 w-10 items-center justify-center rounded-full active:bg-gray-100">
+                    <ArrowLeft color="#081126" size={24} />
+                </Pressable>
+                <View className="ml-2 flex-1">
+                    <Text className="text-lg font-sans-bold text-primary">Invoice Settings</Text>
+                    <Text className="text-xs font-sans-medium text-muted-foreground">Configure invoice prefixes and notes</Text>
                 </View>
+                <Pressable onPress={handleSave} className="flex-row items-center bg-primary px-4 py-2 min-h-[44px] rounded-full">
+                    <Save color="white" size={16} className="mr-2" />
+                    <Text className="font-sans-bold text-white">Save</Text>
+                </Pressable>
+            </View>
 
                 <ScrollView className="flex-1 px-5 pt-4" showsVerticalScrollIndicator={false} contentContainerClassName="pb-32">
                     <View className="bg-white rounded-2xl p-5 mb-4 border border-border shadow-sm">

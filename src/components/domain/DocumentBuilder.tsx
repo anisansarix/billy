@@ -558,7 +558,7 @@ export default function DocumentBuilder({
             <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-border px-4 py-3 flex-row shadow-lg pb-8 z-20">
                 <Pressable onPress={handleSave} className="flex-1 bg-primary items-center justify-center rounded-xl min-h-[48px] flex-row">
                     <Save color="white" size={16} className="mr-2" />
-                    <Text className="font-sans-bold text-white">Save {title.replace('New ', '').replace('Create ', '')}</Text>
+                    <Text className="font-sans-bold text-white">Save</Text>
                 </Pressable>
             </View>
             </View>

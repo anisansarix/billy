@@ -162,11 +162,15 @@ export default function ExpenseRecordsPurchasesScreen() {
     );
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
-            <View className="flex-row items-center p-5 bg-white shadow-sm z-10">
-                <Pressable onPress={() => { Vibration.vibrate(10); router.back(); }} className="mr-4 p-2 min-h-[44px] min-w-[44px] items-center justify-center">
+            {/* Header */}
+            <View className="flex-row items-center p-4 bg-white shadow-sm z-10 border-b border-border">
+                <Pressable onPress={() => { Vibration.vibrate(10); router.back(); }} className="h-10 w-10 items-center justify-center rounded-full active:bg-gray-100">
                     <ArrowLeft color="#081126" size={24} />
                 </Pressable>
-                <Text className="text-2xl font-sans-bold text-primary">Expenses & Purchases</Text>
+                <View className="ml-2 flex-1">
+                    <Text className="text-lg font-sans-bold text-primary">Expenses & Purchases</Text>
+                    <Text className="text-xs font-sans-medium text-muted-foreground">Track outgoing payments and bills</Text>
+                </View>
             </View>
             {mainTab === 'expenses' ? (
                 !isFullyReady ? (

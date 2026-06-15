@@ -2,6 +2,7 @@ import { useAppStore } from "@/store";
 import { getCurrentFinancialYear } from "@/utils/date";
 import { useShallow } from 'zustand/react/shallow';
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Party, DocumentType, SalesInvoice } from "@/types/entities";
 import DocumentBuilder, { DocumentData } from "@/components/domain/DocumentBuilder";
@@ -134,18 +135,20 @@ export default function CreateInvoiceScreen() {
     };
 
     return (
-        <DocumentBuilder
-            defaultDocNumber={defaultDocNumber}
-            title={editId ? "Edit SalesInvoice" : "New SalesInvoice"}
-            subtitle={editId ? undefined : "Record sales and request payments"}
-            defaultType="Tax SalesInvoice"
-            defaultPrefix={`${docPrefix}-`}
-            partyLabel="Customer"
-            partyFilter="customer"
-            hasTransport={true}
-            defaultNotes="Goods once sold will not be taken back."
-            initialData={initialData}
-            onSave={handleSave}
-        />
+        <SafeAreaView style={{ flex: 1 }} className="bg-slate-50">
+            <DocumentBuilder
+                defaultDocNumber={defaultDocNumber}
+                title={editId ? "Edit SalesInvoice" : "New SalesInvoice"}
+                subtitle={editId ? undefined : "Record sales and request payments"}
+                defaultType="Tax SalesInvoice"
+                defaultPrefix={`${docPrefix}-`}
+                partyLabel="Customer"
+                partyFilter="customer"
+                hasTransport={true}
+                defaultNotes="Goods once sold will not be taken back."
+                initialData={initialData}
+                onSave={handleSave}
+            />
+        </SafeAreaView>
     );
 }

@@ -139,7 +139,7 @@ export default function SalesScreen() {
                 <Pressable onPress={() => { Vibration.vibrate(10); router.back(); }} className="h-10 w-10 items-center justify-center rounded-full active:bg-gray-100">
                     <ArrowLeft color="#081126" size={24} />
                 </Pressable>
-                <View className="ml-2">
+                <View className="ml-2 flex-1">
                     <Text className="text-lg font-sans-bold text-primary">Sales Documents</Text>
                     <Text className="text-xs font-sans-medium text-muted-foreground">Manage your outgoing documents</Text>
                 </View>

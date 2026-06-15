@@ -112,7 +112,7 @@ export default function InvoiceDetailScreen() {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }} edges={['top', 'left', 'right']}>
             {/* Header */}
-            <View className="flex-row items-center justify-between p-4 bg-white shadow-sm z-10">
+            <View className="flex-row items-center p-4 bg-white shadow-sm z-10 border-b border-border">
                 <Pressable 
                     onPress={() => { Vibration.vibrate(10); router.back(); }} 
                     disabled={isSharing}
@@ -121,7 +121,10 @@ export default function InvoiceDetailScreen() {
                     <ArrowLeft color="#081126" size={24} />
                 </Pressable>
                 
-                <Text className="text-lg font-sans-bold text-primary">{invoice.documentNumber}</Text>
+                <View className="ml-2 flex-1">
+                    <Text className="text-lg font-sans-bold text-primary">{invoice.documentNumber}</Text>
+                    <Text className="text-xs font-sans-medium text-muted-foreground">Invoice Details</Text>
+                </View>
                 
                 <View className="flex-row space-x-2">
                     <Pressable 

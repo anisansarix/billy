@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { ArrowLeft, Building2, ChevronRight, LogOut, Receipt, User, Users, ShieldCheck } from "lucide-react-native";
-import { Pressable, ScrollView, Text, View, Image } from "react-native";
+import { Pressable, ScrollView, Text, View, Image, Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import images from "../../../../constants/images";
 import "../../../../global.css";
@@ -23,11 +23,15 @@ export default function SettingsScreen() {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
-            <View className="flex-row items-center p-5 bg-white shadow-sm z-10">
-                <Pressable onPress={() => router.back()} className="mr-4">
+            {/* Header */}
+            <View className="flex-row items-center p-4 bg-white shadow-sm z-10 border-b border-border">
+                <Pressable onPress={() => { Vibration.vibrate(10); router.back(); }} className="h-10 w-10 items-center justify-center rounded-full active:bg-gray-100">
                     <ArrowLeft color="#081126" size={24} />
                 </Pressable>
-                <Text className="text-2xl font-sans-bold text-primary">Settings</Text>
+                <View className="ml-2 flex-1">
+                    <Text className="text-lg font-sans-bold text-primary">Settings</Text>
+                    <Text className="text-xs font-sans-medium text-muted-foreground">Manage app preferences and account</Text>
+                </View>
             </View>
 
             <ScrollView className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40, paddingTop: 20 }}>
