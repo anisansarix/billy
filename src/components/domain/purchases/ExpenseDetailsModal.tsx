@@ -4,6 +4,7 @@ import { X, Edit, Trash2, User, CreditCard } from "lucide-react-native";
 import AnimatedModal from "@/components/ui/AnimatedModal";
 import { ExpenseRecord } from "@/types/entities";
 import { formatINR } from "@/utils/money";
+import { formatDate } from "@/utils/date";
 
 interface ExpenseDetailsModalProps {
     visible: boolean;
@@ -22,7 +23,7 @@ export default function ExpenseDetailsModal({ visible, onClose, expense, onEdit,
                 <View className="flex-row justify-between items-start mb-6">
                     <View className="flex-1 mr-4">
                         <Text className="font-sans-bold text-2xl text-primary mb-1">{expense.category}</Text>
-                        <Text className="font-sans-medium text-base text-muted-foreground">{expense.date}</Text>
+                        <Text className="font-sans-medium text-base text-muted-foreground">{formatDate(expense.date)}</Text>
                     </View>
                     <Pressable onPress={onClose} className="h-11 w-11 items-center justify-center bg-muted rounded-full">
                         <X color="#64748b" size={20} />
