@@ -1,10 +1,11 @@
 import {  useState, useEffect  } from 'react';
-import { View, Text, Pressable, TextInput, ScrollView, Alert } from "react-native";
+import { View, Text, Pressable, TextInput, ScrollView, Alert, FlatList } from "react-native";
 import { X, Save, Trash2 } from "lucide-react-native";
 import AnimatedModal from "@/components/ui/AnimatedModal";
 import { InventoryItem, TaxRate } from "@/types/entities";
 import { useAppStore } from "@/store";
 import { useShallow } from 'zustand/react/shallow';
+import HSN_DATA from '@/data/hsn.json';
 
 interface InventoryItemFormModalProps {
     visible: boolean;
@@ -42,6 +43,8 @@ export default function InventoryItemFormModal({ visible, onClose, itemToEdit, i
         stock: 0,
     });
     const [showMoreDetails, setShowMoreDetails] = useState(false);
+    const [hsnQuery, setHsnQuery] = useState('');
+    const hsnResults = hsnQuery.length >= 2 ? HSN_DATA.filter(h => h.code.startsWith(hsnQuery) || h.description.toLowerCase().includes(hsnQuery.toLowerCase())).slice(0, 8) : [];
 
     useEffect(() => {
         if (visible) {
@@ -256,14 +259,44 @@ export default function InventoryItemFormModal({ visible, onClose, itemToEdit, i
                                         onChangeText={(text) => setFormData({ ...formData, gstRate: Number(text) ? parseFloat(text) : 0 })}
                                     />
                                 </View>
-                                <View className="flex-1 ml-2">
+                                <View className="flex-1 ml-2 z-10">
                                     <Text className="font-sans-medium text-sm text-muted-foreground mb-2">{formData.type === 'product' ? 'HSN Code' : 'SAC Code'}</Text>
                                     <TextInput
                                         className="bg-white border border-border rounded-xl px-4 py-4 font-sans-regular text-primary text-base"
                                         placeholder="e.g. 8471"
                                         value={formData.hsnSacCode}
-                                        onChangeText={(text) => setFormData({ ...formData, hsnSacCode: text })}
+                                        onChangeText={(text) => {
+                                            setHsnQuery(text);
+                                            setFormData({ ...formData, hsnSacCode: text });
+                                        }}
                                     />
+                                    {hsnResults.length > 0 && (
+                                        <View className="absolute top-[85px] left-0 right-0 bg-white border border-border rounded-xl shadow-sm z-50 overflow-hidden" style={{ maxHeight: 200 }}>
+                                            <FlatList
+                                                data={hsnResults}
+                                                keyExtractor={(h) => h.code}
+                                                keyboardShouldPersistTaps="handled"
+                                                nestedScrollEnabled={true}
+                                                renderItem={({ item: h }) => (
+                                                    <Pressable 
+                                                        className="p-3 border-b border-border flex-row items-center justify-between"
+                                                        onPress={() => {
+                                                            setFormData({ ...formData, hsnSacCode: h.code, gstRate: h.gstRate });
+                                                            setHsnQuery('');
+                                                        }}
+                                                    >
+                                                        <View className="flex-1 pr-2">
+                                                            <Text className="font-mono text-sm text-primary mb-0.5">{h.code}</Text>
+                                                            <Text className="font-sans-medium text-xs text-muted-foreground" numberOfLines={1}>{h.description}</Text>
+                                                        </View>
+                                                        <View className="bg-slate-100 px-2 py-1 rounded">
+                                                            <Text className="font-sans-bold text-xs text-primary">{h.gstRate}%</Text>
+                                                        </View>
+                                                    </Pressable>
+                                                )}
+                                            />
+                                        </View>
+                                    )}
                                 </View>
                             </View>
                             

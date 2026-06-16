@@ -7,6 +7,7 @@ export enum DocumentType {
     PURCHASE_RETURN = 'PURCHASE_RETURN',
     SALES_RETURN = 'SALES_RETURN',
     PROFORMA_INVOICE = 'PROFORMA_INVOICE',
+    QUOTATION = 'QUOTATION',
     PAYMENT_RECEIPT = 'PAYMENT_RECEIPT'
 }
 
@@ -181,6 +182,8 @@ export interface DocumentBase {
     createdAt: string;
     updatedAt: string;
     irnDetails?: IRNDetails;
+    balanceDuePaise?: number;
+    paidAmountPaise?: number;
 }
 
 export interface SalesInvoice extends DocumentBase {

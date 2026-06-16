@@ -1,11 +1,11 @@
 import * as Print from 'expo-print';
 import { Paths, File } from 'expo-file-system';
-import type { SalesInvoice, Business, Party } from '@/types/entities';
+import type { SalesInvoice, PurchaseOrder, CreditNote, DeliveryChallan, Business, Party } from '@/types/entities';
 import { formatINR } from '@/utils/money';
 import { amountInIndianWords } from '@/utils/gst';
 
 function buildInvoiceHTML(
-  invoice: SalesInvoice,
+  invoice: SalesInvoice | PurchaseOrder | CreditNote | DeliveryChallan,
   business: Business,
   party: Party
 ): string {
@@ -211,7 +211,7 @@ function buildInvoiceHTML(
 }
 
 export async function generateInvoicePDF(
-  invoice: SalesInvoice,
+  invoice: SalesInvoice | PurchaseOrder | CreditNote | DeliveryChallan,
   business: Business,
   party: Party
 ): Promise<string> {

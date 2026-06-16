@@ -17,6 +17,7 @@ import "../../../../global.css";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { formatINR } from "@/utils/money";
 import { formatDate } from "@/utils/date";
+import { DocumentType } from "@/types/entities";
 
 export default function SalesScreen() {
     const router = useRouter();
@@ -62,11 +63,11 @@ export default function SalesScreen() {
     const filteredInvoices = useMemo(() => {
         return allDocuments.filter(inv => {
             let matchesTab = true;
-            if (tab === "Invoices") matchesTab = inv.documentType === "SALES_INVOICE";
-            else if (tab === "Estimates") matchesTab = (inv.documentType as any) === "PROFORMA_INVOICE";
-            else if (tab === "Quotations") matchesTab = (inv.documentType as any) === "QUOTATION";
-            else if (tab === "Challans") matchesTab = (inv.documentType as any) === "DELIVERY_CHALLAN";
-            else if (tab === "Credit Notes") matchesTab = (inv.documentType as any) === "CREDIT_NOTE";
+            if (tab === "Invoices") matchesTab = inv.documentType === DocumentType.SALES_INVOICE;
+            else if (tab === "Estimates") matchesTab = (inv.documentType as string) === DocumentType.PROFORMA_INVOICE;
+            else if (tab === "Quotations") matchesTab = (inv.documentType as string) === DocumentType.QUOTATION;
+            else if (tab === "Challans") matchesTab = inv.documentType === DocumentType.DELIVERY_CHALLAN;
+            else if (tab === "Credit Notes") matchesTab = inv.documentType === DocumentType.CREDIT_NOTE;
 
             const matchesSearch = inv.partyName?.toLowerCase().includes(search.toLowerCase()) || inv.documentNumber?.toLowerCase().includes(search.toLowerCase());
             return matchesTab && matchesSearch;
@@ -101,7 +102,7 @@ export default function SalesScreen() {
                 <SegmentedTabs 
                     tabs={["All", "Invoices", "Estimates", "Quotations", "Challans", "Credit Notes"]} 
                     activeTab={tab} 
-                    onTabChange={(t) => startTransition(() => setTab(t as any))} 
+                    onTabChange={(t) => startTransition(() => setTab(t as typeof tab))} 
                 />
             </View>
 
@@ -253,7 +254,7 @@ export default function SalesScreen() {
                                         <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Items Included</Text>
                                         <Text className="font-sans-bold text-base text-primary" numberOfLines={1}>
                                             {selectedInvoice.lineItems?.length 
-                                                ? selectedInvoice.lineItems.map((i: any) => i.description).join(', ') 
+                                                ? selectedInvoice.lineItems.map((i: import('@/types/entities').LineItem) => i.description).join(', ') 
                                                 : "No items"}
                                         </Text>
                                     </View>
@@ -277,10 +278,10 @@ export default function SalesScreen() {
                                         setSelectedInvoice(null);
                                         
                                         let route = '/(app)/create-invoice';
-                                        if ((type as any) === 'PROFORMA_INVOICE') route = '/(app)/create-estimate';
-                                        if ((type as any) === 'PROFORMA_INVOICE') route = '/(app)/create-quotation';
-                                        if ((type as any) === 'DELIVERY_CHALLAN') route = '/(app)/create-delivery-challan';
-                                        if ((type as any) === 'CREDIT_NOTE') route = '/(app)/create-credit-note';
+                                        if (type === DocumentType.PROFORMA_INVOICE) route = '/(app)/(sales)/create-estimate';
+                                        if (type === DocumentType.QUOTATION) route = '/(app)/(sales)/create-quotation';
+                                        if (type === DocumentType.DELIVERY_CHALLAN) route = '/(app)/(sales)/challan/new';
+                                        if (type === DocumentType.CREDIT_NOTE) route = '/(app)/(sales)/credit-note/new';
                                         
                                         router.push({ pathname: route, params: { id } } as never);
                                     }}

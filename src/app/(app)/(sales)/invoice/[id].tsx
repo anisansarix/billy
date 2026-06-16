@@ -7,8 +7,9 @@ import { ArrowLeft, Share2, Download } from 'lucide-react-native';
 import { useAppStore } from '@/store';
 import { formatINR } from '@/utils/money';
 import { generateInvoicePDF } from '@/utils/pdf';
-import QRCode from 'react-native-qrcode-svg';
+
 import RecordPaymentModal from '@/components/domain/sales/RecordPaymentModal';
+import UPIQRCard from '@/components/ui/UPIQRCard';
 
 export default function InvoiceDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
@@ -45,7 +46,7 @@ export default function InvoiceDetailScreen() {
         }
         try {
             setIsSharing(true);
-            const pdfUri = await generateInvoicePDF(invoice as any, currentBusiness, party);
+            const pdfUri = await generateInvoicePDF(invoice, currentBusiness, party);
             await Sharing.shareAsync(pdfUri, {
                 mimeType: 'application/pdf',
                 dialogTitle: 'Save Document PDF',
@@ -67,7 +68,7 @@ export default function InvoiceDetailScreen() {
         }
         try {
             setIsSharing(true);
-            const pdfUri = await generateInvoicePDF(invoice as any, currentBusiness, party);
+            const pdfUri = await generateInvoicePDF(invoice, currentBusiness, party);
             await Sharing.shareAsync(pdfUri, {
                 mimeType: 'application/pdf',
                 dialogTitle: `Share Document ${invoice.documentNumber}`,
@@ -105,9 +106,7 @@ export default function InvoiceDetailScreen() {
         return dateStr; // Fallback
     };
 
-    const upiString = currentBusiness?.upiVpa 
-        ? `upi://pay?pa=${encodeURIComponent(currentBusiness.upiVpa)}&pn=${encodeURIComponent(currentBusiness.tradeName ?? currentBusiness.legalName)}&am=${(invoice.totalAmountPaise / 100).toFixed(2)}&cu=INR&tn=Invoice%20${encodeURIComponent(invoice.documentNumber)}` 
-        : '';
+
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }} edges={['top', 'left', 'right']}>
@@ -150,10 +149,10 @@ export default function InvoiceDetailScreen() {
                     <View className={`px-3 py-1 rounded-md border ${getStatusColor(invoice.status)} mb-3`}>
                         <Text className="font-sans-bold text-xs uppercase">{invoice.status}</Text>
                     </View>
-                    {invoice.documentType === 'SALES_INVOICE' && (invoice as any).balanceDuePaise < invoice.totalAmountPaise && invoice.status !== 'PAID' && invoice.status !== 'Paid' ? (
+                    {invoice.documentType === 'SALES_INVOICE' && (invoice.balanceDuePaise || 0) < invoice.totalAmountPaise && invoice.status !== 'PAID' ? (
                         <View className="items-center mb-4">
                             <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Balance Due</Text>
-                            <Text className="font-sans-bold text-4xl text-primary">{formatINR((invoice as any).balanceDuePaise)}</Text>
+                            <Text className="font-sans-bold text-4xl text-primary">{formatINR(invoice.balanceDuePaise || 0)}</Text>
                             <Text className="font-sans-medium text-xs text-muted-foreground mt-1">Total: {formatINR(invoice.totalAmountPaise)}</Text>
                         </View>
                     ) : (
@@ -259,23 +258,8 @@ export default function InvoiceDetailScreen() {
                 )}
 
                 {/* UPI pay section */}
-                {currentBusiness?.upiVpa && invoice.documentType === 'SALES_INVOICE' && (
-                    <View className="bg-white rounded-2xl p-4 mb-8 shadow-sm border border-border items-center">
-                        <Text className="font-sans-medium text-xs text-muted-foreground uppercase tracking-wider mb-2">Scan & Pay</Text>
-                        <Text className="font-sans-bold text-2xl text-primary mb-4">{formatINR(invoice.totalAmountPaise)}</Text>
-                        
-                        <View className="mb-4">
-                            <QRCode
-                                value={upiString}
-                                size={140}
-                                backgroundColor="white"
-                                color="#081126"
-                            />
-                        </View>
-                        
-                        <Text className="font-mono text-sm text-primary bg-slate-100 px-3 py-1 rounded-md mb-2">{currentBusiness.upiVpa}</Text>
-                        <Text className="font-sans-medium text-xs text-muted-foreground">Pay via any UPI app</Text>
-                    </View>
+                {invoice.documentType === 'SALES_INVOICE' && currentBusiness && (
+                    <UPIQRCard business={currentBusiness} amountPaise={invoice.totalAmountPaise} documentNumber={invoice.documentNumber} />
                 )}
             </ScrollView>
 
@@ -305,9 +289,9 @@ export default function InvoiceDetailScreen() {
                         </Pressable>
                     </View>
                 </View>
-                {invoice.documentType === 'SALES_INVOICE' && (invoice.status === 'PAID' || invoice.status === 'PARTIAL' || invoice.status === 'Paid') && (
+                {invoice.documentType === 'SALES_INVOICE' && (invoice.status === 'PAID' || invoice.status === 'PARTIAL') && (
                     <Pressable 
-                        onPress={() => router.push(`/(app)/(sales)/credit-note/new?invoiceId=${invoice.id}` as never)}
+                        onPress={() => router.push({ pathname: '/(app)/(sales)/credit-note/new', params: { invoiceId: invoice.id } })}
                         className="bg-amber-100 py-3.5 rounded-xl items-center flex-row justify-center border border-amber-200 w-full"
                     >
                         <Text className="font-sans-bold text-amber-700 text-base">Raise Credit Note</Text>
@@ -322,14 +306,14 @@ export default function InvoiceDetailScreen() {
                 {invoice.documentType === 'DELIVERY_CHALLAN' && (
                     <View className="absolute -top-[52px] right-4">
                         <Pressable 
-                            onPress={() => router.push({ pathname: '/(app)/create-invoice', params: { linkedChallanId: invoice.id } } as never)}
+                            onPress={() => router.push({ pathname: '/(app)/create-invoice', params: { linkedChallanId: invoice.id } } as any)}
                             className="bg-blue-600 px-4 py-2.5 rounded-full shadow-md flex-row items-center"
                         >
                             <Text className="text-white font-sans-bold text-sm">Convert to Invoice</Text>
                         </Pressable>
                     </View>
                 )}
-                {invoice.documentType === 'SALES_INVOICE' && invoice.status !== 'PAID' && invoice.status !== 'Paid' && (
+                {invoice.documentType === 'SALES_INVOICE' && invoice.status !== 'PAID' && (
                     <View className="absolute -top-[52px] right-4">
                         <Pressable 
                             onPress={() => setPaymentModalVisible(true)}
@@ -341,14 +325,14 @@ export default function InvoiceDetailScreen() {
                 )}
             </View>
 
-            {party && invoice.documentType === 'SALES_INVOICE' && invoice.status !== 'PAID' && invoice.status !== 'Paid' && (
+            {party && invoice.documentType === 'SALES_INVOICE' && invoice.status !== 'PAID' && (
                 <RecordPaymentModal
                     visible={paymentModalVisible}
                     onClose={() => setPaymentModalVisible(false)}
                     invoiceId={invoice.id}
                     partyId={party.id}
                     partyName={party.legalName}
-                    balanceDuePaise={(invoice as any).balanceDuePaise ?? invoice.totalAmountPaise}
+                    balanceDuePaise={invoice.balanceDuePaise ?? invoice.totalAmountPaise}
                     onSave={(paymentData) => {
                         recordInvoicePayment(invoice.id, paymentData);
                     }}
