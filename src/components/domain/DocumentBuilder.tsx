@@ -550,7 +550,7 @@ export default function DocumentBuilder({
                                 className="p-4 border-b border-border flex-row justify-between items-center"
                                 onPress={() => { 
                                     const newItem = computeLineItem({
-                                        id: `item-${Date.now()}`,
+                                        id: `li-${item.id}-${Date.now()}`,
                                         inventoryItemId: item.id,
                                         description: item.name,
                                         hsnSacCode: item.hsnSacCode,
@@ -559,7 +559,7 @@ export default function DocumentBuilder({
                                         quantityDecimal: 1,
                                         unitPricePaise: item.unitPricePaise,
                                         discountPercent: 0,
-                                    } as any, isInterState);
+                                    }, isInterState);
                                     setDocumentItems([...documentItems, newItem]); 
                                     setItemModalVisible(false); 
                                 }}

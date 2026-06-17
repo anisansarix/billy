@@ -63,7 +63,7 @@ export default function CreateCreditNoteScreen() {
                 external: existingDoc.reason || "",
                 internal: ""
             }
-        } as any;
+        };
     } else if (selectedOriginalInvoice) {
         const party = parties.find(p => p.id === selectedOriginalInvoice.partyId);
         initialData = {
@@ -84,7 +84,7 @@ export default function CreateCreditNoteScreen() {
                 external: `Return against Invoice: ${selectedOriginalInvoice.documentNumber}`,
                 internal: ""
             }
-        } as any;
+        };
     }
 
     const handleSave = (documentData: DocumentData) => {

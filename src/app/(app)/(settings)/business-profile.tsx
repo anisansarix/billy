@@ -1,26 +1,14 @@
 import { useRouter } from "expo-router";
 import { ArrowLeft, Save, Building2, MapPin, Contact, FileText } from "lucide-react-native";
 import { useState } from "react";
-import { Pressable, ScrollView, Text, TextInput, View, KeyboardAvoidingView, Platform, Alert, Vibration } from "react-native";
+import { Pressable, ScrollView, Text, View, KeyboardAvoidingView, Platform, Alert, Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppStore } from "@/store";
 import { useShallow } from 'zustand/react/shallow';
 import { Business, GSTType } from "@/types/entities";
 import "../../../../global.css";
+import FormField from '@/components/ui/FormField';
 
-const FormField = ({ label, value, onChangeText, placeholder, keyboardType = 'default' }: any) => (
-    <View className="mb-4">
-        <Text className="font-sans-medium text-sm text-muted-foreground mb-1">{label}</Text>
-        <TextInput 
-            className="bg-slate-50 border border-border rounded-lg px-4 py-3 font-sans-medium text-primary text-base"
-            value={value}
-            onChangeText={onChangeText}
-            placeholder={placeholder}
-            placeholderTextColor="#9ca3af"
-            keyboardType={keyboardType}
-        />
-    </View>
-);
 
 export default function BusinessProfileScreen() {
     const router = useRouter();

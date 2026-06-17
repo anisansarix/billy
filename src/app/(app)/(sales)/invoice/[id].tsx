@@ -306,7 +306,7 @@ export default function InvoiceDetailScreen() {
                 {invoice.documentType === 'DELIVERY_CHALLAN' && (
                     <View className="absolute -top-[52px] right-4">
                         <Pressable 
-                            onPress={() => router.push({ pathname: '/(app)/create-invoice', params: { linkedChallanId: invoice.id } } as any)}
+                            onPress={() => router.push(`/(app)/(sales)/create-invoice?linkedChallanId=${invoice.id}` as const)}
                             className="bg-blue-600 px-4 py-2.5 rounded-full shadow-md flex-row items-center"
                         >
                             <Text className="text-white font-sans-bold text-sm">Convert to Invoice</Text>

@@ -39,7 +39,7 @@ export default function PurchaseDetailScreen() {
         }
         setIsDownloading(true);
         try {
-            const uri = await generateInvoicePDF(purchase as any, currentBusiness, party);
+            const uri = await generateInvoicePDF(purchase, currentBusiness, party);
             if (uri) {
                 await Sharing.shareAsync(uri);
             }

@@ -3,7 +3,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { useAppStore } from "@/store";
 import { getCurrentFinancialYear } from "@/utils/date";
 import DocumentBuilder, { DocumentData } from "@/components/domain/DocumentBuilder";
-import { PurchaseOrder, Party } from "@/types/entities";
+import { PurchaseOrder, Party, DocumentType } from "@/types/entities";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CreatePurchaseScreen() {
@@ -28,9 +28,9 @@ export default function CreatePurchaseScreen() {
         initialData = {
             selectedParty: party || ({ id: existingPurchase.partyId || "", name: "" } as unknown as Party),
             header: {
-                type: existingPurchase.documentType,
-                number: existingPurchase.documentNumber,
-                date: existingPurchase.documentDate,
+                documentType: existingPurchase.documentType,
+                documentNumber: existingPurchase.documentNumber,
+                documentDate: existingPurchase.documentDate,
                 dueDate: existingPurchase.dueDate || "",
                 status: existingPurchase.status,
             },
@@ -42,7 +42,8 @@ export default function CreatePurchaseScreen() {
             transport: existingPurchase.expectedDeliveryDate ? { 
                 vehicleNo: "", 
                 ewayBill: "", 
-                deliveryDate: existingPurchase.expectedDeliveryDate 
+                deliveryDate: existingPurchase.expectedDeliveryDate,
+                transporterName: ""
             } : undefined,
             notes: {
                 external: existingPurchase.notes || "",
@@ -57,7 +58,7 @@ export default function CreatePurchaseScreen() {
             businessId: "b1",
             partyId: documentData.selectedParty.id,
             partyName: documentData.selectedParty.legalName,
-            documentType: "PURCHASE_ORDER" as any,
+            documentType: DocumentType.PURCHASE_ORDER,
             documentNumber: documentData.header.documentNumber,
             documentDate: documentData.header.documentDate,
             dueDate: documentData.header.dueDate,
@@ -107,7 +108,7 @@ export default function CreatePurchaseScreen() {
             partyFilter="vendor"
             hasTransport={false}
             defaultNotes="Please deliver goods within 7 days."
-            initialData={initialData as any}
+            initialData={initialData}
             onSave={handleSave}
         />
         </SafeAreaView>

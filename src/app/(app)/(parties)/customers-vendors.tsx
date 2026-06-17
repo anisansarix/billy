@@ -1,4 +1,4 @@
-import { Party } from "@/types/entities";
+import { Party, PartyType } from "@/types/entities";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ListCardSkeleton } from "@/components/ui/skeletons/ListCardSkeleton";
 import { useDeferredRender } from "@/hooks/useDeferredRender";
@@ -217,7 +217,7 @@ export default function CustomersVendorsScreen() {
                 visible={isFormModalVisible}
                 onClose={closeFormModal}
                 partyToEdit={editingParty}
-                initialPartyType={tab as any}
+                initialPartyType={tab === 'customer' ? PartyType.CUSTOMER : tab === 'vendor' ? PartyType.VENDOR : undefined}
                 onSaveSuccess={handleFormSaveSuccess}
             />
         </SafeAreaView>

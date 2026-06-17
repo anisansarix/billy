@@ -10,7 +10,7 @@ interface PartyFormModalProps {
     visible: boolean;
     onClose: () => void;
     partyToEdit: Party | null;
-    initialPartyType?: PartyType.CUSTOMER | PartyType.VENDOR | PartyType.BOTH;
+    initialPartyType?: PartyType;
     onSaveSuccess?: (party: Party) => void;
 }
 

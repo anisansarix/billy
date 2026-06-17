@@ -54,13 +54,14 @@ export default function CreateInvoiceScreen() {
             transport: existingDoc.eWayBillNumber ? { 
                 vehicleNo: "", 
                 ewayBill: existingDoc.eWayBillNumber, 
-                deliveryDate: "" 
+                deliveryDate: "",
+                transporterName: ""
             } : undefined,
             notes: {
                 external: existingDoc.notes || "",
                 internal: ""
             }
-        } as any;
+        };
     } else if (linkedChallan) {
         const party = parties.find(p => p.id === linkedChallan.partyId);
         initialData = {
@@ -80,13 +81,14 @@ export default function CreateInvoiceScreen() {
             transport: {
                 vehicleNo: linkedChallan.vehicleNumber || "",
                 ewayBill: "",
-                deliveryDate: linkedChallan.dispatchDate || ""
+                deliveryDate: linkedChallan.dispatchDate || "",
+                transporterName: ""
             },
             notes: {
                 external: `Converted from Delivery Challan: ${linkedChallan.documentNumber}`,
                 internal: ""
             }
-        } as any;
+        };
     }
 
     const handleSave = (documentData: DocumentData) => {

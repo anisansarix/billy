@@ -7,6 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AuthInput from "@/components/ui/AuthInput";
 import Button from "@/components/ui/Button";
 import { useAppStore } from "@/store";
+import { GSTType } from "@/types/entities";
 import "../../../global.css";
 
 export default function SignUpScreen() {
@@ -58,7 +59,7 @@ export default function SignUpScreen() {
             tradeName: trimmedCompanyName,
             gstin: sanitizedGst || "",
             pan: "",
-            gstType: "REGULAR" as any,
+            gstType: GSTType.REGULAR,
             address: { line1: "", city: "", state: "", stateCode: "", pincode: "", country: "India" },
             shippingAddresses: [],
             phone: trimmedPhone,

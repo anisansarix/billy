@@ -47,7 +47,7 @@ export function useDashboardData(
         const today = new Date();
         today.setHours(0, 0, 0, 0);
     
-        const processDoc = (doc: any, aging: Record<string, number>) => {
+        const processDoc = (doc: SalesInvoice | PurchaseOrder, aging: Record<string, number>) => {
             if (doc.status === 'Pending') {
                 aging.current += (doc.totalAmountPaise || 0);
             } else if (doc.status === 'Overdue') {

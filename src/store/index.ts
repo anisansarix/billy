@@ -1,8 +1,8 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage, StateStorage } from 'zustand/middleware';
 import { createMMKV } from 'react-native-mmkv';
-import { INVOICES, ITEMS, PARTIES, PURCHASES, EXPENSES, PAYMENTS } from '../../constants/data';
-import { Business, TaxRate, GSTType, SalesInvoice, PurchaseOrder, Party, InventoryItem, PaymentRecord, ExpenseRecord, StockAdjustmentRecord, CreditNote, DeliveryChallan } from '../types/entities';
+import { create } from 'zustand';
+import { createJSONStorage, persist, StateStorage } from 'zustand/middleware';
+import { EXPENSES, INVOICES, ITEMS, PARTIES, PAYMENTS, PURCHASES } from '../../constants/data';
+import { Business, CreditNote, DeliveryChallan, ExpenseRecord, GSTType, InventoryItem, Party, PaymentRecord, PurchaseOrder, SalesInvoice, StockAdjustmentRecord, TaxRate } from '../types/entities';
 
 const mmkv = createMMKV();
 
@@ -19,46 +19,46 @@ const zustandStorage: StateStorage = {
   },
 };
 export const DEFAULT_BUSINESS: Business = {
-    id: 'b1',
-    legalName: 'Billy Textiles & Co.',
-    tradeName: 'Billy Textiles',
-    gstin: '27AABCU9603R1ZX',
-    pan: 'AABCU9603R',
-    gstType: GSTType.REGULAR,
-    address: {
-        line1: '104, Textile Market',
-        city: 'Surat',
-        state: 'Gujarat',
-        stateCode: '24',
-        pincode: '395002',
-        country: 'India'
-    },
-    shippingAddresses: [],
-    phone: '+91 9876543210',
-    email: 'contact@billytextiles.com',
-    bankDetails: [
-        {
-            bankName: 'HDFC Bank',
-            accountNumber: '50100234567890',
-            ifscCode: 'HDFC0001234',
-            branch: 'Surat Ring Road',
-            accountType: 'CURRENT'
-        }
-    ],
-    upiVpa: 'billybusiness@upi',
-    fiscalYearStart: 'APRIL',
-    defaultCurrency: 'INR'
+  id: 'b1',
+  legalName: 'Billy - ERP',
+  tradeName: 'Billy ERP',
+  gstin: '27AABCU9603R1ZX',
+  pan: 'AABCU9603R',
+  gstType: GSTType.REGULAR,
+  address: {
+    line1: '104, Textile Market',
+    city: 'Surat',
+    state: 'Gujarat',
+    stateCode: '24',
+    pincode: '395002',
+    country: 'India'
+  },
+  shippingAddresses: [],
+  phone: '+91 9876543210',
+  email: 'contact@billytextiles.com',
+  bankDetails: [
+    {
+      bankName: 'HDFC Bank',
+      accountNumber: '50100234567890',
+      ifscCode: 'HDFC0001234',
+      branch: 'Surat Ring Road',
+      accountType: 'CURRENT'
+    }
+  ],
+  upiVpa: 'billybusiness@upi',
+  fiscalYearStart: 'APRIL',
+  defaultCurrency: 'INR'
 };
 
 const DEFAULT_TAX_RATES: TaxRate[] = [
-    { id: 'tr_0', hsnSacCode: '0000', description: 'Exempt / Nil Rated', gstComponent: { cgstRate: 0, sgstRate: 0, igstRate: 0, cessRate: 0 }, isService: false, isActive: true },
-    { id: 'tr_5_textile', hsnSacCode: '5208', description: 'Woven Fabrics of Cotton (5%)', gstComponent: { cgstRate: 2.5, sgstRate: 2.5, igstRate: 5, cessRate: 0 }, isService: false, isActive: true },
-    { id: 'tr_5_garment', hsnSacCode: '6101', description: 'Apparel under ₹1000 (5%)', gstComponent: { cgstRate: 2.5, sgstRate: 2.5, igstRate: 5, cessRate: 0 }, isService: false, isActive: true },
-    { id: 'tr_12_garment', hsnSacCode: '6101', description: 'Apparel above ₹1000 (12%)', gstComponent: { cgstRate: 6, sgstRate: 6, igstRate: 12, cessRate: 0 }, isService: false, isActive: true },
-    { id: 'tr_12_electronics', hsnSacCode: '8517', description: 'Mobile Phones (12%)', gstComponent: { cgstRate: 6, sgstRate: 6, igstRate: 12, cessRate: 0 }, isService: false, isActive: true },
-    { id: 'tr_18_service', hsnSacCode: '9983', description: 'IT / Professional Services (18%)', gstComponent: { cgstRate: 9, sgstRate: 9, igstRate: 18, cessRate: 0 }, isService: true, isActive: true },
-    { id: 'tr_18_electronics', hsnSacCode: '8471', description: 'Computers & Laptops (18%)', gstComponent: { cgstRate: 9, sgstRate: 9, igstRate: 18, cessRate: 0 }, isService: false, isActive: true },
-    { id: 'tr_28_electronics', hsnSacCode: '8528', description: 'Monitors & TVs > 32 inch (28%)', gstComponent: { cgstRate: 14, sgstRate: 14, igstRate: 28, cessRate: 0 }, isService: false, isActive: true }
+  { id: 'tr_0', hsnSacCode: '0000', description: 'Exempt / Nil Rated', gstComponent: { cgstRate: 0, sgstRate: 0, igstRate: 0, cessRate: 0 }, isService: false, isActive: true },
+  { id: 'tr_5_textile', hsnSacCode: '5208', description: 'Woven Fabrics of Cotton (5%)', gstComponent: { cgstRate: 2.5, sgstRate: 2.5, igstRate: 5, cessRate: 0 }, isService: false, isActive: true },
+  { id: 'tr_5_garment', hsnSacCode: '6101', description: 'Apparel under ₹1000 (5%)', gstComponent: { cgstRate: 2.5, sgstRate: 2.5, igstRate: 5, cessRate: 0 }, isService: false, isActive: true },
+  { id: 'tr_12_garment', hsnSacCode: '6101', description: 'Apparel above ₹1000 (12%)', gstComponent: { cgstRate: 6, sgstRate: 6, igstRate: 12, cessRate: 0 }, isService: false, isActive: true },
+  { id: 'tr_12_electronics', hsnSacCode: '8517', description: 'Mobile Phones (12%)', gstComponent: { cgstRate: 6, sgstRate: 6, igstRate: 12, cessRate: 0 }, isService: false, isActive: true },
+  { id: 'tr_18_service', hsnSacCode: '9983', description: 'IT / Professional Services (18%)', gstComponent: { cgstRate: 9, sgstRate: 9, igstRate: 18, cessRate: 0 }, isService: true, isActive: true },
+  { id: 'tr_18_electronics', hsnSacCode: '8471', description: 'Computers & Laptops (18%)', gstComponent: { cgstRate: 9, sgstRate: 9, igstRate: 18, cessRate: 0 }, isService: false, isActive: true },
+  { id: 'tr_28_electronics', hsnSacCode: '8528', description: 'Monitors & TVs > 32 inch (28%)', gstComponent: { cgstRate: 14, sgstRate: 14, igstRate: 28, cessRate: 0 }, isService: false, isActive: true }
 ];
 
 export type AppStore = {
@@ -135,7 +135,7 @@ export const useAppStore = create<AppStore>()(
       documentCounters: {},
       invoiceSettings: { invoicePrefix: 'INV', poPrefix: 'PO', cnPrefix: 'CN', dcPrefix: 'DC', defaultPaymentTermsDays: 30, defaultTnC: 'Goods once sold will not be taken back. Subject to Surat jurisdiction.' },
       hasHydrated: false,
-      
+
       setInvoiceSettings: (settings) => set((state) => ({ invoiceSettings: { ...state.invoiceSettings, ...settings } })),
       setHasHydrated: (state) => set({ hasHydrated: state }),
       setCurrentBusiness: (b) => set({ currentBusiness: b }),
@@ -280,7 +280,7 @@ export const useAppStore = create<AppStore>()(
         const invoice = state.invoices[invoiceIndex];
         const newPaidAmount = (invoice.paidAmountPaise || 0) + paymentData.amountPaise;
         const newBalance = invoice.totalAmountPaise - newPaidAmount;
-        
+
         let newStatus = invoice.status;
         if (newBalance <= 0) newStatus = 'PAID';
         else if (newPaidAmount > 0) newStatus = 'PARTIAL';

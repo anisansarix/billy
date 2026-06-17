@@ -29,9 +29,9 @@ export default function CreateEstimateScreen() {
         initialData = {
             selectedParty: party || ({ id: existingDoc.partyId || "", legalName: "", partyType: "CUSTOMER" } as unknown as Party),
             header: {
-                type: existingDoc.documentType,
-                number: existingDoc.documentNumber,
-                date: existingDoc.documentDate,
+                documentType: existingDoc.documentType,
+                documentNumber: existingDoc.documentNumber,
+                documentDate: existingDoc.documentDate,
                 dueDate: existingDoc.dueDate || "",
                 status: existingDoc.status,
             },
@@ -43,13 +43,14 @@ export default function CreateEstimateScreen() {
             transport: existingDoc.eWayBillNumber ? { 
                 vehicleNo: "", 
                 ewayBill: existingDoc.eWayBillNumber, 
-                deliveryDate: "" 
+                deliveryDate: "",
+                transporterName: ""
             } : undefined,
             notes: {
                 external: existingDoc.notes || "",
                 internal: ""
             }
-        } as any;
+        };
     }
 
     const handleSave = (documentData: DocumentData) => {

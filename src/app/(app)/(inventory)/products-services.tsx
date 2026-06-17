@@ -281,7 +281,7 @@ export default function ProductsServicesScreen() {
             )}
 
             <Pressable 
-                onPress={() => { Vibration.vibrate(10); if (view === 'catalog') openFormModal(); else router.push('/(app)/(inventory)/create-stock-adjustment' as any); }}
+                onPress={() => { Vibration.vibrate(10); if (view === 'catalog') openFormModal(); else router.push('/(app)/(inventory)/create-stock-adjustment' as const); }}
                 className="absolute bottom-6 right-6 h-14 w-14 bg-primary rounded-full items-center justify-center shadow-lg"
                 style={{ elevation: 5, shadowColor: '#081126', shadowOpacity: 0.3, shadowRadius: 5, shadowOffset: { width: 0, height: 3 } }}
             >

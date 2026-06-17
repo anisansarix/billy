@@ -1,32 +1,13 @@
 import { useRouter } from "expo-router";
 import { ArrowLeft, Save, FileText, LayoutTemplate } from "lucide-react-native";
 import { useState } from "react";
-import { Pressable, ScrollView, Text, TextInput, View, KeyboardAvoidingView, Platform, Alert, Vibration } from "react-native";
+import { Pressable, ScrollView, Text, View, KeyboardAvoidingView, Platform, Alert, Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppStore } from "@/store";
 import { useShallow } from 'zustand/react/shallow';
 import "../../../../global.css";
+import FormField from '@/components/ui/FormField';
 
-const FormField = ({ label, value, onChangeText, placeholder, keyboardType = "default", maxLength, multiline = false, numberOfLines = 1, suffix }: any) => (
-    <View className="mb-4">
-        <Text className="font-sans-medium text-sm text-muted-foreground mb-1.5">{label}</Text>
-        <View className={`bg-slate-50 border border-border rounded-xl px-4 ${multiline ? 'py-3' : 'h-12'} flex-row items-center focus:border-primary/50 focus:bg-white transition-colors`}>
-            <TextInput
-                className="flex-1 font-sans-medium text-base text-primary"
-                value={value}
-                onChangeText={onChangeText}
-                placeholder={placeholder}
-                placeholderTextColor="#9ca3af"
-                keyboardType={keyboardType}
-                maxLength={maxLength}
-                multiline={multiline}
-                numberOfLines={numberOfLines}
-                style={multiline ? { textAlignVertical: 'top' } : {}}
-            />
-            {suffix && <Text className="font-sans-medium text-sm text-muted-foreground ml-2">{suffix}</Text>}
-        </View>
-    </View>
-);
 
 export default function InvoiceSettingsScreen() {
     const router = useRouter();

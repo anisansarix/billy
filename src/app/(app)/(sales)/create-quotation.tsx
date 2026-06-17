@@ -43,13 +43,14 @@ export default function CreateQuotationScreen() {
             transport: existingDoc.eWayBillNumber ? { 
                 vehicleNo: "", 
                 ewayBill: existingDoc.eWayBillNumber, 
-                deliveryDate: "" 
+                deliveryDate: "",
+                transporterName: ""
             } : undefined,
             notes: {
                 external: existingDoc.notes || "",
                 internal: ""
             }
-        } as any;
+        };
     }
 
     const handleSave = (documentData: DocumentData) => {

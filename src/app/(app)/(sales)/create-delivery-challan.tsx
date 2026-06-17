@@ -49,13 +49,14 @@ export default function CreateDeliveryChallanScreen() {
             transport: {
                 vehicleNo: existingDoc.vehicleNumber || "",
                 ewayBill: "",
-                deliveryDate: existingDoc.dispatchDate || ""
+                deliveryDate: existingDoc.dispatchDate || "",
+                transporterName: ""
             },
             notes: {
                 external: existingDoc.notes || "",
                 internal: ""
             }
-        } as any;
+        };
     }
 
     const handleSave = (documentData: DocumentData) => {
