@@ -13,7 +13,7 @@ interface PaymentModalsProps {
     setIsFormVisible: (v: boolean) => void;
     editingPayment: PaymentRecord | null;
     formData: { partyName: string; amount: string; mode: string; type: "in" | "out" };
-    setFormData: (d: any) => void; // TODO: properly type // TODO: properly type // TODO: properly type // TODO: properly type // TODO: properly type
+    setFormData: (d: PaymentModalsProps['formData']) => void;
     handleSave: () => void;
     handleDelete: (id: string) => void;
     openForm: (p?: PaymentRecord) => void;
