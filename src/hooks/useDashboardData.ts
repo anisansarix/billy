@@ -155,7 +155,7 @@ export function useDashboardData(
     const estimatedLiability = useMemo(() => {
         const outputGST = invoices.filter(i => i.status !== 'Draft' && i.status !== 'Cancelled').reduce((acc, inv) => acc + (inv.totalGSTAmountPaise || 0), 0);
         const inputGST = purchases.filter(p => p.status !== 'Draft' && p.status !== 'Cancelled').reduce((acc, pur) => acc + (pur.totalGSTAmountPaise || 0), 0);
-        return outputGST - inputGST;
+        return { outputGST, inputGST, net: outputGST - inputGST };
     }, [invoices, purchases]);
   
     const inventoryStats = useMemo(() => {
