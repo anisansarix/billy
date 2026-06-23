@@ -214,6 +214,26 @@ export default function DocumentBuilder({
             return;
         }
 
+        const isOutward = header.documentType.includes('INVOICE') || header.documentType.includes('SalesInvoice') || header.documentType.includes('CHALLAN');
+        if (isOutward) {
+            const outOfStockItem = documentItems.find(li => {
+                const storeItem = items.find(i => i.id === li.inventoryItemId);
+                // Allow if editing existing invoice and the quantity is just unchanged or increased? 
+                // Wait, it's safer just to check if current store stock + original item stock in invoice is >= li.quantityDecimal.
+                // But for now, just checking store stock is better than nothing.
+                // If it's an edit, store stock already has the item removed. So we shouldn't block if they just press save.
+                // Actually, initialData has the old items. We should probably only block if (storeItem.stock || 0) < (li.quantityDecimal - oldQty).
+                // Let's just do a simple check.
+                const oldItem = initialData?.items?.find(oi => oi.id === li.id);
+                const oldQty = oldItem ? oldItem.quantityDecimal : 0;
+                return storeItem && (storeItem.stock || 0) + oldQty < li.quantityDecimal;
+            });
+            if (outOfStockItem) {
+                Alert.alert("Validation Error", `Insufficient stock for ${outOfStockItem.description}. Cannot sell more than available stock.`);
+                return;
+            }
+        }
+
         const documentData = {
             header,
             selectedParty,
@@ -493,7 +513,7 @@ export default function DocumentBuilder({
                     onToggle={() => toggleSection('notes')}
                 >
                     <View className="mb-4">
-                        <Text className="font-sans-medium text-sm text-muted-foreground mb-1">{partyLabel} Notes (Printed on Document)</Text>
+                        <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Terms & Conditions (Visible on Document)</Text>
                         <TextInput 
                             className="bg-slate-50 border border-border rounded-lg px-3 py-2 font-sans-medium text-primary h-20"
                             multiline

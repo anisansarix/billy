@@ -12,16 +12,16 @@ interface SummaryCardProps {
 
 export function SummaryCard({ title, value, subtitle, icon, trend, trendUp }: SummaryCardProps) {
   return (
-    <View className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 flex-1">
+    <View className="bg-white rounded-3xl p-5 shadow-sm border border-border flex-1">
       <View className="flex-row justify-between items-start mb-3">
-        <Text className="text-gray-500 font-jakarta-medium uppercase tracking-wider text-xs">{title}</Text>
-        {icon && <View className="bg-gray-50 p-2 rounded-xl">{icon}</View>}
+        <Text className="text-muted-foreground font-sans-medium uppercase tracking-wider text-xs">{title}</Text>
+        {icon && <View className="bg-muted p-2 rounded-xl">{icon}</View>}
       </View>
-      <Text className="text-2xl font-jakarta-bold text-gray-900 mb-1">{value}</Text>
-      {subtitle && <Text className="text-sm text-gray-500 font-jakarta">{subtitle}</Text>}
+      <Text className="text-2xl font-sans-bold text-primary mb-1">{value}</Text>
+      {subtitle && <Text className="text-sm text-muted-foreground font-sans-regular">{subtitle}</Text>}
       {trend && (
-        <View className={`mt-2 py-1 px-2 rounded-lg self-start ${trendUp ? 'bg-green-50' : 'bg-red-50'}`}>
-          <Text className={`text-xs font-jakarta-bold ${trendUp ? 'text-green-600' : 'text-red-600'}`}>
+        <View className={`mt-2 py-1 px-2 rounded-lg self-start ${trendUp ? 'bg-green-50' : 'bg-destructive/10'}`}>
+          <Text className={`text-xs font-sans-bold ${trendUp ? 'text-green-600' : 'text-destructive'}`}>
             {trendUp ? '↑' : '↓'} {trend}
           </Text>
         </View>

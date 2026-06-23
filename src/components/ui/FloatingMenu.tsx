@@ -1,22 +1,13 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
-    Modal,
     Pressable,
     Text,
     View,
     Vibration,
 } from "react-native";
 
-import { BlurView } from "expo-blur";
-
 import { useRouter, usePathname } from "expo-router";
 import AnimatedModal from "@/components/ui/AnimatedModal";
-
-import Animated, {
-    useAnimatedStyle,
-    useSharedValue,
-    withTiming,
-} from "react-native-reanimated";
 
 import {
     Boxes,
@@ -85,8 +76,6 @@ export default function FloatingMenu({
 }: Props) {
     const router = useRouter();
     const pathname = usePathname();
-    const scale = useSharedValue(0.8);
-    const opacity = useSharedValue(0);
 
     const [fyModalVisible, setFyModalVisible] = useState(false);
     const [selectedFy, setSelectedFy] = useState("F.Y. 2026-2027");
@@ -100,63 +89,11 @@ export default function FloatingMenu({
         "F.Y. 2021-2022",
     ];
 
-    useEffect(() => {
-        if (visible) {
-            scale.value = withTiming(1, {
-                duration: 250,
-            });
-
-            opacity.value = withTiming(1, {
-                duration: 250,
-            });
-        } else {
-            scale.value = withTiming(0.8, {
-                duration: 180,
-            });
-
-            opacity.value = withTiming(0, {
-                duration: 180,
-            });
-        }
-    }, [visible, opacity, scale]);
-
-    const animatedStyle = useAnimatedStyle(() => ({
-        opacity: opacity.value,
-        transform: [
-            {
-                scale: scale.value,
-            },
-        ],
-    }));
-
     return (
-        <Modal
-            transparent
-            visible={visible}
-            animationType="none"
-        >
-            <Pressable
-                className="flex-1"
-                onPress={onClose}
-            >
-                <BlurView
-                    intensity={12}
-                    tint="light"
-                    className="absolute inset-0"
-                />
-
-                <View className="flex-1 justify-end items-end px-5 pb-24">
-                    <Animated.View
-                        className="w-[300px] rounded-[32px] bg-white p-5 shadow-2xl shadow-black/20 border border-black/5"
-                        style={[
-                            animatedStyle,
-                            {
-                                shadowOffset: { width: 0, height: 15 },
-                                shadowRadius: 30,
-                                elevation: 25,
-                            },
-                        ]}
-                    >
+        <>
+            <AnimatedModal visible={visible} onClose={onClose} placement="bottom">
+                <View className="w-full items-end px-5 pb-24">
+                    <View className="w-[300px] rounded-[32px] bg-white p-5 shadow-2xl shadow-black/20 border border-border">
                         {menuItems.map((item) => {
                             const Icon = item.icon;
 
@@ -206,17 +143,17 @@ export default function FloatingMenu({
                                 {selectedFy}
                             </Text>
                         </Pressable>
-                    </Animated.View>
+                    </View>
                 </View>
-            </Pressable>
+            </AnimatedModal>
 
             <AnimatedModal visible={fyModalVisible} onClose={() => setFyModalVisible(false)} placement="center">
-                <View className="bg-white rounded-3xl w-3/4 p-4 shadow-xl">
+                <View className="bg-white rounded-3xl w-3/4 p-4 shadow-xl border border-border">
                     <Text className="font-sans-bold text-lg text-primary mb-4 text-center">Select Financial Year</Text>
-                    {fyOptions.map(fy => (
+                    {fyOptions.map((fy, index) => (
                         <Pressable 
                             key={fy} 
-                            className="py-4 border-b border-border" 
+                            className={`py-4 ${index !== fyOptions.length - 1 ? 'border-b border-border' : ''}`}
                             onPress={() => { setSelectedFy(fy); setFyModalVisible(false); }}
                         >
                             <Text className={`text-center text-base ${selectedFy === fy ? 'text-primary font-sans-bold' : 'text-muted-foreground font-sans-medium'}`}>
@@ -226,6 +163,6 @@ export default function FloatingMenu({
                     ))}
                 </View>
             </AnimatedModal>
-        </Modal>
+        </>
     );
 }

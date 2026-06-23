@@ -82,7 +82,7 @@ export default function SignUpScreen() {
     });
 
     setIsLoading(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: email.trim(),
       password,
       options: {
@@ -102,6 +102,10 @@ export default function SignUpScreen() {
       return;
     }
 
+    if (data.session) {
+      useAppStore.getState().signIn(data.session);
+    }
+
     router.replace("/(app)/(dashboard)/dashboard");
   };
 
@@ -119,7 +123,7 @@ export default function SignUpScreen() {
               Register an account
             </Text>
             <Text className="text-base font-sans-regular text-muted-foreground">
-              {"Let's connect you with Billy!"}
+              Set up your Billy workspace.
             </Text>
           </View>
 
@@ -140,8 +144,8 @@ export default function SignUpScreen() {
           />
 
           <AuthInput
-            label="Company Name"
-            placeholder="Enter your company name"
+            label="Business Name"
+            placeholder="Enter your business name"
             required
             value={companyName}
             onChangeText={setCompanyName}
@@ -180,6 +184,7 @@ export default function SignUpScreen() {
           <Button
             title="Create Account"
             icon={<ArrowRight color="white" size={20} />}
+            iconPosition="right"
             loading={isLoading}
             onPress={handleSignUp}
             className="w-full mt-4 mb-6"

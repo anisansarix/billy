@@ -42,9 +42,9 @@ export default function EWayBillsScreen() {
                         <Truck color="#081126" size={24} className="mr-3" />
                         <Text className="font-sans-bold text-lg text-primary">E-Way Bill Tracker</Text>
                     </View>
-                    <Text className="font-sans-regular text-sm text-muted-foreground leading-relaxed">
-                        Invoices exceeding ₹50,000 generally require an E-Way Bill for the transportation of goods under GST rules.
-                    </Text>
+                            <Text className="font-sans-regular text-sm text-muted-foreground mt-2 mb-6">
+                                Interstate shipments (and applicable intrastate shipments) exceeding ₹50,000 require an E-Way Bill under GST regulations.
+                            </Text>
                 </View>
 
                 <Text className="font-sans-bold text-lg text-primary mb-4">Requires Attention ({pendingEwayBills.length})</Text>
@@ -74,7 +74,7 @@ export default function EWayBillsScreen() {
                                 <View className="h-16 w-16 bg-green-100 rounded-full items-center justify-center mb-4">
                                     <AlertCircle color="#16a34a" size={32} />
                                 </View>
-                                <Text className="font-sans-bold text-lg text-primary mb-2 text-center">All Good!</Text>
+                                <Text className="font-sans-bold text-lg text-primary mb-2 text-center">Up to Date</Text>
                                 <Text className="font-sans-medium text-sm text-muted-foreground text-center">
                                     No high-value invoices require E-Way bill generation at the moment.
                                 </Text>

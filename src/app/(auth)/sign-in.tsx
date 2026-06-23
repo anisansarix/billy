@@ -28,7 +28,7 @@ export default function SignInScreen() {
     }
 
     setIsLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: email.trim(),
       password,
     });
@@ -39,7 +39,9 @@ export default function SignInScreen() {
       return;
     }
 
+    useAppStore.getState().signIn(data.session);
     useAppStore.getState().setCurrentBusiness(DEFAULT_BUSINESS);
+    router.replace("/(app)/(dashboard)/dashboard");
   };
 
   return (
@@ -125,7 +127,7 @@ export default function SignInScreen() {
           <Pressable 
             className="w-full h-14 bg-white border border-border items-center justify-center rounded-xl flex-row"
             accessibilityRole="button"
-            accessibilityLabel="Sign Up with Google"
+            accessibilityLabel="Sign In with Google"
             onPress={() => Vibration.vibrate(10)}
           >
             <Image 
@@ -134,7 +136,7 @@ export default function SignInScreen() {
               resizeMode="contain" 
             />
             <Text className="text-base font-sans-medium text-primary">
-              Sign Up with Google
+              Sign In with Google
             </Text>
           </Pressable>
 

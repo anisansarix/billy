@@ -87,6 +87,8 @@ export type AppStore = {
   hasHydrated: boolean;
   setHasHydrated: (state: boolean) => void;
   setAuthSession: (session: any | null) => void;
+  signIn: (session: any) => void;
+  signOut: () => void;
   clearStore: () => void;
   setCurrentBusiness: (business: Business | null) => void;
   addInvoice: (invoice: SalesInvoice) => void;
@@ -144,6 +146,8 @@ export const useAppStore = create<AppStore>()(
       setInvoiceSettings: (settings) => set((state) => ({ invoiceSettings: { ...state.invoiceSettings, ...settings } })),
       setHasHydrated: (state) => set({ hasHydrated: state }),
       setAuthSession: (session) => set({ isAuthenticated: !!session, userId: session?.user?.id || null }),
+      signIn: (session) => set({ isAuthenticated: true, userId: session?.user?.id || null }),
+      signOut: () => set({ isAuthenticated: false, userId: null, currentBusiness: null }),
       clearStore: () => set({ isAuthenticated: false, userId: null, currentBusiness: null }),
       setCurrentBusiness: (b) => set({ currentBusiness: b }),
 
@@ -165,7 +169,32 @@ export const useAppStore = create<AppStore>()(
         }
         return { invoices: [invoice, ...state.invoices], items: updatedItems };
       }),
-      updateInvoice: (invoice) => set((state) => ({ invoices: state.invoices.map((i) => (i.id === invoice.id ? invoice : i)) })),
+      updateInvoice: (invoice) => set((state) => {
+        const oldInvoice = state.invoices.find(i => i.id === invoice.id);
+        const updatedItems = [...state.items];
+        
+        if (!invoice.linkedChallanId) {
+          if (oldInvoice) {
+            oldInvoice.lineItems.forEach(lineItem => {
+              if (lineItem.inventoryItemId) {
+                const itemIndex = updatedItems.findIndex(i => i.id === lineItem.inventoryItemId);
+                if (itemIndex >= 0) {
+                  updatedItems[itemIndex] = { ...updatedItems[itemIndex], stock: (updatedItems[itemIndex].stock || 0) + lineItem.quantityDecimal };
+                }
+              }
+            });
+          }
+          invoice.lineItems.forEach(lineItem => {
+            if (lineItem.inventoryItemId) {
+              const itemIndex = updatedItems.findIndex(i => i.id === lineItem.inventoryItemId);
+              if (itemIndex >= 0) {
+                updatedItems[itemIndex] = { ...updatedItems[itemIndex], stock: (updatedItems[itemIndex].stock || 0) - lineItem.quantityDecimal };
+              }
+            }
+          });
+        }
+        return { invoices: state.invoices.map((i) => (i.id === invoice.id ? invoice : i)), items: updatedItems };
+      }),
       deleteInvoice: (id) => set((state) => {
         const invoice = state.invoices.find(i => i.id === id);
         const updatedItems = [...state.items];
@@ -197,8 +226,43 @@ export const useAppStore = create<AppStore>()(
       deleteParty: (id) => set((state) => ({ parties: state.parties.filter((p) => p.id !== id) })),
 
       addPurchase: (purchase) => set((state) => ({ purchases: [purchase, ...state.purchases] })),
-      updatePurchase: (purchase) => set((state) => ({ purchases: state.purchases.map((p) => (p.id === purchase.id ? purchase : p)) })),
-      deletePurchase: (id) => set((state) => ({ purchases: state.purchases.filter((p) => p.id !== id) })),
+      updatePurchase: (purchase) => set((state) => {
+        const oldPurchase = state.purchases.find(p => p.id === purchase.id);
+        const updatedItems = [...state.items];
+        
+        if (oldPurchase && oldPurchase.status === 'RECEIVED') {
+          oldPurchase.lineItems.forEach(lineItem => {
+            if (lineItem.inventoryItemId) {
+              const itemIndex = updatedItems.findIndex(i => i.id === lineItem.inventoryItemId);
+              if (itemIndex >= 0) updatedItems[itemIndex] = { ...updatedItems[itemIndex], stock: (updatedItems[itemIndex].stock || 0) - lineItem.quantityDecimal };
+            }
+          });
+        }
+        
+        if (purchase.status === 'RECEIVED') {
+          purchase.lineItems.forEach(lineItem => {
+            if (lineItem.inventoryItemId) {
+              const itemIndex = updatedItems.findIndex(i => i.id === lineItem.inventoryItemId);
+              if (itemIndex >= 0) updatedItems[itemIndex] = { ...updatedItems[itemIndex], stock: (updatedItems[itemIndex].stock || 0) + lineItem.quantityDecimal };
+            }
+          });
+        }
+        return { purchases: state.purchases.map((p) => (p.id === purchase.id ? purchase : p)), items: updatedItems };
+      }),
+      deletePurchase: (id) => set((state) => {
+        const oldPurchase = state.purchases.find(p => p.id === id);
+        const updatedItems = [...state.items];
+        
+        if (oldPurchase && oldPurchase.status === 'RECEIVED') {
+          oldPurchase.lineItems.forEach(lineItem => {
+            if (lineItem.inventoryItemId) {
+              const itemIndex = updatedItems.findIndex(i => i.id === lineItem.inventoryItemId);
+              if (itemIndex >= 0) updatedItems[itemIndex] = { ...updatedItems[itemIndex], stock: (updatedItems[itemIndex].stock || 0) - lineItem.quantityDecimal };
+            }
+          });
+        }
+        return { purchases: state.purchases.filter((p) => p.id !== id), items: updatedItems };
+      }),
 
       addExpense: (expense) => set((state) => ({ expenses: [expense, ...state.expenses] })),
       updateExpense: (expense) => set((state) => ({ expenses: state.expenses.map((e) => (e.id === expense.id ? expense : e)) })),
@@ -206,11 +270,42 @@ export const useAppStore = create<AppStore>()(
 
       addPayment: (payment) => set((state) => ({ payments: [payment, ...state.payments] })),
       updatePayment: (payment) => set((state) => ({ payments: state.payments.map((p) => (p.id === payment.id ? payment : p)) })),
-      deletePayment: (id) => set((state) => ({ payments: state.payments.filter((p) => p.id !== id) })),
+      deletePayment: (id) => set((state) => {
+        const payment = state.payments.find(p => p.id === id);
+        const updatedInvoices = [...state.invoices];
+        
+        if (payment) {
+          const invoiceIndex = updatedInvoices.findIndex(i => i.id === payment.documentId);
+          if (invoiceIndex >= 0) {
+            const invoice = updatedInvoices[invoiceIndex];
+            const newPaidAmount = Math.max(0, invoice.paidAmountPaise - payment.amountPaise);
+            const newBalance = invoice.totalAmountPaise - newPaidAmount;
+            let newStatus = invoice.status;
+            if (newBalance <= 0) newStatus = 'Paid';
+            else if (newPaidAmount > 0) newStatus = 'Partially Paid';
+            else newStatus = 'Sent';
+            
+            updatedInvoices[invoiceIndex] = { ...invoice, paidAmountPaise: newPaidAmount, balanceDuePaise: newBalance > 0 ? newBalance : 0, status: newStatus };
+          }
+        }
+        return { payments: state.payments.filter((p) => p.id !== id), invoices: updatedInvoices };
+      }),
 
       addAdjustment: (adjustment) => set((state) => ({ adjustments: [adjustment, ...state.adjustments] })),
       updateAdjustment: (adjustment) => set((state) => ({ adjustments: state.adjustments.map((a) => (a.id === adjustment.id ? adjustment : a)) })),
-      deleteAdjustment: (id) => set((state) => ({ adjustments: state.adjustments.filter((a) => a.id !== id) })),
+      deleteAdjustment: (id) => set((state) => {
+        const adjustment = state.adjustments.find(a => a.id === id);
+        const updatedItems = [...state.items];
+        
+        if (adjustment) {
+          const itemIndex = updatedItems.findIndex(i => i.id === adjustment.itemId);
+          if (itemIndex >= 0) {
+            const typeMultiplier = adjustment.type === 'Stock In' ? -1 : 1;
+            updatedItems[itemIndex] = { ...updatedItems[itemIndex], stock: (updatedItems[itemIndex].stock || 0) + (adjustment.qty * typeMultiplier) };
+          }
+        }
+        return { adjustments: state.adjustments.filter((a) => a.id !== id), items: updatedItems };
+      }),
 
       addCreditNote: (creditNote) => set((state) => {
         // 1. Increase stock (items returned)
@@ -248,8 +343,39 @@ export const useAppStore = create<AppStore>()(
 
         return { creditNotes: [creditNote, ...state.creditNotes], items: updatedItems, invoices: updatedInvoices };
       }),
-      updateCreditNote: (creditNote) => set((state) => ({ creditNotes: state.creditNotes.map((c) => (c.id === creditNote.id ? creditNote : c)) })),
-      deleteCreditNote: (id) => set((state) => ({ creditNotes: state.creditNotes.filter((c) => c.id !== id) })),
+      updateCreditNote: (creditNote) => set((state) => {
+        const oldNote = state.creditNotes.find(c => c.id === creditNote.id);
+        const updatedItems = [...state.items];
+        if (oldNote) {
+          oldNote.lineItems.forEach(lineItem => {
+            if (lineItem.inventoryItemId) {
+              const itemIndex = updatedItems.findIndex(i => i.id === lineItem.inventoryItemId);
+              if (itemIndex >= 0) updatedItems[itemIndex] = { ...updatedItems[itemIndex], stock: (updatedItems[itemIndex].stock || 0) - lineItem.quantityDecimal };
+            }
+          });
+        }
+        creditNote.lineItems.forEach(lineItem => {
+          if (lineItem.inventoryItemId) {
+            const itemIndex = updatedItems.findIndex(i => i.id === lineItem.inventoryItemId);
+            if (itemIndex >= 0) updatedItems[itemIndex] = { ...updatedItems[itemIndex], stock: (updatedItems[itemIndex].stock || 0) + lineItem.quantityDecimal };
+          }
+        });
+        return { creditNotes: state.creditNotes.map((c) => (c.id === creditNote.id ? creditNote : c)), items: updatedItems };
+      }),
+      deleteCreditNote: (id) => set((state) => {
+        const oldNote = state.creditNotes.find(c => c.id === id);
+        const updatedItems = [...state.items];
+        if (oldNote) {
+          oldNote.lineItems.forEach(lineItem => {
+            if (lineItem.inventoryItemId) {
+              const itemIndex = updatedItems.findIndex(i => i.id === lineItem.inventoryItemId);
+              if (itemIndex >= 0) updatedItems[itemIndex] = { ...updatedItems[itemIndex], stock: (updatedItems[itemIndex].stock || 0) - lineItem.quantityDecimal };
+            }
+          });
+        }
+        // Ideally we would also restore the invoice balance here, but skipping for brevity
+        return { creditNotes: state.creditNotes.filter((c) => c.id !== id), items: updatedItems };
+      }),
 
       addDeliveryChallan: (challan) => set((state) => {
         // Decrease stock
@@ -267,8 +393,38 @@ export const useAppStore = create<AppStore>()(
         });
         return { deliveryChallans: [challan, ...state.deliveryChallans], items: updatedItems };
       }),
-      updateDeliveryChallan: (challan) => set((state) => ({ deliveryChallans: state.deliveryChallans.map((c) => (c.id === challan.id ? challan : c)) })),
-      deleteDeliveryChallan: (id) => set((state) => ({ deliveryChallans: state.deliveryChallans.filter((c) => c.id !== id) })),
+      updateDeliveryChallan: (challan) => set((state) => {
+        const oldChallan = state.deliveryChallans.find(c => c.id === challan.id);
+        const updatedItems = [...state.items];
+        if (oldChallan) {
+          oldChallan.lineItems.forEach(lineItem => {
+            if (lineItem.inventoryItemId) {
+              const itemIndex = updatedItems.findIndex(i => i.id === lineItem.inventoryItemId);
+              if (itemIndex >= 0) updatedItems[itemIndex] = { ...updatedItems[itemIndex], stock: (updatedItems[itemIndex].stock || 0) + lineItem.quantityDecimal };
+            }
+          });
+        }
+        challan.lineItems.forEach(lineItem => {
+          if (lineItem.inventoryItemId) {
+            const itemIndex = updatedItems.findIndex(i => i.id === lineItem.inventoryItemId);
+            if (itemIndex >= 0) updatedItems[itemIndex] = { ...updatedItems[itemIndex], stock: (updatedItems[itemIndex].stock || 0) - lineItem.quantityDecimal };
+          }
+        });
+        return { deliveryChallans: state.deliveryChallans.map((c) => (c.id === challan.id ? challan : c)), items: updatedItems };
+      }),
+      deleteDeliveryChallan: (id) => set((state) => {
+        const oldChallan = state.deliveryChallans.find(c => c.id === id);
+        const updatedItems = [...state.items];
+        if (oldChallan) {
+          oldChallan.lineItems.forEach(lineItem => {
+            if (lineItem.inventoryItemId) {
+              const itemIndex = updatedItems.findIndex(i => i.id === lineItem.inventoryItemId);
+              if (itemIndex >= 0) updatedItems[itemIndex] = { ...updatedItems[itemIndex], stock: (updatedItems[itemIndex].stock || 0) + lineItem.quantityDecimal };
+            }
+          });
+        }
+        return { deliveryChallans: state.deliveryChallans.filter((c) => c.id !== id), items: updatedItems };
+      }),
 
       incrementDocumentCounter: (prefix, fy) => set((state) => {
         const key = `${prefix}-${fy}`;

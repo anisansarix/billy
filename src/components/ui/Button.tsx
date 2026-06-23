@@ -13,12 +13,14 @@ interface ButtonProps extends PressableProps {
   loading?: boolean;
   className?: string;
   textClassName?: string;
+  iconPosition?: 'left' | 'right';
 }
 
 export default function Button({
   title,
   variant = 'primary',
   icon,
+  iconPosition = 'left',
   className = '',
   textClassName = '',
   loading = false,
@@ -59,7 +61,7 @@ export default function Button({
       textClass += "text-white";
       break;
     case 'secondary':
-      baseClass += "bg-[#e3e8fc] border border-transparent";
+      baseClass += "bg-primary/10 border border-transparent";
       textClass += "text-primary font-sans-bold";
       break;
     case 'outline':
@@ -67,8 +69,8 @@ export default function Button({
       textClass += "text-primary";
       break;
     case 'danger':
-      baseClass += "bg-red-50 border border-transparent";
-      textClass += "text-red-600 font-sans-bold";
+      baseClass += "bg-destructive/10 border border-transparent";
+      textClass += "text-destructive font-sans-bold";
       break;
   }
 
@@ -87,10 +89,11 @@ export default function Button({
         <ActivityIndicator color={variant === 'primary' || variant === 'danger' ? 'white' : '#208AEF'} />
       ) : (
         <>
-          {icon && <React.Fragment>{icon}</React.Fragment>}
-          <Text className={`${textClass} ${icon ? 'ml-2' : ''} ${textClassName}`}>
+          {icon && iconPosition === 'left' && <React.Fragment>{icon}</React.Fragment>}
+          <Text className={`${textClass} ${icon && iconPosition === 'left' ? 'ml-2' : ''} ${icon && iconPosition === 'right' ? 'mr-2' : ''} ${textClassName}`}>
             {title}
           </Text>
+          {icon && iconPosition === 'right' && <React.Fragment>{icon}</React.Fragment>}
         </>
       )}
     </AnimatedPressable>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, TextInput, Pressable, ScrollView, Vibration } from 'react-native';
+import { View, Text, TextInput, Pressable, ScrollView, Vibration, Alert } from 'react-native';
 import { X, CheckCircle2 } from 'lucide-react-native';
 import AnimatedModal from '@/components/ui/AnimatedModal';
 import { formatINR } from '@/utils/money';
@@ -31,6 +31,10 @@ export default function RecordPaymentModal({
         Vibration.vibrate(10);
         const amountPaise = Math.round(parseFloat(amountStr || '0') * 100);
         if (amountPaise <= 0) return;
+        if (amountPaise > balanceDuePaise) {
+            Alert.alert("Validation Error", "Payment amount cannot exceed the balance due.");
+            return;
+        }
 
         onSave({
             date,

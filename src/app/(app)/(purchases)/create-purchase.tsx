@@ -5,6 +5,7 @@ import { getCurrentFinancialYear } from "@/utils/date";
 import DocumentBuilder, { DocumentData } from "@/components/domain/DocumentBuilder";
 import { PurchaseOrder, Party, DocumentType } from "@/types/entities";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { buildGSTSummary, amountInIndianWords } from "@/utils/gst";
 
 export default function CreatePurchaseScreen() {
     const router = useRouter();
@@ -69,15 +70,10 @@ export default function CreatePurchaseScreen() {
             totalTaxableAmountPaise: documentData.totals.subtotalPaise - documentData.totals.discountPaise,
             totalGSTAmountPaise: documentData.totals.cgstPaise + documentData.totals.sgstPaise + documentData.totals.igstPaise,
             totalAmountPaise: documentData.totals.totalAmountPaise,
-            totalAmountInWords: "",
-            gstSummary: {
-                slabs: {},
-                totalTaxableValuePaise: documentData.totals.subtotalPaise - documentData.totals.discountPaise,
-                totalGSTAmountPaise: documentData.totals.cgstPaise + documentData.totals.sgstPaise + documentData.totals.igstPaise,
-                totalCessAmountPaise: 0,
-            },
-            isInterState: false,
-            placeOfSupply: "24",
+            totalAmountInWords: amountInIndianWords(documentData.totals.totalAmountPaise),
+            gstSummary: buildGSTSummary(documentData.items, documentData.totals.isInterState),
+            isInterState: documentData.totals.isInterState,
+            placeOfSupply: documentData.selectedParty.billingAddress?.state || "",
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             expectedDeliveryDate: documentData.transport?.deliveryDate || "",

@@ -79,7 +79,7 @@ export default function SettingsScreen() {
                     <View className="bg-white rounded-2xl border border-border overflow-hidden shadow-sm">
                         <SettingItem 
                             icon={Receipt} 
-                            title="SalesInvoice Customization" 
+                            title="Invoice Customization" 
                             subtitle="Prefixes, Terms & Conditions, Logo" 
                             onPress={() => router.push('/(app)/(settings)/invoice-settings')}
                         />
@@ -148,7 +148,7 @@ export default function SettingsScreen() {
                                             style: "destructive",
                                             onPress: async () => {
                                                 await supabase.auth.signOut();
-                                                useAppStore.getState().clearStore();
+                                                useAppStore.getState().signOut();
                                             }
                                         }
                                     ]

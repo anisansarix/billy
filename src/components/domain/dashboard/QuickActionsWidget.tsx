@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 import { Receipt, Boxes, FileText, Truck } from "lucide-react-native";
 
 const QUICK_ACTIONS = [
-    { label: "SalesInvoice", icon: Receipt, route: "/(app)/sales" },
+    { label: "Sales Invoice", icon: Receipt, route: "/(app)/sales" },
     { label: "Products", icon: Boxes, route: "/(app)/products-services" },
     { label: "GST", icon: FileText, route: "/(app)/gst-returns" },
     { label: "E-Way", icon: Truck, route: "/(app)/eway-bills" },

@@ -114,12 +114,14 @@ export default function CreateInvoiceScreen() {
             notes: documentData.notes.external,
             isInterState: documentData.totals.isInterState,
             placeOfSupply: documentData.selectedParty.billingAddress?.state || "",
-            status: documentData.header.status || "Draft",
+            status: (existingDoc && existingDoc.paidAmountPaise > 0) 
+                ? (existingDoc.paidAmountPaise >= documentData.totals.totalAmountPaise ? "Paid" : "Partially Paid") 
+                : (documentData.header.status || "Draft"),
             createdAt: existingDoc ? existingDoc.createdAt : new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             paymentMode: documentData.payment.mode,
-            paidAmountPaise: 0,
-            balanceDuePaise: documentData.totals.totalAmountPaise,
+            paidAmountPaise: existingDoc ? existingDoc.paidAmountPaise : 0,
+            balanceDuePaise: existingDoc ? Math.max(0, documentData.totals.totalAmountPaise - existingDoc.paidAmountPaise) : documentData.totals.totalAmountPaise,
             eWayBillNumber: documentData.transport?.ewayBill,
             linkedChallanId: linkedChallanId || existingDoc?.linkedChallanId,
         };
@@ -140,9 +142,8 @@ export default function CreateInvoiceScreen() {
         <SafeAreaView style={{ flex: 1 }} className="bg-slate-50">
             <DocumentBuilder
                 defaultDocNumber={defaultDocNumber}
-                title={editId ? "Edit SalesInvoice" : "New SalesInvoice"}
-                subtitle={editId ? undefined : "Record sales and request payments"}
-                defaultType="Tax SalesInvoice"
+                title={editId ? "Edit Sales Invoice" : "New Sales Invoice"}
+                defaultType="Tax Invoice"
                 defaultPrefix={`${docPrefix}-`}
                 partyLabel="Customer"
                 partyFilter="customer"

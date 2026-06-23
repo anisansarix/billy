@@ -16,13 +16,13 @@ export default function AuthInput({ label, required, isPassword, ...props }: Aut
     <View className="mb-4">
       <Text className="text-base font-sans-medium text-primary mb-2">
         {label}
-        {required && <Text className="text-red-500">*</Text>}
+        {required && <Text className="text-destructive">*</Text>}
       </Text>
 
       <View className="flex-row items-center rounded-xl border border-border bg-white px-4 h-[52px]">
         <TextInput
           className="flex-1 h-full text-base font-sans-regular text-primary"
-          placeholderTextColor="#9ca3af"
+          placeholderTextColor="var(--color-muted-foreground, #9ca3af)"
           secureTextEntry={isPassword && !showPassword}
           accessibilityLabel={label}
           {...props}
@@ -36,9 +36,9 @@ export default function AuthInput({ label, required, isPassword, ...props }: Aut
             accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
           >
             {showPassword ? (
-              <EyeOff size={20} color="#9ca3af" />
+              <EyeOff className="text-muted-foreground" size={20} />
             ) : (
-              <Eye size={20} color="#9ca3af" />
+              <Eye className="text-muted-foreground" size={20} />
             )}
           </Pressable>
         )}

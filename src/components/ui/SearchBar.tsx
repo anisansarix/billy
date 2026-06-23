@@ -17,12 +17,12 @@ export function SearchBar({
 }: SearchBarProps) {
   return (
     <View className={`px-4 mb-4 ${className}`}>
-      <View className="flex-row items-center bg-white px-4 py-3 rounded-2xl border border-gray-100 shadow-sm">
-        <Search size={20} color="#64748b" />
+      <View className="flex-row items-center bg-white px-4 py-3 rounded-2xl border border-border shadow-sm">
+        <Search className="text-muted-foreground" size={20} />
         <TextInput
           placeholder={placeholder}
-          className="flex-1 ml-3 font-jakarta text-base text-gray-900"
-          placeholderTextColor="#94a3b8"
+          className="flex-1 ml-3 font-sans-regular text-base text-primary"
+          placeholderTextColor="var(--color-muted-foreground, #94a3b8)"
           value={value}
           onChangeText={onChangeText}
         />

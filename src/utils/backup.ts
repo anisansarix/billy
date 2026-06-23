@@ -1,48 +1,90 @@
-import * as FileSystem from 'expo-file-system/legacy';
+import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import * as DocumentPicker from 'expo-document-picker';
 import { useAppStore } from '@/store';
 
-export async function exportBackup(): Promise<void> {
-  const state = useAppStore.getState();
-  const backup = {
-    version: 1,
-    exportedAt: new Date().toISOString(),
-    data: {
-      currentBusiness: state.currentBusiness,
-      invoices: state.invoices,
-      purchases: state.purchases,
-      parties: state.parties,
-      items: state.items,
-      expenses: state.expenses,
-      payments: state.payments,
-      documentCounters: state.documentCounters,
-      invoiceSettings: state.invoiceSettings,
-    }
-  };
-  const json = JSON.stringify(backup, null, 2);
-  const filename = `billy-backup-${new Date().toISOString().split('T')[0]}.json`;
-  const path = `${FileSystem.documentDirectory}${filename}`;
-  await FileSystem.writeAsStringAsync(path, json, { encoding: FileSystem.EncodingType.UTF8 });
-  await Sharing.shareAsync(path, { mimeType: 'application/json', dialogTitle: 'Save Billy Backup' });
-}
+export const exportBackup = async () => {
+    const storeState = useAppStore.getState();
+    const backupData = {
+        invoices: storeState.invoices,
+        items: storeState.items,
+        parties: storeState.parties,
+        purchases: storeState.purchases,
+        expenses: storeState.expenses,
+        payments: storeState.payments,
+        adjustments: storeState.adjustments,
+        creditNotes: storeState.creditNotes,
+        deliveryChallans: storeState.deliveryChallans,
+        documentCounters: storeState.documentCounters,
+        invoiceSettings: storeState.invoiceSettings,
+        timestamp: new Date().toISOString()
+    };
 
-export async function importBackup(): Promise<{ success: boolean; message: string }> {
-  try {
-    const DocumentPicker = require('expo-document-picker');
-    const result = await DocumentPicker.getDocumentAsync({ type: 'application/json', copyToCacheDirectory: true });
-    if (result.canceled) return { success: false, message: 'Cancelled' };
-    const json = await FileSystem.readAsStringAsync(result.assets[0].uri);
-    const backup = JSON.parse(json);
-    if (!backup.version || !backup.data) return { success: false, message: 'Invalid backup file' };
-    const store = useAppStore.getState();
-    const d = backup.data;
-    if (d.currentBusiness) store.setCurrentBusiness(d.currentBusiness);
-    if (Array.isArray(d.invoices)) d.invoices.forEach((inv: Parameters<typeof store.addInvoice>[0]) => store.addInvoice(inv));
-    if (Array.isArray(d.parties)) d.parties.forEach((p: Parameters<typeof store.addParty>[0]) => store.addParty(p));
-    if (Array.isArray(d.items)) d.items.forEach((i: Parameters<typeof store.addItem>[0]) => store.addItem(i));
-    if (d.invoiceSettings) store.setInvoiceSettings(d.invoiceSettings);
-    return { success: true, message: `Restored ${d.invoices?.length ?? 0} invoices and ${d.parties?.length ?? 0} parties.` };
-  } catch (e) {
-    return { success: false, message: 'Failed to read backup file.' };
-  }
-}
+    const jsonString = JSON.stringify(backupData, null, 2);
+    const fileName = `billy_backup_${new Date().getTime()}.json`;
+    // @ts-ignore
+    const fileUri = `${FileSystem.documentDirectory}${fileName}`;
+
+    await FileSystem.writeAsStringAsync(fileUri, jsonString, {
+        encoding: FileSystem.EncodingType.UTF8
+    });
+
+    const isAvailable = await Sharing.isAvailableAsync();
+    if (isAvailable) {
+        await Sharing.shareAsync(fileUri);
+    } else {
+        throw new Error("Sharing is not available on this device.");
+    }
+};
+
+export const importBackup = async (): Promise<{ success: boolean; message: string }> => {
+    try {
+        const result = await DocumentPicker.getDocumentAsync({
+            type: 'application/json',
+            copyToCacheDirectory: true
+        });
+
+        if (result.canceled) {
+            return { success: false, message: 'Import cancelled' };
+        }
+
+        if (result.assets && result.assets.length > 0) {
+            const asset = result.assets[0];
+            const fileContent = await FileSystem.readAsStringAsync(asset.uri, {
+                encoding: FileSystem.EncodingType.UTF8
+            });
+
+            const parsedData = JSON.parse(fileContent);
+
+            if (!parsedData || typeof parsedData !== 'object') {
+                throw new Error("Invalid backup file format");
+            }
+
+            const store = useAppStore.getState();
+            
+            useAppStore.setState({ 
+                ...store,
+                invoices: parsedData.invoices || store.invoices,
+                items: parsedData.items || store.items,
+                parties: parsedData.parties || store.parties,
+                purchases: parsedData.purchases || store.purchases,
+                expenses: parsedData.expenses || store.expenses,
+                payments: parsedData.payments || store.payments,
+                adjustments: parsedData.adjustments || store.adjustments,
+                creditNotes: parsedData.creditNotes || store.creditNotes,
+                deliveryChallans: parsedData.deliveryChallans || store.deliveryChallans,
+                documentCounters: parsedData.documentCounters || store.documentCounters,
+            });
+
+            if (parsedData.invoiceSettings) {
+                store.setInvoiceSettings(parsedData.invoiceSettings);
+            }
+
+            return { success: true, message: 'Backup restored successfully' };
+        }
+        
+        return { success: false, message: 'Failed to read file' };
+    } catch (error: any) {
+        return { success: false, message: error.message || 'An error occurred during import' };
+    }
+};

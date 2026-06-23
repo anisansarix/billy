@@ -31,7 +31,7 @@ interface FormState {
 }
 
 export default function InventoryItemFormModal({ visible, onClose, itemToEdit, initialTab, onSaveSuccess, onDelete }: InventoryItemFormModalProps) {
-    const { addItem, updateItem } = useAppStore(useShallow(state => ({ addItem: state.addItem, updateItem: state.updateItem })));
+    const { addItem, updateItem, addAdjustment } = useAppStore(useShallow(state => ({ addItem: state.addItem, updateItem: state.updateItem, addAdjustment: state.addAdjustment })));
 
     const [formData, setFormData] = useState<FormState>({
         name: "",
@@ -145,6 +145,17 @@ export default function InventoryItemFormModal({ visible, onClose, itemToEdit, i
             updateItem(itemData);
         } else {
             addItem(itemData);
+            if (itemData.stock && itemData.stock > 0) {
+                addAdjustment({
+                    id: `adj-${Date.now()}`,
+                    itemId: itemData.id,
+                    itemName: itemData.name,
+                    type: "Stock In",
+                    qty: Number(itemData.stock),
+                    reason: "Initial Stock",
+                    date: new Date().toISOString()
+                });
+            }
         }
 
         if (onSaveSuccess) {

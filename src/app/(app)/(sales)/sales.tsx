@@ -262,7 +262,7 @@ export default function SalesScreen() {
 
                             <View className="p-4 rounded-2xl bg-slate-50 border border-border flex-row justify-between items-center mb-6">
                                 <View>
-                                    <Text className="font-sans-medium text-sm text-muted-foreground mb-1">SalesInvoice Total</Text>
+                                    <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Invoice Total</Text>
                                     <Text className="font-sans-bold text-2xl text-primary">
                                         {formatINR(selectedInvoice.totalAmountPaise)}
                                     </Text>
@@ -309,8 +309,8 @@ export default function SalesScreen() {
                                         let route = '/(app)/create-invoice';
                                         if (type === DocumentType.PROFORMA_INVOICE) route = '/(app)/(sales)/create-estimate';
                                         if (type === DocumentType.QUOTATION) route = '/(app)/(sales)/create-quotation';
-                                        if (type === DocumentType.DELIVERY_CHALLAN) route = '/(app)/(sales)/challan/new';
-                                        if (type === DocumentType.CREDIT_NOTE) route = '/(app)/(sales)/credit-note/new';
+                                        if (type === DocumentType.DELIVERY_CHALLAN) route = '/(app)/(sales)/create-delivery-challan';
+                                        if (type === DocumentType.CREDIT_NOTE) route = '/(app)/(sales)/create-credit-note';
                                         
                                         router.push({ pathname: route, params: { id } } as never);
                                     }}
@@ -357,7 +357,7 @@ export default function SalesScreen() {
                             { title: "Tax Invoice", route: "/(app)/create-invoice", icon: <ReceiptText color="#208AEF" size={20} />, bg: "bg-blue-50" },
                             { title: "Estimate", route: "/(app)/create-estimate", icon: <ReceiptText color="#f59e0b" size={20} />, bg: "bg-amber-50" },
                             { title: "Quotation", route: "/(app)/create-quotation", icon: <ReceiptText color="#8b5cf6" size={20} />, bg: "bg-purple-50" },
-                            { title: "Delivery Challan", route: "/(app)/(sales)/challan/new", icon: <Truck color="#10b981" size={20} />, bg: "bg-teal-50" },
+                            { title: "Delivery Challan", route: "/(app)/(sales)/create-delivery-challan", icon: <Truck color="#10b981" size={20} />, bg: "bg-teal-50" },
                             { title: "Credit Note", route: "/(app)/create-credit-note", icon: <Undo2 color="#ef4444" size={20} />, bg: "bg-red-50" },
                         ].map((item, idx) => (
                             <Pressable 

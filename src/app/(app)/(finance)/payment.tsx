@@ -337,7 +337,7 @@ export default function PaymentScreen() {
                         </View>
 
                         <View className="mb-4">
-                            <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Party Name (Customer/Vendor)</Text>
+                            <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Customer/Vendor Name</Text>
                             <TextInput 
                                 className="bg-slate-50 border border-border rounded-lg px-4 py-3 font-sans-medium text-primary"
                                 placeholder="e.g. Ramesh Traders"

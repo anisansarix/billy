@@ -60,7 +60,13 @@ export default function App() {
   const { isTabReady, startTransition } = useTabTransition();
   const isFullyReady = isReady && isTabReady;
   
-  const {  invoices, purchases, payments, items  } = useAppStore(useShallow(state => ({ invoices: state.invoices, purchases: state.purchases, payments: state.payments, items: state.items })));
+  const { invoices, purchases, payments, items, currentBusiness } = useAppStore(useShallow(state => ({ 
+    invoices: state.invoices, 
+    purchases: state.purchases, 
+    payments: state.payments, 
+    items: state.items,
+    currentBusiness: state.currentBusiness
+  })));
 
   const {
       dashboardBalances,
@@ -83,7 +89,7 @@ export default function App() {
           <View className="mb-2.5 flex-row items-center justify-between mb-6">
             <View>
               <Text className="text-3xl font-sans-bold text-primary leading-tight">{getGreeting()}</Text>
-              <Text className="text-3xl font-sans-bold text-primary leading-tight">Axanees!</Text>
+              <Text className="text-3xl font-sans-bold text-primary leading-tight">{currentBusiness?.tradeName || "Guest"}!</Text>
             </View>
             <View className="flex-row items-center gap-4">
               <View className="relative">
@@ -170,7 +176,7 @@ export default function App() {
                   data={cashFlowData} 
                   legend1="Money In"
                   legend2="Money Out"
-                  legend3="GST Liab."
+                  legend3="GST Liability"
                   color1="#16a34a"
                   color2="#dc2626"
                   color3="#f59e0b"
@@ -190,7 +196,7 @@ export default function App() {
 
             <View className="items-center py-6 mt-2">
               <Text className="font-sans-medium text-xs text-muted-foreground/60 text-center">
-                Billy ERP Copyrights reserved by Omnity Industries
+                © 2026 Omnity Industries. All rights reserved.
               </Text>
             </View>
           </ScrollView>
