@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
-import { ArrowLeft, Plus, Receipt, Wallet, Search, Box } from "lucide-react-native";
+import { ArrowLeft, Plus, Receipt, Wallet, Box } from "lucide-react-native";
 import { useState } from "react";
-import {  Pressable, ScrollView, Text, TextInput, View, RefreshControl, FlatList , Vibration } from "react-native";
+import {  Pressable, ScrollView, Text, View, RefreshControl, FlatList , Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Card from "@/components/ui/Card";
 import { useAppStore } from "@/store";
@@ -15,6 +15,8 @@ import "../../../../global.css";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { formatINR } from "@/utils/money";
 import { formatDate } from "@/utils/date";
+import { FilterPills } from "@/components/ui/FilterPills";
+import { SearchBar } from "@/components/ui/SearchBar";
 import ExpenseDetailsModal from "@/components/domain/purchases/ExpenseDetailsModal";
 import PurchaseDetailsModal from "@/components/domain/purchases/PurchaseDetailsModal";
 import ExpenseFormModal from "@/components/domain/purchases/ExpenseFormModal";
@@ -24,6 +26,13 @@ export default function ExpenseRecordsPurchasesScreen() {
     const { isTabReady, startTransition } = useTabTransition();
     const isFullyReady = isReady && isTabReady;
     const [search, setSearch] = useState("");
+    const [activeFilters, setActiveFilters] = useState<string[]>([]);
+    
+    const toggleFilter = (filter: string) => {
+        startTransition(() => {
+            setActiveFilters(prev => prev.includes(filter) ? prev.filter(f => f !== filter) : [...prev, filter]);
+        });
+    };
     const [mainTab, setMainTab] = useState<"expenses" | "purchases">("expenses");
     const [purchaseTab, setPurchaseTab] = useState<"All" | "Pending" | "Paid" | "Overdue" | "Draft" | "Sent">("All");
 
@@ -55,14 +64,39 @@ export default function ExpenseRecordsPurchasesScreen() {
     const filteredExpenseRecords = expenses.filter(exp => {
         const vendor = exp.vendorName || "";
         const cat = exp.category || "";
-        return vendor.toLowerCase().includes(search.toLowerCase()) || cat.toLowerCase().includes(search.toLowerCase());
+        const matchesSearch = vendor.toLowerCase().includes(search.toLowerCase()) || cat.toLowerCase().includes(search.toLowerCase());
+        
+        let matchesFilters = true;
+        if (activeFilters.length > 0) {
+            if (activeFilters.includes("Recent")) {
+                const daysDiff = (new Date().getTime() - new Date(exp.date).getTime()) / (1000 * 3600 * 24);
+                if (daysDiff > 7) matchesFilters = false;
+            }
+            const statusFilters = activeFilters.filter(f => f !== "Recent");
+            if (matchesFilters && statusFilters.length > 0 && !statusFilters.includes("Paid")) {
+                matchesFilters = false;
+            }
+        }
+        return matchesSearch && matchesFilters;
     }).sort((a, b) => new Date(b.updatedAt || b.createdAt || 0).getTime() - new Date(a.updatedAt || a.createdAt || 0).getTime());
 
     const filteredPurchases = purchases.filter(pur => {
         const matchesTab = purchaseTab === "All" || pur.status === purchaseTab;
         const vendorName = pur.partyName || pur.partyName || "";
         const matchesSearch = vendorName.toLowerCase().includes(search.toLowerCase()) || pur.documentNumber?.toLowerCase().includes(search.toLowerCase());
-        return matchesTab && matchesSearch;
+        
+        let matchesFilters = true;
+        if (activeFilters.length > 0) {
+            const statusFilters = activeFilters.filter(f => f !== "Recent");
+            if (statusFilters.length > 0) {
+                matchesFilters = statusFilters.includes(pur.status);
+            }
+            if (matchesFilters && activeFilters.includes("Recent")) {
+                const daysDiff = (new Date().getTime() - new Date(pur.documentDate).getTime()) / (1000 * 3600 * 24);
+                if (daysDiff > 7) matchesFilters = false;
+            }
+        }
+        return matchesTab && matchesSearch && matchesFilters;
     }).sort((a, b) => new Date(b.updatedAt || b.createdAt || 0).getTime() - new Date(a.updatedAt || a.createdAt || 0).getTime());
 
     // Summaries
@@ -146,17 +180,18 @@ export default function ExpenseRecordsPurchasesScreen() {
             </View>
 
             {/* Search */}
-            <View className="px-5 mt-2 mb-4">
-                <View className="flex-row items-center bg-white px-4 h-12 rounded-xl border border-border">
-                    <Search color="#9ca3af" size={20} />
-                    <TextInput
-                        className="flex-1 ml-3 h-full font-sans-regular text-base text-primary"
-                        placeholder={`Search ${mainTab}...`}
-                        placeholderTextColor="#9ca3af"
-                        value={search}
-                        onChangeText={setSearch}
-                    />
-                </View>
+            <View className="pb-2">
+                <SearchBar 
+                    value={search} 
+                    onChangeText={setSearch} 
+                    placeholder={`Search ${mainTab}...`} 
+                    className="px-5 mt-4" 
+                />
+                <FilterPills
+                    options={["Recent", "Paid", "Overdue"]}
+                    activeFilters={activeFilters}
+                    onToggleFilter={toggleFilter}
+                />
             </View>
         </>
     );

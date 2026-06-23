@@ -2,7 +2,7 @@ import { PaymentRecord } from "@/types/entities";
 
 import { useRouter } from "expo-router";
 import { useShallow } from 'zustand/react/shallow';
-import { ArrowDownLeft, ArrowLeft, ArrowUpRight, Plus, Search, X, Edit, Trash2, CreditCard, Calendar } from "lucide-react-native";
+import { ArrowDownLeft, ArrowLeft, ArrowUpRight, Plus, X, Edit, Trash2, CreditCard, Calendar } from "lucide-react-native";
 import { useState } from "react";
 import {  Pressable, ScrollView, Text, TextInput, View, RefreshControl, Alert, FlatList , Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -13,6 +13,8 @@ import { ListCardSkeleton } from "@/components/ui/skeletons/ListCardSkeleton";
 import AnimatedModal from "@/components/ui/AnimatedModal";
 import Card from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { SearchBar } from "@/components/ui/SearchBar";
+import { FilterPills } from "@/components/ui/FilterPills";
 import { useAppStore } from "@/store";
 import "../../../../global.css";
 import { formatINR } from "@/utils/money";
@@ -25,6 +27,13 @@ export default function PaymentScreen() {
     const [search, setSearch] = useState("");
     const [tab, setTab] = useState<"in" | "out">("in");
     const [refreshing, setRefreshing] = useState(false);
+    const [activeFilters, setActiveFilters] = useState<string[]>([]);
+    
+    const toggleFilter = (filter: string) => {
+        startTransition(() => {
+            setActiveFilters(prev => prev.includes(filter) ? prev.filter(f => f !== filter) : [...prev, filter]);
+        });
+    };
 
     const isReady = useDeferredRender();
     const { isTabReady, startTransition } = useTabTransition();
@@ -54,8 +63,21 @@ export default function PaymentScreen() {
     const filteredPayments = payments.filter(pay => {
         const matchesTab = pay.type === tab;
         const matchesSearch = pay.partyName.toLowerCase().includes(search.toLowerCase());
-        return matchesTab && matchesSearch;
-    });
+        
+        let matchesFilters = true;
+        if (activeFilters.length > 0) {
+            const modeFilters = activeFilters.filter(f => f !== "Recent");
+            if (modeFilters.length > 0) {
+                matchesFilters = modeFilters.includes(pay.mode);
+            }
+            if (matchesFilters && activeFilters.includes("Recent")) {
+                const daysDiff = (new Date().getTime() - new Date(pay.date).getTime()) / (1000 * 3600 * 24);
+                if (daysDiff > 7) matchesFilters = false;
+            }
+        }
+        
+        return matchesTab && matchesSearch && matchesFilters;
+    }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     const totalMoneyIn = payments.filter(p => p.type === 'in').reduce((sum, p) => sum + p.amountPaise, 0);
     const totalMoneyOut = payments.filter(p => p.type === 'out').reduce((sum, p) => sum + p.amountPaise, 0);
@@ -133,17 +155,18 @@ export default function PaymentScreen() {
             </View>
 
             {/* Search */}
-            <View className="px-5 mt-2 mb-4">
-                <View className="flex-row items-center bg-white px-4 h-12 rounded-xl border border-border">
-                    <Search color="#9ca3af" size={20} />
-                    <TextInput
-                        className="flex-1 ml-3 h-full font-sans-regular text-base text-primary"
-                        placeholder={`Search ${tab === 'in' ? 'customers' : 'vendors'}...`}
-                        placeholderTextColor="#9ca3af"
-                        value={search}
-                        onChangeText={setSearch}
-                    />
-                </View>
+            <View className="pb-2">
+                <SearchBar 
+                    value={search} 
+                    onChangeText={setSearch} 
+                    placeholder={`Search ${tab === 'in' ? 'customers' : 'vendors'}...`} 
+                    className="px-5 mt-4" 
+                />
+                <FilterPills
+                    options={["Recent", "UPI", "Cash", "Bank Transfer", "NEFT", "RTGS", "Cheque"]}
+                    activeFilters={activeFilters}
+                    onToggleFilter={toggleFilter}
+                />
             </View>
         </>
     );

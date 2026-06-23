@@ -9,6 +9,7 @@ import { useState, useMemo } from "react";
 import {  Pressable, Text, View, RefreshControl, Alert, FlatList, ScrollView , Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AnimatedModal from "@/components/ui/AnimatedModal";
+import { FilterPills } from "@/components/ui/FilterPills";
 import Card from "@/components/ui/Card";
 import { useAppStore } from "@/store";
 import { SegmentedTabs } from "@/components/ui/SegmentedTabs";
@@ -28,6 +29,15 @@ export default function SalesScreen() {
     
     // Details Modal State
     const [selectedInvoice, setSelectedInvoice] = useState<any | null>(null);
+    
+    // Filter State
+    const [activeFilters, setActiveFilters] = useState<string[]>([]);
+    
+    const toggleFilter = (filter: string) => {
+        startTransition(() => {
+            setActiveFilters(prev => prev.includes(filter) ? prev.filter(f => f !== filter) : [...prev, filter]);
+        });
+    };
 
     const isReady = useDeferredRender();
     const { isTabReady, startTransition } = useTabTransition();
@@ -70,9 +80,24 @@ export default function SalesScreen() {
             else if (tab === "Credit Notes") matchesTab = inv.documentType === DocumentType.CREDIT_NOTE;
 
             const matchesSearch = inv.partyName?.toLowerCase().includes(search.toLowerCase()) || inv.documentNumber?.toLowerCase().includes(search.toLowerCase());
-            return matchesTab && matchesSearch;
+            
+            let matchesFilters = true;
+            if (activeFilters.length > 0) {
+                const statusFilters = activeFilters.filter(f => f !== "Recent" && f !== "Partial");
+                if (statusFilters.length > 0 || activeFilters.includes("Partial")) {
+                    const mappedFilters = [...statusFilters];
+                    if (activeFilters.includes("Partial")) mappedFilters.push("Partially Paid");
+                    matchesFilters = mappedFilters.includes(inv.status);
+                }
+                
+                if (matchesFilters && activeFilters.includes("Recent")) {
+                    const daysDiff = (new Date().getTime() - new Date(inv.documentDate).getTime()) / (1000 * 3600 * 24);
+                    if (daysDiff > 7) matchesFilters = false;
+                }
+            }
+            return matchesTab && matchesSearch && matchesFilters;
         }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    }, [allDocuments, tab, search]);
+    }, [allDocuments, tab, search, activeFilters]);
 
     // Summary Calculations
     const totalInvoicesValue = useMemo(() => {
@@ -122,13 +147,17 @@ export default function SalesScreen() {
                 </View>
             </View>
 
-            {/* Search */}
-            <View className="pb-4">
+            <View className="pb-2">
                 <SearchBar 
                     value={search} 
                     onChangeText={setSearch} 
                     placeholder="Search by name or number..." 
                     className="px-5 mt-4" 
+                />
+                <FilterPills
+                    options={["Recent", "Paid", "Pending", "Partial"]}
+                    activeFilters={activeFilters}
+                    onToggleFilter={toggleFilter}
                 />
             </View>
         </>

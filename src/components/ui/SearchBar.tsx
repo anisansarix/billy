@@ -9,7 +9,12 @@ interface SearchBarProps {
   className?: string;
 }
 
-export function SearchBar({ value, onChangeText, placeholder = "Search...", className = "" }: SearchBarProps) {
+export function SearchBar({ 
+  value, 
+  onChangeText, 
+  placeholder = "Search...", 
+  className = ""
+}: SearchBarProps) {
   return (
     <View className={`px-4 mb-4 ${className}`}>
       <View className="flex-row items-center bg-white px-4 py-3 rounded-2xl border border-gray-100 shadow-sm">

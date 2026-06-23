@@ -7,10 +7,12 @@ import { SegmentedTabs } from "@/components/ui/SegmentedTabs";
 
 import { useShallow } from 'zustand/react/shallow';
 import { useRouter } from "expo-router";
-import { ArrowLeft, Briefcase, Package, Plus, Search, AlertCircle, ArrowUpRight, ArrowDownRight } from "lucide-react-native";
+import { ArrowLeft, Briefcase, Package, Plus, AlertCircle, ArrowUpRight, ArrowDownRight } from "lucide-react-native";
 import { useState } from "react";
-import {  Pressable, ScrollView, Text, TextInput, View, RefreshControl, FlatList , Vibration } from "react-native";
+import {  Pressable, ScrollView, Text, View, RefreshControl, FlatList , Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { SearchBar } from "@/components/ui/SearchBar";
+import { FilterPills } from "@/components/ui/FilterPills";
 import Card from "@/components/ui/Card";
 import { useAppStore } from "@/store";
 import "../../../../global.css";
@@ -24,6 +26,13 @@ export default function ProductsServicesScreen() {
     const [tab, setTab] = useState<"product" | "service">("product");
     const [search, setSearch] = useState("");
     const [refreshing, setRefreshing] = useState(false);
+    const [activeFilters, setActiveFilters] = useState<string[]>([]);
+    
+    const toggleFilter = (filter: string) => {
+        startTransition(() => {
+            setActiveFilters(prev => prev.includes(filter) ? prev.filter(f => f !== filter) : [...prev, filter]);
+        });
+    };
 
     // Data State
     const isReady = useDeferredRender();
@@ -37,7 +46,25 @@ export default function ProductsServicesScreen() {
     };
 
     const filteredItems = items.filter(
-        i => i.type === tab && i.name.toLowerCase().includes(search.toLowerCase())
+        i => {
+            if (i.type !== tab) return false;
+            if (!i.name.toLowerCase().includes(search.toLowerCase())) return false;
+            
+            let matchesFilters = true;
+            if (activeFilters.length > 0) {
+                if (activeFilters.includes("Recently added")) {
+                    const daysDiff = (new Date().getTime() - new Date(i.createdAt || 0).getTime()) / (1000 * 3600 * 24);
+                    if (daysDiff > 7) matchesFilters = false;
+                }
+                if (matchesFilters && activeFilters.includes("Low stock")) {
+                    if (i.type !== 'product' || (i.stock || 0) > (i.minimumStock || 5)) matchesFilters = false;
+                }
+                if (matchesFilters && activeFilters.includes("High Stock")) {
+                    if (i.type !== 'product' || (i.stock || 0) <= (i.minimumStock || 5)) matchesFilters = false;
+                }
+            }
+            return matchesFilters;
+        }
     ).sort((a, b) => new Date(b.updatedAt || b.createdAt || 0).getTime() - new Date(a.updatedAt || a.createdAt || 0).getTime());
 
     // Summary Logic
@@ -143,17 +170,18 @@ export default function ProductsServicesScreen() {
             )}
 
             {view === 'catalog' && (
-                <View className="px-5 mb-4">
-                    <View className="flex-row items-center bg-white px-4 h-12 rounded-xl border border-border">
-                        <Search color="#9ca3af" size={20} />
-                        <TextInput
-                            className="flex-1 ml-3 h-full font-sans-regular text-base text-primary"
-                            placeholder={`Search ${tab}s...`}
-                            placeholderTextColor="#9ca3af"
-                            value={search}
-                            onChangeText={setSearch}
-                        />
-                    </View>
+                <View className="pb-2">
+                    <SearchBar 
+                        value={search} 
+                        onChangeText={setSearch} 
+                        placeholder={`Search ${tab}s...`} 
+                        className="px-5 mt-4" 
+                    />
+                    <FilterPills
+                        options={["Recently added", "Low stock", "High Stock"]}
+                        activeFilters={activeFilters}
+                        onToggleFilter={toggleFilter}
+                    />
                 </View>
             )}
         </View>
