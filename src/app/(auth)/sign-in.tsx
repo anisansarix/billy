@@ -4,6 +4,7 @@ import { StatusBar } from "expo-status-bar";
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View, Image, Alert, Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppStore, DEFAULT_BUSINESS } from "@/store";
+import { supabase } from "@/lib/supabase";
 import AuthInput from "@/components/ui/AuthInput";
 import Button from "@/components/ui/Button";
 import { icons } from "../../../constants/icons";
@@ -11,23 +12,34 @@ import "../../../global.css";
 
 export default function SignInScreen() {
   const router = useRouter();
-  const signIn = useAppStore(state => state.signIn);
   
-  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = () => {
-    if (!phone.trim()) {
-      Alert.alert("Validation Error", "Please enter your phone number.");
+  const handleLogin = async () => {
+    if (!email.trim()) {
+      Alert.alert("Validation Error", "Please enter your email.");
       return;
     }
     if (!password) {
       Alert.alert("Validation Error", "Please enter your password.");
       return;
     }
+
+    setIsLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
+    setIsLoading(false);
+
+    if (error) {
+      Alert.alert("Sign In Failed", error.message);
+      return;
+    }
+
     useAppStore.getState().setCurrentBusiness(DEFAULT_BUSINESS);
-    signIn(phone);
-    router.push("/(app)/(dashboard)/dashboard");
   };
 
   return (
@@ -49,11 +61,12 @@ export default function SignInScreen() {
           </View>
 
           <AuthInput
-            label="Phone"
-            placeholder="+91   Enter your phone number"
-            keyboardType="phone-pad"
-            value={phone}
-            onChangeText={setPhone}
+            label="Email"
+            placeholder="Enter your email address"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            value={email}
+            onChangeText={setEmail}
           />
 
           <AuthInput
@@ -82,6 +95,7 @@ export default function SignInScreen() {
 
           <Button
             title="Login"
+            loading={isLoading}
             onPress={handleLogin}
             className="w-full mb-6"
           />

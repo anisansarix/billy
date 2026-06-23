@@ -1,7 +1,6 @@
 import { createMMKV } from 'react-native-mmkv';
 import { create } from 'zustand';
 import { createJSONStorage, persist, StateStorage } from 'zustand/middleware';
-import { EXPENSES, INVOICES, ITEMS, PARTIES, PAYMENTS, PURCHASES } from '../../constants/data';
 import { Business, CreditNote, DeliveryChallan, ExpenseRecord, GSTType, InventoryItem, Party, PaymentRecord, PurchaseOrder, SalesInvoice, StockAdjustmentRecord, TaxRate } from '../types/entities';
 
 const mmkv = createMMKV();
@@ -63,7 +62,7 @@ const DEFAULT_TAX_RATES: TaxRate[] = [
 
 export type AppStore = {
   isAuthenticated: boolean;
-  userPin: string | null;
+  userId: string | null;
   currentBusiness: Business | null;
   taxRates: TaxRate[];
   invoices: SalesInvoice[];
@@ -87,8 +86,8 @@ export type AppStore = {
   setInvoiceSettings: (settings: Partial<{ invoicePrefix: string; poPrefix: string; cnPrefix: string; dcPrefix: string; defaultPaymentTermsDays: number; defaultTnC: string; }>) => void;
   hasHydrated: boolean;
   setHasHydrated: (state: boolean) => void;
-  signIn: (pin?: string) => void;
-  signOut: () => void;
+  setAuthSession: (session: any | null) => void;
+  clearStore: () => void;
   setCurrentBusiness: (business: Business | null) => void;
   addInvoice: (invoice: SalesInvoice) => void;
   updateInvoice: (invoice: SalesInvoice) => void;
@@ -126,15 +125,15 @@ export const useAppStore = create<AppStore>()(
   persist(
     (set) => ({
       isAuthenticated: false,
-      userPin: null,
+      userId: null,
       currentBusiness: null,
       taxRates: DEFAULT_TAX_RATES,
-      invoices: __DEV__ ? INVOICES : [],
-      items: __DEV__ ? ITEMS : [],
-      parties: __DEV__ ? PARTIES : [],
-      purchases: __DEV__ ? PURCHASES : [],
-      expenses: __DEV__ ? EXPENSES : [],
-      payments: __DEV__ ? PAYMENTS : [],
+      invoices: [],
+      items: [],
+      parties: [],
+      purchases: [],
+      expenses: [],
+      payments: [],
       adjustments: [],
       creditNotes: [],
       deliveryChallans: [],
@@ -144,8 +143,8 @@ export const useAppStore = create<AppStore>()(
 
       setInvoiceSettings: (settings) => set((state) => ({ invoiceSettings: { ...state.invoiceSettings, ...settings } })),
       setHasHydrated: (state) => set({ hasHydrated: state }),
-      signIn: (pin) => set({ isAuthenticated: true, userPin: pin ?? null }),
-      signOut: () => set({ isAuthenticated: false, userPin: null }),
+      setAuthSession: (session) => set({ isAuthenticated: !!session, userId: session?.user?.id || null }),
+      clearStore: () => set({ isAuthenticated: false, userId: null, currentBusiness: null }),
       setCurrentBusiness: (b) => set({ currentBusiness: b }),
 
       addInvoice: (invoice) => set((state) => {

@@ -1,11 +1,14 @@
 import { useRouter } from "expo-router";
 import { ArrowLeft, Building2, ChevronRight, LogOut, Receipt, User, Users, ShieldCheck } from "lucide-react-native";
+import { useState } from "react";
 import { Pressable, ScrollView, Text, View, Image, Vibration, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import images from "../../../../constants/images";
 import { useAppStore } from "@/store";
 import { exportBackup, importBackup } from "@/utils/backup";
-import { Download, Upload } from "lucide-react-native";
+import { Download, Upload, CloudUpload } from "lucide-react-native";
+import { supabase } from "@/lib/supabase";
+import { pushMockData } from "@/lib/sync";
 import "../../../../global.css";
 
 const SettingItem = ({ icon: Icon, title, subtitle, isDestructive = false, onPress, isLast = false }: { icon: React.ElementType, title: string, subtitle?: string, isDestructive?: boolean, onPress?: () => void, isLast?: boolean }) => (
@@ -23,7 +26,7 @@ const SettingItem = ({ icon: Icon, title, subtitle, isDestructive = false, onPre
 
 export default function SettingsScreen() {
     const router = useRouter();
-    const signOut = useAppStore(state => state.signOut);
+    const [isSyncing, setIsSyncing] = useState(false);
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
@@ -102,6 +105,29 @@ export default function SettingsScreen() {
                     </View>
                 </View>
 
+                {/* Migration Section */}
+                <View className="mb-6 px-5">
+                    <Text className="text-sm font-sans-semibold text-gray-500 uppercase tracking-wider mb-2 px-2">Migration</Text>
+                    <View className="bg-white rounded-2xl overflow-hidden border border-black/5">
+                        <SettingItem 
+                            icon={CloudUpload} 
+                            title={isSyncing ? "Uploading..." : "Push Mock Data to Cloud"} 
+                            subtitle="Uploads local test data to Supabase" 
+                            isLast
+                            onPress={async () => {
+                                setIsSyncing(true);
+                                try {
+                                    await pushMockData();
+                                    Alert.alert("Success", "Mock data seeded to your Supabase account!");
+                                } catch(e: any) {
+                                    Alert.alert("Error", e.message);
+                                }
+                                setIsSyncing(false);
+                            }}
+                        />
+                    </View>
+                </View>
+
                 {/* Danger Zone */}
                 <View className="mb-8 px-5">
                     <Text className="font-sans-bold text-xs text-muted-foreground uppercase mb-2 tracking-wider ml-2">Session</Text>
@@ -111,18 +137,21 @@ export default function SettingsScreen() {
                             title="Log Out" 
                             isDestructive 
                             isLast
-                            onPress={() => {
+                            onPress={async () => {
                                 Alert.alert(
-                                  'Sign Out',
-                                  'You will be signed out of Billy. Your data stays on this device.',
-                                  [
-                                    { text: 'Cancel', style: 'cancel' },
-                                    {
-                                      text: 'Sign Out',
-                                      style: 'destructive',
-                                      onPress: () => { signOut(); router.replace('/onboarding'); }
-                                    }
-                                  ]
+                                    "Log Out",
+                                    "Are you sure you want to log out?",
+                                    [
+                                        { text: "Cancel", style: "cancel" },
+                                        { 
+                                            text: "Log Out", 
+                                            style: "destructive",
+                                            onPress: async () => {
+                                                await supabase.auth.signOut();
+                                                useAppStore.getState().clearStore();
+                                            }
+                                        }
+                                    ]
                                 );
                             }} 
                         />

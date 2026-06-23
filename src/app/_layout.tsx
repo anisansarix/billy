@@ -6,6 +6,7 @@ import '../../global.css';
 import { useAppStore } from "@/store";
 import { useShallow } from 'zustand/react/shallow';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import { AuthProvider } from '@/providers/AuthProvider';
 
 import { StatusBar } from "expo-status-bar";
 
@@ -64,8 +65,10 @@ export default function RootLayout() {
 
   return (
     <ErrorBoundary>
-      <StatusBar style="dark" />
-      <Stack screenOptions={{ headerShown: false }} />
+      <AuthProvider>
+        <StatusBar style="dark" />
+        <Stack screenOptions={{ headerShown: false }} />
+      </AuthProvider>
     </ErrorBoundary>
   );
 }

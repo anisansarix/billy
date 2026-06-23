@@ -7,21 +7,24 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AuthInput from "@/components/ui/AuthInput";
 import Button from "@/components/ui/Button";
 import { useAppStore } from "@/store";
+import { supabase } from "@/lib/supabase";
 import { GSTType } from "@/types/entities";
 import "../../../global.css";
 
 export default function SignUpScreen() {
   const router = useRouter();
   const setCurrentBusiness = useAppStore(state => state.setCurrentBusiness);
-  const signIn = useAppStore(state => state.signIn);
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [gst, setGst] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     const trimmedFirstName = firstName.trim();
     const trimmedLastName = lastName.trim();
     const trimmedCompanyName = companyName.trim();
@@ -44,6 +47,14 @@ export default function SignUpScreen() {
       Alert.alert("Validation Error", "Please enter your phone number.");
       return;
     }
+    if (!email.trim()) {
+      Alert.alert("Validation Error", "Please enter your email.");
+      return;
+    }
+    if (!password) {
+      Alert.alert("Validation Error", "Please enter a password.");
+      return;
+    }
 
     if (sanitizedGst) {
       // Indian GSTIN format: 2 numbers, 5 letters, 4 numbers, 1 letter, 1 alphanumeric, 1 Z, 1 alphanumeric
@@ -64,13 +75,33 @@ export default function SignUpScreen() {
             address: { line1: "", city: "", state: "", stateCode: "", pincode: "", country: "India" },
             shippingAddresses: [],
             phone: trimmedPhone,
-            email: "",
+            email: email.trim(),
             bankDetails: [],
             fiscalYearStart: "APRIL",
-            defaultCurrency: "INR"
-        });
+            defaultCurrency: 'INR'
+    });
 
-    signIn();
+    setIsLoading(true);
+    const { error } = await supabase.auth.signUp({
+      email: email.trim(),
+      password,
+      options: {
+        data: {
+          first_name: trimmedFirstName,
+          last_name: trimmedLastName,
+          company_name: trimmedCompanyName,
+          phone: trimmedPhone,
+          gstin: sanitizedGst || null,
+        }
+      }
+    });
+    setIsLoading(false);
+
+    if (error) {
+      Alert.alert("Sign Up Failed", error.message);
+      return;
+    }
+
     router.replace("/(app)/(dashboard)/dashboard");
   };
 
@@ -117,12 +148,26 @@ export default function SignUpScreen() {
           />
 
           <AuthInput
-            label="Phone"
-            placeholder="+91   Enter your phone number"
+            label="Phone Number"
+            placeholder="+91"
             keyboardType="phone-pad"
-            required
             value={phone}
             onChangeText={setPhone}
+          />
+          <AuthInput
+            label="Email"
+            placeholder="Enter your email"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            value={email}
+            onChangeText={setEmail}
+          />
+          <AuthInput
+            label="Password"
+            placeholder="Create a password"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
           />
 
           <AuthInput
@@ -135,6 +180,7 @@ export default function SignUpScreen() {
           <Button
             title="Create Account"
             icon={<ArrowRight color="white" size={20} />}
+            loading={isLoading}
             onPress={handleSignUp}
             className="w-full mt-4 mb-6"
             textClassName="mr-2"
