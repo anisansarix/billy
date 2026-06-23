@@ -13,6 +13,7 @@ import "../../../global.css";
 export default function SignUpScreen() {
   const router = useRouter();
   const setCurrentBusiness = useAppStore(state => state.setCurrentBusiness);
+  const signIn = useAppStore(state => state.signIn);
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -69,6 +70,7 @@ export default function SignUpScreen() {
             defaultCurrency: "INR"
         });
 
+    signIn();
     router.replace("/(app)/(dashboard)/dashboard");
   };
 

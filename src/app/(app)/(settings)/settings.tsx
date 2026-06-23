@@ -1,8 +1,11 @@
 import { useRouter } from "expo-router";
 import { ArrowLeft, Building2, ChevronRight, LogOut, Receipt, User, Users, ShieldCheck } from "lucide-react-native";
-import { Pressable, ScrollView, Text, View, Image, Vibration } from "react-native";
+import { Pressable, ScrollView, Text, View, Image, Vibration, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import images from "../../../../constants/images";
+import { useAppStore } from "@/store";
+import { exportBackup, importBackup } from "@/utils/backup";
+import { Download, Upload } from "lucide-react-native";
 import "../../../../global.css";
 
 const SettingItem = ({ icon: Icon, title, subtitle, isDestructive = false, onPress, isLast = false }: { icon: React.ElementType, title: string, subtitle?: string, isDestructive?: boolean, onPress?: () => void, isLast?: boolean }) => (
@@ -20,6 +23,7 @@ const SettingItem = ({ icon: Icon, title, subtitle, isDestructive = false, onPre
 
 export default function SettingsScreen() {
     const router = useRouter();
+    const signOut = useAppStore(state => state.signOut);
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
@@ -80,6 +84,24 @@ export default function SettingsScreen() {
                     </View>
                 </View>
 
+                {/* Data Section */}
+                <View className="mb-6 px-5">
+                    <Text className="font-sans-bold text-xs text-muted-foreground uppercase mb-2 tracking-wider ml-2">Data</Text>
+                    <View className="bg-white rounded-2xl border border-border overflow-hidden shadow-sm">
+                        <SettingItem 
+                            icon={Download} 
+                            title="Export Data Backup" 
+                            onPress={() => exportBackup().catch(e => Alert.alert('Error', e.message))}
+                        />
+                        <SettingItem 
+                            icon={Upload} 
+                            title="Import from Backup" 
+                            isLast
+                            onPress={() => importBackup().then(r => Alert.alert(r.success ? 'Restored' : 'Error', r.message))}
+                        />
+                    </View>
+                </View>
+
                 {/* Danger Zone */}
                 <View className="mb-8 px-5">
                     <Text className="font-sans-bold text-xs text-muted-foreground uppercase mb-2 tracking-wider ml-2">Session</Text>
@@ -90,7 +112,18 @@ export default function SettingsScreen() {
                             isDestructive 
                             isLast
                             onPress={() => {
-                                router.replace("/onboarding");
+                                Alert.alert(
+                                  'Sign Out',
+                                  'You will be signed out of Billy. Your data stays on this device.',
+                                  [
+                                    { text: 'Cancel', style: 'cancel' },
+                                    {
+                                      text: 'Sign Out',
+                                      style: 'destructive',
+                                      onPress: () => { signOut(); router.replace('/onboarding'); }
+                                    }
+                                  ]
+                                );
                             }} 
                         />
                     </View>

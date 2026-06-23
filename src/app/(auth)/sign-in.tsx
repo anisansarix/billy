@@ -11,6 +11,7 @@ import "../../../global.css";
 
 export default function SignInScreen() {
   const router = useRouter();
+  const signIn = useAppStore(state => state.signIn);
   
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -25,6 +26,7 @@ export default function SignInScreen() {
       return;
     }
     useAppStore.getState().setCurrentBusiness(DEFAULT_BUSINESS);
+    signIn(phone);
     router.push("/(app)/(dashboard)/dashboard");
   };
 

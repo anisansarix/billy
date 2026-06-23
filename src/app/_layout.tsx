@@ -1,9 +1,11 @@
-import { Stack } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import '../../global.css';
 import { useAppStore } from "@/store";
+import { useShallow } from 'zustand/react/shallow';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 import { StatusBar } from "expo-status-bar";
 
@@ -19,7 +21,15 @@ export default function RootLayout() {
     "sans-extrabold": require("../../assets/fonts/PlusJakartaSans-ExtraBold.ttf"),
   });
 
-  const hasHydrated = useAppStore((state) => state.hasHydrated);
+  const { hasHydrated, isAuthenticated, currentBusiness } = useAppStore(
+    useShallow((s) => ({
+      hasHydrated: s.hasHydrated,
+      isAuthenticated: s.isAuthenticated,
+      currentBusiness: s.currentBusiness
+    }))
+  );
+  const router = useRouter();
+  const segments = useSegments();
 
   useEffect(() => {
     if (loaded && hasHydrated) {
@@ -27,14 +37,35 @@ export default function RootLayout() {
     }
   }, [loaded, hasHydrated]);
 
+  useEffect(() => {
+    if (!loaded || !hasHydrated) return;
+    
+    const inAuthGroup = segments[0] === '(auth)';
+    const inOnboarding = segments[0] === 'onboarding';
+    const inProtected = segments[0] === '(app)';
+
+    if (!isAuthenticated && inProtected) {
+      router.replace('/onboarding');
+      return;
+    }
+    if (isAuthenticated && !currentBusiness && inProtected) {
+      router.replace('/(auth)/sign-up');
+      return;
+    }
+    if (isAuthenticated && currentBusiness && (inAuthGroup || inOnboarding)) {
+      router.replace('/(app)/(dashboard)/dashboard');
+      return;
+    }
+  }, [loaded, hasHydrated, isAuthenticated, currentBusiness, segments]);
+
   if (!loaded || !hasHydrated) {
     return null;
   }
 
   return (
-    <>
+    <ErrorBoundary>
       <StatusBar style="dark" />
       <Stack screenOptions={{ headerShown: false }} />
-    </>
+    </ErrorBoundary>
   );
 }
