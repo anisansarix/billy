@@ -1,7 +1,7 @@
-import {  } from 'react';
+import { useRef, useEffect, useCallback, useMemo } from 'react';
 import { View, Text, Pressable, Alert, Linking } from "react-native";
 import { X, Phone, Edit, Trash2 } from "lucide-react-native";
-import AnimatedModal from "@/components/ui/AnimatedModal";
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { Party, PartyType } from "@/types/entities";
 import { formatINR } from "@/utils/money";
 
@@ -14,6 +14,24 @@ interface PartyDetailsModalProps {
 }
 
 export default function PartyDetailsModal({ visible, onClose, party, onEdit, onDelete }: PartyDetailsModalProps) {
+    const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+    const snapPoints = useMemo(() => ['65%'], []);
+
+    useEffect(() => {
+        if (visible) {
+            bottomSheetModalRef.current?.present();
+        } else {
+            bottomSheetModalRef.current?.dismiss();
+        }
+    }, [visible]);
+
+    const renderBackdrop = useCallback(
+        (props: any) => (
+            <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} onPress={onClose} />
+        ),
+        [onClose]
+    );
+
     if (!party) return null;
 
     const handleCall = () => {
@@ -42,8 +60,16 @@ export default function PartyDetailsModal({ visible, onClose, party, onEdit, onD
     };
 
     return (
-        <AnimatedModal visible={visible} onClose={onClose}>
-            <View className="bg-white rounded-t-3xl p-8 min-h-[400px]">
+        <BottomSheetModal
+            ref={bottomSheetModalRef}
+            snapPoints={snapPoints}
+            onDismiss={onClose}
+            backdropComponent={renderBackdrop}
+            enablePanDownToClose
+            handleIndicatorStyle={{ backgroundColor: '#cbd5e1' }}
+            backgroundStyle={{ backgroundColor: 'white', borderRadius: 24 }}
+        >
+            <BottomSheetView className="p-8 min-h-[400px]">
                 <View className="flex-row justify-between items-start mb-6">
                     <View className="flex-1 mr-4">
                         <Text className="font-sans-bold text-2xl text-primary mb-1">{party.legalName}</Text>
@@ -110,7 +136,7 @@ export default function PartyDetailsModal({ visible, onClose, party, onEdit, onD
                     <Trash2 color="#ef4444" size={18} className="mr-2" />
                     <Text className="font-sans-bold text-red-500 text-base">Delete {party.partyType === PartyType.CUSTOMER ? 'Customer' : 'Vendor'}</Text>
                 </Pressable>
-            </View>
-        </AnimatedModal>
+            </BottomSheetView>
+        </BottomSheetModal>
     );
 }

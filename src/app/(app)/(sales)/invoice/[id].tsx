@@ -8,7 +8,7 @@ import { useAppStore } from '@/store';
 import { formatINR } from '@/utils/money';
 import { generateInvoicePDF } from '@/utils/pdf';
 
-import RecordPaymentModal from '@/components/domain/sales/RecordPaymentModal';
+
 import UPIQRCard from '@/components/ui/UPIQRCard';
 
 export default function InvoiceDetailScreen() {
@@ -24,8 +24,6 @@ export default function InvoiceDetailScreen() {
     const party = parties.find(p => p.id === invoice?.partyId);
     
     const [isSharing, setIsSharing] = useState(false);
-    const [paymentModalVisible, setPaymentModalVisible] = useState(false);
-    const recordInvoicePayment = useAppStore(s => s.recordInvoicePayment);
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -316,7 +314,7 @@ export default function InvoiceDetailScreen() {
                 {invoice.documentType === 'SALES_INVOICE' && invoice.status !== 'PAID' && (
                     <View className="absolute -top-[52px] right-4">
                         <Pressable 
-                            onPress={() => setPaymentModalVisible(true)}
+                            onPress={() => router.push({ pathname: '/(app)/(sales)/record-payment', params: { invoiceId: invoice.id, partyId: party?.id, partyName: party?.legalName, balanceDuePaise: (invoice.balanceDuePaise ?? invoice.totalAmountPaise).toString() } } as never)}
                             className="bg-green-600 px-4 py-2.5 rounded-full shadow-md flex-row items-center"
                         >
                             <Text className="text-white font-sans-bold text-sm">Record Payment</Text>
@@ -324,20 +322,6 @@ export default function InvoiceDetailScreen() {
                     </View>
                 )}
             </View>
-
-            {party && invoice.documentType === 'SALES_INVOICE' && invoice.status !== 'PAID' && (
-                <RecordPaymentModal
-                    visible={paymentModalVisible}
-                    onClose={() => setPaymentModalVisible(false)}
-                    invoiceId={invoice.id}
-                    partyId={party.id}
-                    partyName={party.legalName}
-                    balanceDuePaise={invoice.balanceDuePaise ?? invoice.totalAmountPaise}
-                    onSave={(paymentData) => {
-                        recordInvoicePayment(invoice.id, paymentData);
-                    }}
-                />
-            )}
         </SafeAreaView>
     );
 }

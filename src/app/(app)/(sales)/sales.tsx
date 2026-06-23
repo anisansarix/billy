@@ -2,10 +2,10 @@
 import { ListCardSkeleton } from "@/components/ui/skeletons/ListCardSkeleton";
 import { useDeferredRender } from "@/hooks/useDeferredRender";
 import { useTabTransition } from "@/hooks/useTabTransition";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { useShallow } from 'zustand/react/shallow';
 import { ArrowLeft, Plus, ReceiptText, X, Edit, Trash2, Box, Undo2, Truck } from "lucide-react-native";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {  Pressable, Text, View, RefreshControl, Alert, FlatList, ScrollView , Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AnimatedModal from "@/components/ui/AnimatedModal";
@@ -22,6 +22,7 @@ import { DocumentType } from "@/types/entities";
 
 export default function SalesScreen() {
     const router = useRouter();
+    const params = useLocalSearchParams<{ filter?: string }>();
     const [search, setSearch] = useState("");
     const [tab, setTab] = useState<"All" | "Invoices" | "Estimates" | "Quotations" | "Challans" | "Credit Notes">("All");
     const [refreshing, setRefreshing] = useState(false);
@@ -38,6 +39,14 @@ export default function SalesScreen() {
             setActiveFilters(prev => prev.includes(filter) ? prev.filter(f => f !== filter) : [...prev, filter]);
         });
     };
+
+    useEffect(() => {
+        if (params.filter === 'OVERDUE' && !activeFilters.includes('Overdue')) {
+            startTransition(() => {
+                setActiveFilters(prev => [...prev, 'Overdue']);
+            });
+        }
+    }, [params.filter]);
 
     const isReady = useDeferredRender();
     const { isTabReady, startTransition } = useTabTransition();
@@ -198,8 +207,17 @@ export default function SalesScreen() {
                 maxToRenderPerBatch={10}
                 windowSize={10}
                 removeClippedSubviews={true}
-                renderItem={({ item: inv }) => (
-                    <Card className="mb-4 mx-5" isPressable onPress={() => setSelectedInvoice(inv)}>
+                renderItem={({ item: inv }) => {
+                    const getCardStyle = (status: string) => {
+                        switch(status.toUpperCase()) {
+                            case 'PAID': return 'border-l-4 border-l-green-500';
+                            case 'PARTIAL': return 'border-l-4 border-l-orange-500';
+                            case 'OVERDUE': return 'border-l-4 border-l-red-500';
+                            default: return 'border-l-4 border-l-blue-500';
+                        }
+                    };
+                    return (
+                    <Card className={`mb-4 mx-5 ${getCardStyle(inv.status)}`} isPressable onPress={() => setSelectedInvoice(inv)}>
                         <View className="flex-row justify-between items-start mb-3">
                             <View className="flex-1 mr-2">
                                 <Text className="font-sans-bold text-base text-primary">{inv.partyName}</Text>
@@ -225,7 +243,8 @@ export default function SalesScreen() {
                             </View>
                         </View>
                     </Card>
-                )}
+                    );
+                }}
                 ListEmptyComponent={<EmptyState title="No items found" subtitle="Nothing matches your search criteria." icon={<View />} />}
             />
             )}

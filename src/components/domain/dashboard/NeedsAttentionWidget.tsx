@@ -29,12 +29,12 @@ export default function NeedsAttentionWidget({ lowStockItems, unpaidInvoices }: 
                         </View>
                     ))}
                     {lowStockItems.length > 3 && (
-                        <Pressable onPress={() => { Vibration.vibrate(10); router.push('/(app)/products-services' as never); }} className="mt-2 pt-2 border-t border-amber-200/50 min-h-[44px] justify-center" style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
+                        <Pressable onPress={() => { Vibration.vibrate(10); router.push({ pathname: '/(app)/products-services', params: { filter: 'LOW_STOCK' } } as never); }} className="mt-2 pt-2 border-t border-amber-200/50 min-h-[44px] justify-center" style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
                             <Text className="font-sans-medium text-amber-700 text-center text-xs">+ {lowStockItems.length - 3} more items need restocking</Text>
                         </Pressable>
                     )}
                     {lowStockItems.length <= 3 && (
-                        <Pressable onPress={() => { Vibration.vibrate(10); router.push('/(app)/products-services' as never); }} className="mt-2 pt-2 border-t border-amber-200/50 min-h-[44px] justify-center" style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
+                        <Pressable onPress={() => { Vibration.vibrate(10); router.push({ pathname: '/(app)/products-services', params: { filter: 'LOW_STOCK' } } as never); }} className="mt-2 pt-2 border-t border-amber-200/50 min-h-[44px] justify-center" style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
                             <Text className="font-sans-medium text-amber-700 text-center text-xs">View all products</Text>
                         </Pressable>
                     )}
@@ -54,12 +54,12 @@ export default function NeedsAttentionWidget({ lowStockItems, unpaidInvoices }: 
                         </View>
                     ))}
                     {unpaidInvoices.length > 3 && (
-                        <Pressable onPress={() => { Vibration.vibrate(10); router.push('/(app)/sales' as never); }} className="mt-2 pt-2 border-t border-red-200/50 min-h-[44px] justify-center" style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
+                        <Pressable onPress={() => { Vibration.vibrate(10); router.push({ pathname: '/(app)/sales', params: { filter: 'OVERDUE' } } as never); }} className="mt-2 pt-2 border-t border-red-200/50 min-h-[44px] justify-center" style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
                             <Text className="font-sans-medium text-red-700 text-center text-xs">+ {unpaidInvoices.length - 3} more overdue invoices</Text>
                         </Pressable>
                     )}
                     {unpaidInvoices.length <= 3 && (
-                        <Pressable onPress={() => router.push('/(app)/sales' as never)} className="mt-2 pt-2 border-t border-red-200/50 min-h-[44px] justify-center" style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
+                        <Pressable onPress={() => { Vibration.vibrate(10); router.push({ pathname: '/(app)/sales', params: { filter: 'OVERDUE' } } as never); }} className="mt-2 pt-2 border-t border-red-200/50 min-h-[44px] justify-center" style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}>
                             <Text className="font-sans-medium text-red-700 text-center text-xs">View all invoices</Text>
                         </Pressable>
                     )}

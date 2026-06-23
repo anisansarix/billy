@@ -1,7 +1,7 @@
-import {  } from 'react';
+import { useRef, useEffect, useCallback, useMemo } from 'react';
 import { View, Text, Pressable } from "react-native";
 import { X, Edit, Trash2 } from "lucide-react-native";
-import AnimatedModal from "@/components/ui/AnimatedModal";
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { InventoryItem } from "@/types/entities";
 import { formatINR } from "@/utils/money";
 
@@ -14,11 +14,37 @@ interface InventoryItemDetailsModalProps {
 }
 
 export default function InventoryItemDetailsModal({ visible, onClose, item, onEdit, onDelete }: InventoryItemDetailsModalProps) {
+    const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+    const snapPoints = useMemo(() => ['50%'], []);
+
+    useEffect(() => {
+        if (visible) {
+            bottomSheetModalRef.current?.present();
+        } else {
+            bottomSheetModalRef.current?.dismiss();
+        }
+    }, [visible]);
+
+    const renderBackdrop = useCallback(
+        (props: any) => (
+            <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} onPress={onClose} />
+        ),
+        [onClose]
+    );
+
     if (!item) return null;
 
     return (
-        <AnimatedModal visible={visible} onClose={onClose}>
-            <View className="bg-white rounded-t-3xl p-6 min-h-[350px]">
+        <BottomSheetModal
+            ref={bottomSheetModalRef}
+            snapPoints={snapPoints}
+            onDismiss={onClose}
+            backdropComponent={renderBackdrop}
+            enablePanDownToClose
+            handleIndicatorStyle={{ backgroundColor: '#cbd5e1' }}
+            backgroundStyle={{ backgroundColor: 'white', borderRadius: 24 }}
+        >
+            <BottomSheetView className="p-6 min-h-[350px]">
                 <View className="flex-row justify-between items-start mb-6">
                     <View className="flex-1 mr-4">
                         <Text className="font-sans-bold text-2xl text-primary mb-1">{item.name}</Text>
@@ -76,7 +102,7 @@ export default function InventoryItemDetailsModal({ visible, onClose, item, onEd
                         <Text className="font-sans-bold text-red-500 text-base">Delete</Text>
                     </Pressable>
                 </View>
-            </View>
-        </AnimatedModal>
+            </BottomSheetView>
+        </BottomSheetModal>
     );
 }

@@ -22,7 +22,7 @@ export default function AuthInput({ label, required, isPassword, ...props }: Aut
       <View className="flex-row items-center rounded-xl border border-border bg-white px-4 h-[52px]">
         <TextInput
           className="flex-1 h-full text-base font-sans-regular text-primary"
-          placeholderTextColor="var(--color-muted-foreground, #9ca3af)"
+          placeholderTextColor="#6b7280"
           secureTextEntry={isPassword && !showPassword}
           accessibilityLabel={label}
           {...props}

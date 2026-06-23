@@ -3,12 +3,10 @@ import { ListCardSkeleton } from "@/components/ui/skeletons/ListCardSkeleton";
 import { useDeferredRender } from "@/hooks/useDeferredRender";
 import { useTabTransition } from "@/hooks/useTabTransition";
 import { SegmentedTabs } from "@/components/ui/SegmentedTabs";
-
-
 import { useShallow } from 'zustand/react/shallow';
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { ArrowLeft, Briefcase, Package, Plus, AlertCircle, ArrowUpRight, ArrowDownRight } from "lucide-react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {  Pressable, ScrollView, Text, View, RefreshControl, FlatList , Vibration } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SearchBar } from "@/components/ui/SearchBar";
@@ -18,10 +16,10 @@ import { useAppStore } from "@/store";
 import "../../../../global.css";
 import { formatINR } from "@/utils/money";
 import InventoryItemDetailsModal from "@/components/domain/inventory/InventoryItemDetailsModal";
-import InventoryItemFormModal from "@/components/domain/inventory/InventoryItemFormModal";
 
 export default function ProductsServicesScreen() {
     const router = useRouter();
+    const params = useLocalSearchParams<{ filter?: string }>();
     const [view, setView] = useState<"catalog" | "adjustments">("catalog");
     const [tab, setTab] = useState<"product" | "service">("product");
     const [search, setSearch] = useState("");
@@ -33,6 +31,14 @@ export default function ProductsServicesScreen() {
             setActiveFilters(prev => prev.includes(filter) ? prev.filter(f => f !== filter) : [...prev, filter]);
         });
     };
+
+    useEffect(() => {
+        if (params.filter === 'LOW_STOCK' && !activeFilters.includes('Low Stock')) {
+            startTransition(() => {
+                setActiveFilters(prev => [...prev, 'Low Stock']);
+            });
+        }
+    }, [params.filter]);
 
     // Data State
     const isReady = useDeferredRender();
@@ -74,27 +80,11 @@ export default function ProductsServicesScreen() {
 
     // Modal States
     const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
-    const [isFormModalVisible, setIsFormModalVisible] = useState(false);
-    const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
-
     const openFormModal = (item?: InventoryItem) => {
         if (item) {
-            setEditingItem(item);
+            router.push({ pathname: '/(app)/(inventory)/item-form', params: { id: item.id, tab: tab } } as never);
         } else {
-            setEditingItem(null);
-        }
-        setIsFormModalVisible(true);
-    };
-
-    const closeFormModal = () => {
-        setIsFormModalVisible(false);
-        setEditingItem(null);
-    };
-
-    const handleFormSaveSuccess = (item: InventoryItem) => {
-        closeFormModal();
-        if (editingItem && selectedItem?.id === editingItem.id) {
-            setSelectedItem(item);
+            router.push({ pathname: '/(app)/(inventory)/item-form', params: { tab: tab } } as never);
         }
     };
 
@@ -222,8 +212,11 @@ export default function ProductsServicesScreen() {
                     maxToRenderPerBatch={10}
                     windowSize={10}
                     removeClippedSubviews={true}
-                    renderItem={({ item }) => (
-                        <Card className="flex-row items-center mb-4 p-4 mx-5" isPressable onPress={() => setSelectedItem(item)}>
+                    renderItem={({ item }) => {
+                        const isLowStock = item.stock && item.stock <= (item.minimumStock || 5);
+                        const stockStyle = isLowStock ? 'border-l-4 border-l-red-500' : 'border-l-4 border-l-green-500';
+                        return (
+                        <Card className={`flex-row items-center mb-4 p-4 mx-5 ${stockStyle}`} isPressable onPress={() => setSelectedItem(item)}>
                             <View className="size-12 rounded-lg bg-[#e3e8fc] items-center justify-center mr-4">
                                 {tab === "product" ? (
                                     <Package color="#081126" size={24} />
@@ -248,7 +241,8 @@ export default function ProductsServicesScreen() {
                                 )}
                             </View>
                         </Card>
-                    )}
+                        );
+                    }}
                     ListEmptyComponent={
                         <View className="items-center justify-center py-10">
                             <Text className="font-sans-medium text-muted-foreground">No {tab}s found.</Text>
@@ -320,16 +314,12 @@ export default function ProductsServicesScreen() {
                 visible={!!selectedItem}
                 onClose={() => setSelectedItem(null)}
                 item={selectedItem}
-                onEdit={(item) => openFormModal(item)}
-                onDelete={handleDelete}
-            />
-
-            <InventoryItemFormModal
-                visible={isFormModalVisible}
-                onClose={closeFormModal}
-                itemToEdit={editingItem}
-                initialTab={tab}
-                onSaveSuccess={handleFormSaveSuccess}
+                onEdit={() => {
+                    if (selectedItem) {
+                        openFormModal(selectedItem);
+                        setSelectedItem(null);
+                    }
+                }}
                 onDelete={handleDelete}
             />
         </SafeAreaView>

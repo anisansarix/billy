@@ -22,7 +22,7 @@ export function SearchBar({
         <TextInput
           placeholder={placeholder}
           className="flex-1 ml-3 font-sans-regular text-base text-primary"
-          placeholderTextColor="var(--color-muted-foreground, #94a3b8)"
+          placeholderTextColor="#6b7280"
           value={value}
           onChangeText={onChangeText}
         />

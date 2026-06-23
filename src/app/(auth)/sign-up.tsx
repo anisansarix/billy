@@ -2,7 +2,9 @@ import { useState } from "react";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { ArrowRight } from "lucide-react-native";
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View, Alert, Vibration } from "react-native";
+import { Pressable, Text, View, Vibration } from "react-native";
+import { useAlertStore } from "@/store/alertStore";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from "react-native-safe-area-context";
 import AuthInput from "@/components/ui/AuthInput";
 import Button from "@/components/ui/Button";
@@ -31,36 +33,34 @@ export default function SignUpScreen() {
     const trimmedPhone = phone.trim();
     const sanitizedGst = gst.trim().toUpperCase();
 
-    if (!trimmedFirstName) {
-      Alert.alert("Validation Error", "Please enter your first name.");
+    if (!firstName) {
+      useAlertStore.getState().showAlert({ title: "Validation Error", message: "Please enter your first name.", type: "error" });
       return;
     }
-    if (!trimmedLastName) {
-      Alert.alert("Validation Error", "Please enter your last name.");
+    if (!lastName) {
+      useAlertStore.getState().showAlert({ title: "Validation Error", message: "Please enter your last name.", type: "error" });
       return;
     }
-    if (!trimmedCompanyName) {
-      Alert.alert("Validation Error", "Please enter your company name.");
+    if (!companyName) {
+      useAlertStore.getState().showAlert({ title: "Validation Error", message: "Please enter your company name.", type: "error" });
       return;
     }
-    if (!trimmedPhone) {
-      Alert.alert("Validation Error", "Please enter your phone number.");
+    if (!phone) {
+      useAlertStore.getState().showAlert({ title: "Validation Error", message: "Please enter your phone number.", type: "error" });
       return;
     }
-    if (!email.trim()) {
-      Alert.alert("Validation Error", "Please enter your email.");
+    if (!email) {
+      useAlertStore.getState().showAlert({ title: "Validation Error", message: "Please enter your email.", type: "error" });
       return;
     }
     if (!password) {
-      Alert.alert("Validation Error", "Please enter a password.");
+      useAlertStore.getState().showAlert({ title: "Validation Error", message: "Please enter a password.", type: "error" });
       return;
     }
 
     if (sanitizedGst) {
-      // Indian GSTIN format: 2 numbers, 5 letters, 4 numbers, 1 letter, 1 alphanumeric, 1 Z, 1 alphanumeric
-      const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
-      if (!gstRegex.test(sanitizedGst)) {
-        Alert.alert("Invalid GSTIN", "Please enter a valid 15-character GSTIN or leave it blank.");
+      if (sanitizedGst.length !== 15) {
+        useAlertStore.getState().showAlert({ title: "Invalid GSTIN", message: "Please enter a valid 15-character GSTIN or leave it blank.", type: "error" });
         return;
       }
     }
@@ -82,41 +82,47 @@ export default function SignUpScreen() {
     });
 
     setIsLoading(true);
-    const { data, error } = await supabase.auth.signUp({
-      email: email.trim(),
-      password,
-      options: {
-        data: {
-          first_name: trimmedFirstName,
-          last_name: trimmedLastName,
-          company_name: trimmedCompanyName,
-          phone: trimmedPhone,
-          gstin: sanitizedGst || null,
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: {
+          data: {
+            first_name: trimmedFirstName,
+            last_name: trimmedLastName,
+            company_name: trimmedCompanyName,
+            phone: trimmedPhone,
+            gstin: sanitizedGst || null,
+          }
         }
+      });
+
+      if (error) {
+        useAlertStore.getState().showAlert({ title: "Sign Up Failed", message: error.message, type: "error" });
+        return;
       }
-    });
-    setIsLoading(false);
 
-    if (error) {
-      Alert.alert("Sign Up Failed", error.message);
-      return;
+      if (data.session) {
+        useAppStore.getState().signIn(data.session);
+      }
+
+      router.replace("/(app)/(dashboard)/dashboard");
+    } catch (error: any) {
+      useAlertStore.getState().showAlert({ title: "Sign Up Failed", message: error.message, type: "error" });
+    } finally {
+      setIsLoading(false);
     }
-
-    if (data.session) {
-      useAppStore.getState().signIn(data.session);
-    }
-
-    router.replace("/(app)/(dashboard)/dashboard");
   };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <StatusBar style="dark" />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
+      <KeyboardAwareScrollView 
+        contentContainerStyle={{ flexGrow: 1, padding: 24 }}
+        enableOnAndroid={true}
+        extraScrollHeight={20}
+        keyboardShouldPersistTaps="handled"
       >
-        <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 24 }}>
 
           <View className="mt-8 mb-8">
             <Text className="text-3xl font-sans-bold text-primary mb-2">
@@ -211,8 +217,7 @@ export default function SignUpScreen() {
             </Text>
           </View>
 
-        </ScrollView>
-      </KeyboardAvoidingView>
+        </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }

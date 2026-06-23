@@ -1,4 +1,4 @@
-import { Party, PartyType } from "@/types/entities";
+import { Party } from "@/types/entities";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ListCardSkeleton } from "@/components/ui/skeletons/ListCardSkeleton";
 import { useDeferredRender } from "@/hooks/useDeferredRender";
@@ -15,7 +15,6 @@ import { useAppStore } from "@/store";
 import "../../../../global.css";
 import { formatINR } from "@/utils/money";
 import PartyDetailsModal from "@/components/domain/parties/PartyDetailsModal";
-import PartyFormModal from "@/components/domain/parties/PartyFormModal";
 
 
 export default function CustomersVendorsScreen() {
@@ -41,11 +40,6 @@ export default function CustomersVendorsScreen() {
 
     // State for Details Modal
     const [selectedParty, setSelectedParty] = useState<Party | null>(null);
-    const [isDetailsModalVisible, setIsDetailsModalVisible] = useState(false);
-
-    // State for Form Modal
-    const [isFormModalVisible, setIsFormModalVisible] = useState(false);
-    const [editingParty, setEditingParty] = useState<Party | null>(null);
 
     let filterTab = tab === "customer" ? "CUSTOMER" : tab === "vendor" ? "VENDOR" : null;
     const filteredParties = parties.filter(p => 
@@ -57,43 +51,20 @@ export default function CustomersVendorsScreen() {
 
     const openDetailsModal = (party: Party) => {
         setSelectedParty(party);
-        setIsDetailsModalVisible(true);
-    };
-
-    const closeDetailsModal = () => {
-        setIsDetailsModalVisible(false);
-        setSelectedParty(null);
     };
 
     const openFormModal = (party?: Party) => {
         if (party) {
-            setEditingParty(party);
+            router.push({ pathname: '/(app)/(parties)/party-form', params: { id: party.id, type: tab } } as never);
         } else {
-            setEditingParty(null);
-        }
-        setIsFormModalVisible(true);
-        setIsDetailsModalVisible(false); // Close details if open
-    };
-
-    const closeFormModal = () => {
-        setIsFormModalVisible(false);
-        setEditingParty(null);
-    };
-
-    const handleFormSaveSuccess = (party: Party) => {
-        closeFormModal();
-        if (editingParty && selectedParty?.id === editingParty.id) {
-            setSelectedParty(party);
-            setIsDetailsModalVisible(true);
+            router.push({ pathname: '/(app)/(parties)/party-form', params: { type: tab } } as never);
         }
     };
 
     const handleDelete = (partyId: string) => {
         deleteParty(partyId);
-        closeDetailsModal();
+        setSelectedParty(null);
     };
-
-    
 
     const header = (
         <View className="pt-4">
@@ -206,21 +177,17 @@ export default function CustomersVendorsScreen() {
             </Pressable>
 
             <PartyDetailsModal
-                visible={isDetailsModalVisible}
-                onClose={closeDetailsModal}
+                visible={!!selectedParty}
+                onClose={() => setSelectedParty(null)}
                 party={selectedParty}
-                onEdit={openFormModal}
+                onEdit={() => {
+                    if (selectedParty) {
+                        openFormModal(selectedParty);
+                        setSelectedParty(null);
+                    }
+                }}
                 onDelete={handleDelete}
-            />
-
-            <PartyFormModal
-                visible={isFormModalVisible}
-                onClose={closeFormModal}
-                partyToEdit={editingParty}
-                initialPartyType={tab === 'customer' ? PartyType.CUSTOMER : tab === 'vendor' ? PartyType.VENDOR : undefined}
-                onSaveSuccess={handleFormSaveSuccess}
             />
         </SafeAreaView>
     );
 }
-

@@ -1,21 +1,27 @@
-import {  useState, useEffect  } from 'react';
-import { View, Text, Pressable, TextInput, ScrollView, Alert } from "react-native";
-import { X, Save } from "lucide-react-native";
-import AnimatedModal from "@/components/ui/AnimatedModal";
+import { useState, useEffect } from 'react';
+import { View, Text, Pressable, TextInput, Alert } from "react-native";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { ArrowLeft, Save, Trash2 } from "lucide-react-native";
 import { Party, PartyType } from "@/types/entities";
 import { useAppStore } from "@/store";
 import { useShallow } from 'zustand/react/shallow';
+import { useAlertStore } from "@/store/alertStore";
 
-interface PartyFormModalProps {
-    visible: boolean;
-    onClose: () => void;
-    partyToEdit: Party | null;
-    initialPartyType?: PartyType;
-    onSaveSuccess?: (party: Party) => void;
-}
+export default function PartyFormScreen() {
+    const router = useRouter();
+    const params = useLocalSearchParams<{ id?: string, type?: PartyType }>();
+    const initialPartyType = params.type || PartyType.CUSTOMER;
 
-export default function PartyFormModal({ visible, onClose, partyToEdit, initialPartyType, onSaveSuccess }: PartyFormModalProps) {
-    const { addParty, updateParty } = useAppStore(useShallow(state => ({ addParty: state.addParty, updateParty: state.updateParty })));
+    const { addParty, updateParty, deleteParty, parties } = useAppStore(useShallow(state => ({ 
+        addParty: state.addParty, 
+        updateParty: state.updateParty,
+        deleteParty: state.deleteParty,
+        parties: state.parties
+    })));
+
+    const partyToEdit = params.id ? parties.find(p => p.id === params.id) : null;
 
     const [formData, setFormData] = useState<Partial<Party> & { balanceString: string; balanceType: string }>({
         legalName: "",
@@ -27,28 +33,26 @@ export default function PartyFormModal({ visible, onClose, partyToEdit, initialP
     const [showMoreDetails, setShowMoreDetails] = useState(false);
 
     useEffect(() => {
-        if (visible) {
-            if (partyToEdit) {
-                setFormData({
-                    ...partyToEdit,
-                    balanceString: (Math.abs(partyToEdit.openingBalancePaise) / 100).toString(),
-                    balanceType: partyToEdit.openingBalancePaise > 0 ? "receivable" : "payable",
-                    partyType: partyToEdit.partyType
-                });
-                setShowMoreDetails(false);
-            } else {
-                setFormData({
-                    legalName: "",
-                    gstin: "",
-                    phone: "",
-                    balanceString: "0",
-                    partyType: initialPartyType !== PartyType.BOTH && initialPartyType ? initialPartyType : PartyType.CUSTOMER,
-                    balanceType: "receivable"
-                });
-                setShowMoreDetails(false);
-            }
+        if (partyToEdit) {
+            setFormData({
+                ...partyToEdit,
+                balanceString: (Math.abs(partyToEdit.openingBalancePaise) / 100).toString(),
+                balanceType: partyToEdit.openingBalancePaise > 0 ? "receivable" : "payable",
+                partyType: partyToEdit.partyType
+            });
+            setShowMoreDetails(false);
+        } else {
+            setFormData({
+                legalName: "",
+                gstin: "",
+                phone: "",
+                balanceString: "0",
+                partyType: initialPartyType !== PartyType.BOTH && initialPartyType ? initialPartyType : PartyType.CUSTOMER,
+                balanceType: "receivable"
+            });
+            setShowMoreDetails(false);
         }
-    }, [visible, partyToEdit, initialPartyType]);
+    }, [partyToEdit, initialPartyType]);
 
     const handleClose = () => {
         const isDirty = partyToEdit 
@@ -56,16 +60,17 @@ export default function PartyFormModal({ visible, onClose, partyToEdit, initialP
             : !!(formData.legalName || formData.phone);
 
         if (isDirty) {
-            Alert.alert(
-                "Discard Changes?",
-                "You have unsaved changes. Are you sure you want to discard them?",
-                [
+            useAlertStore.getState().showAlert({
+                title: "Discard Changes?",
+                message: "You have unsaved changes. Are you sure you want to discard them?",
+                type: "warning",
+                buttons: [
                     { text: "Keep Editing", style: "cancel" },
-                    { text: "Discard", style: "destructive", onPress: onClose }
+                    { text: "Discard", style: "destructive", onPress: () => router.back() }
                 ]
-            );
+            });
         } else {
-            onClose();
+            router.back();
         }
     };
 
@@ -109,26 +114,33 @@ export default function PartyFormModal({ visible, onClose, partyToEdit, initialP
             addParty(partyData);
         }
 
-        if (onSaveSuccess) {
-            onSaveSuccess(partyData);
-        } else {
-            onClose();
-        }
+        router.back();
     };
 
     return (
-        <AnimatedModal visible={visible} onClose={handleClose} avoidKeyboard>
-            <View className="bg-white rounded-t-3xl p-6 pb-12 h-[92%] flex-col">
-                <View className="flex-row justify-between items-center mb-6">
-                    <Text className="font-sans-bold text-2xl text-primary">
-                        {partyToEdit ? 'Edit' : 'Add'} {formData.partyType === PartyType.CUSTOMER ? 'Customer' : formData.partyType === PartyType.VENDOR ? 'Vendor' : 'Party'}
-                    </Text>
-                    <Pressable onPress={handleClose} className="h-11 w-11 items-center justify-center bg-muted rounded-full">
-                        <X color="#64748b" size={20} />
-                    </Pressable>
-                </View>
+        <SafeAreaView className="flex-1 bg-white">
+            <KeyboardAwareScrollView 
+                className="flex-1"
+                contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}
+                keyboardShouldPersistTaps="handled"
+                enableOnAndroid={true}
+            >
+                <View className="p-6 flex-1 flex-col">
+                    <View className="flex-row items-center mb-6">
+                        <Pressable onPress={handleClose} className="p-2 -ml-2 mr-3">
+                            <ArrowLeft color="#081126" size={24} />
+                        </Pressable>
+                        <Text className="flex-1 font-sans-bold text-2xl text-primary">
+                            {partyToEdit ? 'Edit' : 'Add'} {formData.partyType === PartyType.CUSTOMER ? 'Customer' : formData.partyType === PartyType.VENDOR ? 'Vendor' : 'Party'}
+                        </Text>
+                        {partyToEdit && (
+                            <Pressable onPress={() => { deleteParty(partyToEdit.id); handleClose(); }} className="p-2 bg-red-50 rounded-full">
+                                <Trash2 color="#ef4444" size={20} />
+                            </Pressable>
+                        )}
+                    </View>
 
-                <ScrollView showsVerticalScrollIndicator={false} className="mb-4">
+                    <View className="mb-4">
                     {!partyToEdit && (
                         <View className="flex-row mb-6 bg-muted p-1 rounded-xl">
                             <Pressable
@@ -281,8 +293,11 @@ export default function PartyFormModal({ visible, onClose, partyToEdit, initialP
                             </View>
                         </View>
                     )}
-                </ScrollView>
+                </View>
+                </View>
+            </KeyboardAwareScrollView>
 
+            <View className="p-5 border-t border-border bg-white pb-safe absolute bottom-0 left-0 right-0">
                 <Pressable
                     onPress={handleSave}
                     className="bg-primary py-4 rounded-xl flex-row justify-center items-center shadow-md shadow-primary/30"
@@ -291,6 +306,6 @@ export default function PartyFormModal({ visible, onClose, partyToEdit, initialP
                     <Text className="font-sans-bold text-white text-lg">Save {formData.partyType === PartyType.CUSTOMER ? 'Customer' : formData.partyType === PartyType.VENDOR ? 'Vendor' : 'Party'}</Text>
                 </Pressable>
             </View>
-        </AnimatedModal>
+        </SafeAreaView>
     );
 }

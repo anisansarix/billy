@@ -1,42 +1,17 @@
 "use no memo";
 import { useRouter } from "expo-router";
-import { ArrowLeft, Save, Plus, ChevronDown, ChevronUp, Trash2, X } from "lucide-react-native";
-import { useState, useMemo } from "react";
-import { Vibration, Pressable, ScrollView, Text, TextInput, View, KeyboardAvoidingView, Platform, Alert } from "react-native";
-import AnimatedModal from "@/components/ui/AnimatedModal";
+import { ArrowLeft, Save, Plus, Trash2, X } from "lucide-react-native";
+import { useState, useMemo, useRef, useCallback } from "react";
+import { Vibration, Pressable, ScrollView, Text, TextInput, View, KeyboardAvoidingView, Platform } from "react-native";
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useAppStore } from "@/store";
+import { useAlertStore } from "@/store/alertStore";
 import { useShallow } from 'zustand/react/shallow';
 import { Party, LineItem } from "@/types/entities";
 import { formatINR } from "../../utils/money";
 import { computeLineItem, buildGSTSummary, isInterStateSupply } from "../../utils/gst";
 
-type SectionProps = {
-    title: string;
-    isExpanded: boolean;
-    onToggle: () => void;
-    children: React.ReactNode;
-    summary?: string;
-};
 
-const Section = ({ title, isExpanded, onToggle, children, summary }: SectionProps) => (
-    <View className="bg-white rounded-2xl shadow-sm mb-4 border border-border overflow-hidden">
-        <Pressable 
-            className={`flex-row justify-between items-center p-5 ${isExpanded ? 'border-b border-border bg-slate-50/50' : ''}`}
-            onPress={onToggle}
-        >
-            <View className="flex-1 pr-4">
-                <Text className="font-sans-bold text-lg text-primary">{title}</Text>
-                {!isExpanded && summary && <Text className="font-sans-medium text-sm text-muted-foreground mt-1">{summary}</Text>}
-            </View>
-            {isExpanded ? <ChevronUp color="#0f172a" size={24} /> : <ChevronDown color="#0f172a" size={24} />}
-        </Pressable>
-        {isExpanded && (
-            <View className="p-5">
-                {children}
-            </View>
-        )}
-    </View>
-);
 
 export interface DocumentData {
     header: {
@@ -104,19 +79,6 @@ export default function DocumentBuilder({
     const router = useRouter();
     const { parties, items, currentBusiness } = useAppStore(useShallow(state => ({ parties: state.parties, items: state.items, currentBusiness: state.currentBusiness })));
 
-    const [expandedSections, setExpandedSections] = useState({
-        header: true,
-        party: false,
-        items: false,
-        payment: false,
-        transport: false,
-        notes: false,
-    });
-
-    const toggleSection = (section: keyof typeof expandedSections) => {
-        setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
-    };
-
     // Form State
     const [header, setHeader] = useState<DocumentData['header']>(() => initialData?.header || {
         documentType: defaultType,
@@ -127,10 +89,23 @@ export default function DocumentBuilder({
     });
 
     const [selectedParty, setSelectedParty] = useState<Party | null>(initialData?.selectedParty || null);
-    const [partyModalVisible, setPartyModalVisible] = useState(false);
+    const partyModalRef = useRef<BottomSheetModal>(null);
+    const itemModalRef = useRef<BottomSheetModal>(null);
+    const snapPoints = useMemo(() => ['75%', '90%'], []);
+
+    const renderBackdrop = useCallback(
+        (props: any) => (
+            <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />
+        ),
+        []
+    );
+
+    const openPartyModal = () => partyModalRef.current?.present();
+    const closePartyModal = () => partyModalRef.current?.dismiss();
+    const openItemModal = () => itemModalRef.current?.present();
+    const closeItemModal = () => itemModalRef.current?.dismiss();
 
     const [documentItems, setDocumentItems] = useState<LineItem[]>(initialData?.items || []);
-    const [itemModalVisible, setItemModalVisible] = useState(false);
 
     const [payment, setPayment] = useState<DocumentData['payment']>(initialData?.payment || { mode: "UPI", terms: "Immediate" });
     const [transport, setTransport] = useState({
@@ -148,7 +123,7 @@ export default function DocumentBuilder({
 
     const handlePartySelect = (party: Party) => {
         setSelectedParty(party);
-        setPartyModalVisible(false);
+        closePartyModal();
         const newIsInterState = currentBusiness?.address?.stateCode && party.billingAddress?.stateCode ? isInterStateSupply(currentBusiness.address.stateCode, party.billingAddress.stateCode) : false;
         
         if (documentItems.length > 0) {
@@ -194,23 +169,23 @@ export default function DocumentBuilder({
 
     const handleSave = () => {
         if (!selectedParty) {
-            Alert.alert("Validation Error", `Please select a ${partyLabel.toLowerCase()}`);
+            useAlertStore.getState().showAlert({ title: "Validation Error", message: `Please select a ${partyLabel.toLowerCase()}`, type: "error" });
             return;
         }
 
         if (documentItems.length === 0) {
-            Alert.alert("Validation Error", "Please add at least one item to the document");
+            useAlertStore.getState().showAlert({ title: "Validation Error", message: "Please add at least one item to the document", type: "error" });
             return;
         }
 
         if (!header.documentType || !header.documentNumber || !header.documentDate) {
-            Alert.alert("Validation Error", "Please fill in all required document details (Type, Number, Date).");
+            useAlertStore.getState().showAlert({ title: "Validation Error", message: "Please fill in all required document details (Type, Number, Date).", type: "error" });
             return;
         }
 
         const invalidItem = documentItems.find(item => !item.quantityDecimal || item.quantityDecimal <= 0 || item.unitPricePaise < 0);
         if (invalidItem) {
-            Alert.alert("Validation Error", "Please ensure all items have a valid quantity (> 0) and rate (>= 0).");
+            useAlertStore.getState().showAlert({ title: "Validation Error", message: "Please ensure all items have a valid quantity (> 0) and rate (>= 0).", type: "error" });
             return;
         }
 
@@ -229,7 +204,7 @@ export default function DocumentBuilder({
                 return storeItem && (storeItem.stock || 0) + oldQty < li.quantityDecimal;
             });
             if (outOfStockItem) {
-                Alert.alert("Validation Error", `Insufficient stock for ${outOfStockItem.description}. Cannot sell more than available stock.`);
+                useAlertStore.getState().showAlert({ title: "Validation Error", message: `Insufficient stock for ${outOfStockItem.description}. Cannot sell more than available stock.`, type: "error" });
                 return;
             }
         }
@@ -264,12 +239,8 @@ export default function DocumentBuilder({
             <ScrollView className="flex-1 px-5 pt-4" showsVerticalScrollIndicator={false} contentContainerClassName="pb-32">
                 
                 {/* 1. Header Details */}
-                <Section 
-                    title="Document Details" 
-                    isExpanded={expandedSections.header} 
-                    onToggle={() => toggleSection('header')}
-                    summary={`${header.documentNumber} • ${header.documentDate}`}
-                >
+                <View className="bg-white rounded-2xl shadow-sm mb-4 border border-border p-5">
+                    <Text className="font-sans-bold text-lg text-primary mb-4">Document Details</Text>
                     <View className="mb-4">
                         <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Document Type</Text>
                         <TextInput 
@@ -296,15 +267,11 @@ export default function DocumentBuilder({
                             />
                         </View>
                     </View>
-                </Section>
+                </View>
 
                 {/* 2. Party Details */}
-                <Section 
-                    title={`${partyLabel} Details`} 
-                    isExpanded={expandedSections.party} 
-                    onToggle={() => toggleSection('party')}
-                    summary={selectedParty ? `${selectedParty.legalName} (${selectedParty.gstin || 'Unregistered'})` : `No ${partyLabel.toLowerCase()} selected`}
-                >
+                <View className="bg-white rounded-2xl shadow-sm mb-4 border border-border p-5">
+                    <Text className="font-sans-bold text-lg text-primary mb-4">{partyLabel} Details</Text>
                     {selectedParty ? (
                         <View className="bg-slate-50 p-3 rounded-lg border border-border mb-3">
                             <Text className="font-sans-bold text-primary text-base">{selectedParty.legalName}</Text>
@@ -315,19 +282,15 @@ export default function DocumentBuilder({
                     
                     <Pressable 
                         className="bg-primary/10 border border-primary/20 rounded-lg p-3 min-h-[44px] items-center justify-center flex-row"
-                        onPress={() => setPartyModalVisible(true)}
+                        onPress={openPartyModal}
                     >
                         <Text className="font-sans-bold text-primary">{selectedParty ? `Change ${partyLabel}` : `Select ${partyLabel}`}</Text>
                     </Pressable>
-                </Section>
+                </View>
 
                 {/* 3. Items Grid */}
-                <Section 
-                    title="Items" 
-                    isExpanded={expandedSections.items} 
-                    onToggle={() => toggleSection('items')}
-                    summary={`${documentItems.length} items • ${formatINR(totals.totalAmountPaise)}`}
-                >
+                <View className="bg-white rounded-2xl shadow-sm mb-4 border border-border p-5">
+                    <Text className="font-sans-bold text-lg text-primary mb-4">Items</Text>
                     {documentItems.map((item, index) => {
                         try {
                             return (
@@ -392,10 +355,10 @@ export default function DocumentBuilder({
 
                     <Pressable 
                         className="bg-primary/10 border border-primary/20 rounded-lg p-3 min-h-[44px] items-center justify-center flex-row mb-4"
-                        onPress={() => setItemModalVisible(true)}
+                        onPress={openItemModal}
                     >
                         <Plus color="#0f172a" size={16} className="mr-2" />
-                        <Text className="font-sans-bold text-primary">Add InventoryItem from Catalog</Text>
+                        <Text className="font-sans-bold text-primary">Add Product/Service</Text>
                     </Pressable>
 
                     {documentItems.length > 0 && (
@@ -429,15 +392,11 @@ export default function DocumentBuilder({
                             </View>
                         </View>
                     )}
-                </Section>
+                </View>
 
-                {/* 4. PaymentRecord Info */}
-                <Section 
-                    title="Payment Information" 
-                    isExpanded={expandedSections.payment} 
-                    onToggle={() => toggleSection('payment')}
-                    summary={`${payment.mode} • ${payment.terms}`}
-                >
+                {/* 4. Payment Information */}
+                <View className="bg-white rounded-2xl shadow-sm mb-4 border border-border p-5">
+                    <Text className="font-sans-bold text-lg text-primary mb-4">Payment Information</Text>
                     <View className="flex-row gap-4 mb-4">
                         <View className="flex-1">
                             <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Payment Mode</Text>
@@ -456,16 +415,12 @@ export default function DocumentBuilder({
                             />
                         </View>
                     </View>
-                </Section>
+                </View>
 
-                {/* 5. Transport Info (Optional) */}
-                {hasTransport && (
-                    <Section 
-                        title="Transport & E-Way Bill" 
-                        isExpanded={expandedSections.transport} 
-                        onToggle={() => toggleSection('transport')}
-                        summary={transport.vehicleNo || 'Not specified'}
-                    >
+                {/* 5. Transport Info (Optional) - Context Aware */}
+                {(hasTransport && totals.totalAmountPaise >= 5000000) && (
+                    <View className="bg-white rounded-2xl shadow-sm mb-4 border border-border p-5">
+                        <Text className="font-sans-bold text-lg text-primary mb-4">Transport & E-Way Bill</Text>
                         <View className="flex-row gap-4 mb-4">
                             <View className="flex-1">
                                 <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Vehicle No</Text>
@@ -503,15 +458,12 @@ export default function DocumentBuilder({
                                 />
                             </View>
                         </View>
-                    </Section>
+                    </View>
                 )}
 
                 {/* 6. Notes */}
-                <Section 
-                    title="Notes & Remarks" 
-                    isExpanded={expandedSections.notes} 
-                    onToggle={() => toggleSection('notes')}
-                >
+                <View className="bg-white rounded-2xl shadow-sm mb-4 border border-border p-5">
+                    <Text className="font-sans-bold text-lg text-primary mb-4">Notes & Remarks</Text>
                     <View className="mb-4">
                         <Text className="font-sans-medium text-sm text-muted-foreground mb-1">Terms & Conditions (Visible on Document)</Text>
                         <TextInput 
@@ -522,20 +474,27 @@ export default function DocumentBuilder({
                             onChangeText={t => setNotes({...notes, external: t})}
                         />
                     </View>
-                </Section>
+                </View>
 
             </ScrollView>
 
             {/* Party Selector Modal */}
-            <AnimatedModal visible={partyModalVisible} onClose={() => setPartyModalVisible(false)}>
-                <View className="bg-white rounded-t-3xl h-[600px] p-5 shadow-xl">
+            <BottomSheetModal
+                ref={partyModalRef}
+                snapPoints={snapPoints}
+                backdropComponent={renderBackdrop}
+                enablePanDownToClose
+                handleIndicatorStyle={{ backgroundColor: '#cbd5e1' }}
+                backgroundStyle={{ backgroundColor: 'white', borderRadius: 24 }}
+            >
+                <BottomSheetView className="flex-1 p-5 pb-12">
                     <View className="flex-row justify-between items-center mb-4">
                         <Text className="font-sans-bold text-xl text-primary">Select {partyLabel}</Text>
-                        <Pressable onPress={() => setPartyModalVisible(false)} className="h-11 w-11 items-center justify-center bg-muted rounded-full">
+                        <Pressable onPress={closePartyModal} className="h-11 w-11 items-center justify-center bg-muted rounded-full">
                             <X color="#64748b" size={20} />
                         </Pressable>
                     </View>
-                    <ScrollView showsVerticalScrollIndicator={false}>
+                    <BottomSheetScrollView showsVerticalScrollIndicator={false}>
                         {parties.filter(p => partyFilter === 'both' || p.partyType === partyFilter.toUpperCase() || p.partyType === 'BOTH').map(party => (
                             <Pressable 
                                 key={party.id} 
@@ -550,20 +509,27 @@ export default function DocumentBuilder({
                                 </View>
                             </Pressable>
                         ))}
-                    </ScrollView>
-                </View>
-            </AnimatedModal>
+                    </BottomSheetScrollView>
+                </BottomSheetView>
+            </BottomSheetModal>
 
             {/* InventoryItem Selector Modal */}
-            <AnimatedModal visible={itemModalVisible} onClose={() => setItemModalVisible(false)}>
-                <View className="bg-white rounded-t-3xl h-[700px] p-5 shadow-xl">
+            <BottomSheetModal
+                ref={itemModalRef}
+                snapPoints={snapPoints}
+                backdropComponent={renderBackdrop}
+                enablePanDownToClose
+                handleIndicatorStyle={{ backgroundColor: '#cbd5e1' }}
+                backgroundStyle={{ backgroundColor: 'white', borderRadius: 24 }}
+            >
+                <BottomSheetView className="flex-1 p-5 pb-12">
                     <View className="flex-row justify-between items-center mb-4">
-                        <Text className="font-sans-bold text-xl text-primary">Add InventoryItem</Text>
-                        <Pressable onPress={() => setItemModalVisible(false)} className="h-11 w-11 items-center justify-center bg-muted rounded-full">
+                        <Text className="font-sans-bold text-xl text-primary">Add Product/Service</Text>
+                        <Pressable onPress={closeItemModal} className="h-11 w-11 items-center justify-center bg-muted rounded-full">
                             <X color="#64748b" size={20} />
                         </Pressable>
                     </View>
-                    <ScrollView showsVerticalScrollIndicator={false}>
+                    <BottomSheetScrollView showsVerticalScrollIndicator={false}>
                         {items.map(item => (
                             <Pressable 
                                 key={item.id} 
@@ -581,7 +547,7 @@ export default function DocumentBuilder({
                                         discountPercent: 0,
                                     }, isInterState);
                                     setDocumentItems([...documentItems, newItem]); 
-                                    setItemModalVisible(false); 
+                                    closeItemModal(); 
                                 }}
                             >
                                 <View>
@@ -595,13 +561,17 @@ export default function DocumentBuilder({
                                 </View>
                             </Pressable>
                         ))}
-                    </ScrollView>
-                </View>
-            </AnimatedModal>
+                    </BottomSheetScrollView>
+                </BottomSheetView>
+            </BottomSheetModal>
 
             {/* Bottom Action Bar */}
-            <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-border px-4 py-3 flex-row shadow-lg pb-8 z-20">
-                <Pressable onPress={handleSave} className="flex-1 bg-primary items-center justify-center rounded-xl min-h-[48px] flex-row">
+            <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-border px-4 py-3 shadow-lg pb-8 z-20 flex-row justify-between items-center">
+                <View className="flex-1 mr-4">
+                    <Text className="font-sans-medium text-xs text-muted-foreground">Grand Total</Text>
+                    <Text className="font-sans-bold text-xl text-primary">{formatINR(totals.totalAmountPaise)}</Text>
+                </View>
+                <Pressable onPress={handleSave} className="bg-primary items-center justify-center rounded-xl min-h-[48px] px-6 flex-row">
                     <Save color="white" size={16} className="mr-2" />
                     <Text className="font-sans-bold text-white">Save</Text>
                 </Pressable>

@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { useRouter } from "expo-router";
+import Animated, { FadeInDown, FadeInUp, FadeIn } from "react-native-reanimated";
+import { Boxes } from "lucide-react-native";
 import { StatusBar } from "expo-status-bar";
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View, Image, Alert, Vibration } from "react-native";
+import { Pressable, Text, View, Image, Vibration } from "react-native";
+import { useAlertStore } from "@/store/alertStore";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppStore, DEFAULT_BUSINESS } from "@/store";
 import { supabase } from "@/lib/supabase";
@@ -19,11 +23,11 @@ export default function SignInScreen() {
 
   const handleLogin = async () => {
     if (!email.trim()) {
-      Alert.alert("Validation Error", "Please enter your email.");
+      useAlertStore.getState().showAlert({ title: "Validation Error", message: "Please enter your email.", type: "error" });
       return;
     }
     if (!password) {
-      Alert.alert("Validation Error", "Please enter your password.");
+      useAlertStore.getState().showAlert({ title: "Validation Error", message: "Please enter your password.", type: "error" });
       return;
     }
 
@@ -35,7 +39,7 @@ export default function SignInScreen() {
     setIsLoading(false);
 
     if (error) {
-      Alert.alert("Sign In Failed", error.message);
+      useAlertStore.getState().showAlert({ title: "Sign In Failed", message: error.message, type: "error" });
       return;
     }
 
@@ -47,20 +51,29 @@ export default function SignInScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <StatusBar style="dark" />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
+      <KeyboardAwareScrollView 
+        contentContainerStyle={{ flexGrow: 1, padding: 24 }}
+        enableOnAndroid={true}
+        extraScrollHeight={20}
+        keyboardShouldPersistTaps="handled"
       >
-        <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 24 }}>
 
-          <View className="mt-8 mb-10">
-            <Text className="text-3xl font-sans-bold text-primary mb-2">
-              Login to your account
+          <Animated.View entering={FadeInDown.duration(1000).springify().damping(14)} className="items-center mt-6 mb-8">
+            <View className="size-20 bg-[#081126] rounded-[24px] items-center justify-center shadow-2xl shadow-black/30 mb-6">
+              <Boxes color="white" size={44} strokeWidth={2.5} />
+            </View>
+          </Animated.View>
+
+          <Animated.View entering={FadeInUp.duration(1000).delay(200).springify().damping(14)} className="mb-10 items-center">
+            <Text className="text-3xl font-sans-bold text-primary mb-2 text-center">
+              Welcome to Billy
             </Text>
-            <Text className="text-base font-sans-regular text-muted-foreground">
-              {"It's great to see you again."}
+            <Text className="text-base font-sans-regular text-muted-foreground text-center">
+              {"The ultimate ERP for modern businesses."}
             </Text>
-          </View>
+          </Animated.View>
+
+          <Animated.View entering={FadeIn.duration(800).delay(400)}>
 
           <AuthInput
             label="Email"
@@ -147,8 +160,8 @@ export default function SignInScreen() {
             </Text>
           </View>
 
-        </ScrollView>
-      </KeyboardAvoidingView>
+          </Animated.View>
+        </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }

@@ -1,20 +1,14 @@
 import {  useState, useEffect  } from 'react';
-import { View, Text, Pressable, TextInput, ScrollView, Alert, FlatList } from "react-native";
-import { X, Save, Trash2 } from "lucide-react-native";
-import AnimatedModal from "@/components/ui/AnimatedModal";
+import { View, Text, Pressable, TextInput, FlatList } from "react-native";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { ArrowLeft, Save, Trash2 } from "lucide-react-native";
 import { InventoryItem, TaxRate } from "@/types/entities";
 import { useAppStore } from "@/store";
+import { useAlertStore } from "@/store/alertStore";
 import { useShallow } from 'zustand/react/shallow';
 import HSN_DATA from '@/data/hsn.json';
-
-interface InventoryItemFormModalProps {
-    visible: boolean;
-    onClose: () => void;
-    itemToEdit: InventoryItem | null;
-    initialTab: "product" | "service";
-    onSaveSuccess?: (item: InventoryItem) => void;
-    onDelete?: (itemId: string) => void;
-}
 
 interface FormState {
     name: string;
@@ -30,8 +24,20 @@ interface FormState {
     description?: string;
 }
 
-export default function InventoryItemFormModal({ visible, onClose, itemToEdit, initialTab, onSaveSuccess, onDelete }: InventoryItemFormModalProps) {
-    const { addItem, updateItem, addAdjustment } = useAppStore(useShallow(state => ({ addItem: state.addItem, updateItem: state.updateItem, addAdjustment: state.addAdjustment })));
+export default function InventoryItemFormScreen() {
+    const router = useRouter();
+    const params = useLocalSearchParams<{ id?: string, tab?: "product" | "service" }>();
+    const initialTab = params.tab || "product";
+
+    const { addItem, updateItem, addAdjustment, items, deleteItem } = useAppStore(useShallow(state => ({ 
+        addItem: state.addItem, 
+        updateItem: state.updateItem, 
+        addAdjustment: state.addAdjustment,
+        items: state.items,
+        deleteItem: state.deleteItem
+    })));
+
+    const itemToEdit = params.id ? items.find(i => i.id === params.id) : null;
 
     const [formData, setFormData] = useState<FormState>({
         name: "",
@@ -47,36 +53,34 @@ export default function InventoryItemFormModal({ visible, onClose, itemToEdit, i
     const hsnResults = hsnQuery.length >= 2 ? HSN_DATA.filter(h => h.code.startsWith(hsnQuery) || h.description.toLowerCase().includes(hsnQuery.toLowerCase())).slice(0, 8) : [];
 
     useEffect(() => {
-        if (visible) {
-            if (itemToEdit) {
-                setFormData({ 
-                    name: itemToEdit.name,
-                    type: itemToEdit.type,
-                    unitPricePaise: itemToEdit.unitPricePaise,
-                    purchasePricePaise: itemToEdit.purchasePricePaise,
-                    hsnSacCode: itemToEdit.hsnSacCode,
-                    gstRate: itemToEdit.taxRate?.gstComponent?.igstRate || 0,
-                    unit: itemToEdit.unit,
-                    stock: itemToEdit.stock || 0,
-                    minimumStock: itemToEdit.minimumStock,
-                    sku: itemToEdit.sku,
-                    description: itemToEdit.description,
-                });
-                setShowMoreDetails(false);
-            } else {
-                setFormData({
-                    name: "",
-                    type: initialTab,
-                    unitPricePaise: 0,
-                    hsnSacCode: "",
-                    gstRate: 0,
-                    unit: "pcs",
-                    stock: 0,
-                });
-                setShowMoreDetails(false);
-            }
+        if (itemToEdit) {
+            setFormData({ 
+                name: itemToEdit.name,
+                type: itemToEdit.type,
+                unitPricePaise: itemToEdit.unitPricePaise,
+                purchasePricePaise: itemToEdit.purchasePricePaise,
+                hsnSacCode: itemToEdit.hsnSacCode,
+                gstRate: itemToEdit.taxRate?.gstComponent?.igstRate || 0,
+                unit: itemToEdit.unit,
+                stock: itemToEdit.stock || 0,
+                minimumStock: itemToEdit.minimumStock,
+                sku: itemToEdit.sku,
+                description: itemToEdit.description,
+            });
+            setShowMoreDetails(false);
+        } else {
+            setFormData({
+                name: "",
+                type: initialTab,
+                unitPricePaise: 0,
+                hsnSacCode: "",
+                gstRate: 0,
+                unit: "pcs",
+                stock: 0,
+            });
+            setShowMoreDetails(false);
         }
-    }, [visible, itemToEdit, initialTab]);
+    }, [itemToEdit, initialTab]);
 
     const handleClose = () => {
         const isDirty = itemToEdit
@@ -84,29 +88,32 @@ export default function InventoryItemFormModal({ visible, onClose, itemToEdit, i
             : !!(formData.name || formData.unitPricePaise);
 
         if (isDirty) {
-            Alert.alert(
-                "Discard Changes?",
-                "You have unsaved changes. Are you sure you want to discard them?",
-                [
+            useAlertStore.getState().showAlert({
+                title: "Discard Changes?",
+                message: "You have unsaved changes. Are you sure you want to discard them?",
+                type: "warning",
+                buttons: [
                     { text: "Keep Editing", style: "cancel" },
-                    { text: "Discard", style: "destructive", onPress: onClose }
+                    { text: "Discard", style: "destructive", onPress: () => router.back() }
                 ]
-            );
+            });
         } else {
-            onClose();
+            router.back();
         }
     };
 
     const handleSave = () => {
         if (!formData.name?.trim()) {
-            Alert.alert("Error", "Item Name is required");
+            useAlertStore.getState().showAlert({ title: "Error", message: "Item Name is required", type: "error" });
             return;
         }
 
-        if (formData.hsnSacCode?.trim()) {
-            const hsn = formData.hsnSacCode.trim();
-            if (!/^\d{4}$|^\d{6}$|^\d{8}$/.test(hsn)) {
-                Alert.alert("Invalid HSN/SAC", "HSN/SAC code must be exactly 4, 6, or 8 digits.");
+        const hsnSac = formData.hsnSacCode || "";
+        const hasGst = formData.gstRate > 0;
+        if (hasGst) {
+            const hsnClean = hsnSac.trim();
+            if (hsnClean.length > 0 && ![4, 6, 8].includes(hsnClean.length)) {
+                useAlertStore.getState().showAlert({ title: "Invalid HSN/SAC", message: "HSN/SAC code must be exactly 4, 6, or 8 digits.", type: "error" });
                 return;
             }
         }
@@ -158,33 +165,33 @@ export default function InventoryItemFormModal({ visible, onClose, itemToEdit, i
             }
         }
 
-        if (onSaveSuccess) {
-            onSaveSuccess(itemData);
-        } else {
-            onClose();
-        }
+        router.back();
     };
 
     return (
-        <AnimatedModal visible={visible} onClose={handleClose} avoidKeyboard>
-            <View className="bg-white rounded-t-3xl p-6 pb-12 h-[92%] flex-col">
-                <View className="flex-row justify-between items-center mb-6">
-                    <Text className="font-sans-bold text-2xl text-primary">
-                        {itemToEdit ? 'Edit' : 'Add'} {formData.type === 'product' ? 'Product' : 'Service'}
-                    </Text>
-                    <View className="flex-row items-center">
-                        {itemToEdit && onDelete && (
-                            <Pressable onPress={() => { onClose(); onDelete(itemToEdit.id); }} className="p-2 bg-red-50 rounded-full mr-2">
+        <SafeAreaView className="flex-1 bg-white">
+            <KeyboardAwareScrollView 
+                className="flex-1"
+                contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}
+                keyboardShouldPersistTaps="handled"
+                enableOnAndroid={true}
+            >
+                <View className="p-6 flex-1 flex-col">
+                    <View className="flex-row items-center mb-6">
+                        <Pressable onPress={handleClose} className="p-2 -ml-2 mr-3">
+                            <ArrowLeft color="#081126" size={24} />
+                        </Pressable>
+                        <Text className="flex-1 font-sans-bold text-2xl text-primary">
+                            {itemToEdit ? 'Edit' : 'Add'} {formData.type === 'product' ? 'Product' : 'Service'}
+                        </Text>
+                        {itemToEdit && (
+                            <Pressable onPress={() => { deleteItem(itemToEdit.id); handleClose(); }} className="p-2 bg-red-50 rounded-full">
                                 <Trash2 color="#ef4444" size={20} />
                             </Pressable>
                         )}
-                        <Pressable onPress={handleClose} className="h-11 w-11 items-center justify-center bg-muted rounded-full">
-                            <X color="#64748b" size={20} />
-                        </Pressable>
                     </View>
-                </View>
 
-                <ScrollView showsVerticalScrollIndicator={false} className="mb-4">
+                    <View className="mb-4">
                     {!itemToEdit && (
                         <View className="flex-row mb-6 bg-muted p-1 rounded-xl">
                             <Pressable
@@ -259,7 +266,7 @@ export default function InventoryItemFormModal({ visible, onClose, itemToEdit, i
                                 />
                             </View>
 
-                            <View className="mb-4 flex-row">
+                            <View className="mb-4 flex-row" style={{ zIndex: 50, elevation: 50 }}>
                                 <View className="flex-1 mr-2">
                                     <Text className="font-sans-medium text-sm text-muted-foreground mb-2">GST Rate (%)</Text>
                                     <TextInput
@@ -270,7 +277,7 @@ export default function InventoryItemFormModal({ visible, onClose, itemToEdit, i
                                         onChangeText={(text) => setFormData({ ...formData, gstRate: Number(text) ? parseFloat(text) : 0 })}
                                     />
                                 </View>
-                                <View className="flex-1 ml-2 z-10">
+                                <View className="flex-1 ml-2 z-10" style={{ zIndex: 50, elevation: 50 }}>
                                     <Text className="font-sans-medium text-sm text-muted-foreground mb-2">{formData.type === 'product' ? 'HSN Code' : 'SAC Code'}</Text>
                                     <TextInput
                                         className="bg-white border border-border rounded-xl px-4 py-4 font-sans-regular text-primary text-base"
@@ -282,7 +289,7 @@ export default function InventoryItemFormModal({ visible, onClose, itemToEdit, i
                                         }}
                                     />
                                     {hsnResults.length > 0 && (
-                                        <View className="absolute top-[85px] left-0 right-0 bg-white border border-border rounded-xl shadow-sm z-50 overflow-hidden" style={{ maxHeight: 200 }}>
+                                        <View className="absolute top-[85px] left-0 right-0 bg-white border border-border rounded-xl shadow-sm z-50 overflow-hidden" style={{ maxHeight: 200, elevation: 100, zIndex: 100 }}>
                                             <FlatList
                                                 data={hsnResults}
                                                 keyExtractor={(h) => h.code}
@@ -367,8 +374,11 @@ export default function InventoryItemFormModal({ visible, onClose, itemToEdit, i
                             </View>
                         </View>
                     )}
-                </ScrollView>
+                </View>
+                </View>
+            </KeyboardAwareScrollView>
 
+            <View className="p-5 border-t border-border bg-white pb-safe absolute bottom-0 left-0 right-0">
                 <Pressable
                     onPress={handleSave}
                     className="bg-primary py-4 rounded-xl flex-row justify-center items-center shadow-md shadow-primary/30"
@@ -377,6 +387,6 @@ export default function InventoryItemFormModal({ visible, onClose, itemToEdit, i
                     <Text className="font-sans-bold text-white text-lg">Save {formData.type === 'product' ? 'Product' : 'Service'}</Text>
                 </Pressable>
             </View>
-        </AnimatedModal>
+        </SafeAreaView>
     );
 }

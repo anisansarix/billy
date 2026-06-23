@@ -1,28 +1,20 @@
 import { useState } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView, Vibration, Alert } from 'react-native';
 import { X, CheckCircle2 } from 'lucide-react-native';
-import AnimatedModal from '@/components/ui/AnimatedModal';
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useAppStore } from "@/store";
 import { formatINR } from '@/utils/money';
-import { PaymentRecord } from '@/types/entities';
 
-interface RecordPaymentModalProps {
-    visible: boolean;
-    onClose: () => void;
-    onSave: (paymentData: Omit<PaymentRecord, 'id'>) => void;
-    invoiceId: string;
-    partyId: string;
-    partyName: string;
-    balanceDuePaise: number;
-}
+export default function RecordPaymentScreen() {
+    const router = useRouter();
+    const params = useLocalSearchParams<{ invoiceId: string, partyId: string, partyName: string, balanceDuePaise: string }>();
+    const invoiceId = params.invoiceId || "";
+    const partyId = params.partyId || "";
+    const partyName = params.partyName || "";
+    const balanceDuePaise = Number(params.balanceDuePaise) || 0;
 
-export default function RecordPaymentModal({
-    visible,
-    onClose,
-    onSave,
-    partyId,
-    partyName,
-    balanceDuePaise
-}: RecordPaymentModalProps) {
+    const recordInvoicePayment = useAppStore(state => state.recordInvoicePayment);
     const [amountStr, setAmountStr] = useState((balanceDuePaise / 100).toString());
     const [mode, setMode] = useState<'UPI' | 'Bank Transfer' | 'Cash' | 'NEFT' | 'RTGS' | 'Cheque'>('UPI');
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -36,7 +28,7 @@ export default function RecordPaymentModal({
             return;
         }
 
-        onSave({
+        recordInvoicePayment(invoiceId, {
             date,
             amountPaise,
             mode,
@@ -45,31 +37,28 @@ export default function RecordPaymentModal({
             partyName,
         });
         
-        // Reset and close
-        setAmountStr((balanceDuePaise / 100).toString());
-        setMode('UPI');
-        onClose();
+        router.back();
     };
 
     const paymentModes = ['UPI', 'Bank Transfer', 'Cash', 'Cheque'] as const;
 
     return (
-        <AnimatedModal visible={visible} onClose={onClose} placement="bottom" avoidKeyboard>
-            <View className="bg-white rounded-t-3xl min-h-[500px] p-5">
-                <View className="flex-row justify-between items-center mb-6">
+        <SafeAreaView className="flex-1 bg-white">
+            <View className="flex-1 flex-col">
+                <View className="flex-row items-center mb-6 p-6 pb-2">
+                    <Pressable 
+                        onPress={() => { Vibration.vibrate(10); router.back(); }} 
+                        className="p-2 -ml-2 mr-3"
+                    >
+                        <X color="#081126" size={24} />
+                    </Pressable>
                     <View>
-                        <Text className="font-sans-bold text-xl text-primary">Record Payment</Text>
+                        <Text className="font-sans-bold text-2xl text-primary">Record Payment</Text>
                         <Text className="font-sans-medium text-muted-foreground text-sm mt-1">From {partyName}</Text>
                     </View>
-                    <Pressable 
-                        onPress={() => { Vibration.vibrate(10); onClose(); }} 
-                        className="h-10 w-10 items-center justify-center bg-slate-100 rounded-full"
-                    >
-                        <X color="#64748b" size={20} />
-                    </Pressable>
                 </View>
 
-                <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
+                <ScrollView showsVerticalScrollIndicator={false} className="flex-1 px-6">
                     <View className="bg-blue-50 border border-blue-100 p-4 rounded-xl mb-6">
                         <Text className="font-sans-medium text-blue-800 mb-1">Balance Due</Text>
                         <Text className="font-sans-bold text-2xl text-blue-900">{formatINR(balanceDuePaise)}</Text>
@@ -112,7 +101,7 @@ export default function RecordPaymentModal({
                     </View>
                 </ScrollView>
 
-                <View className="pt-4 border-t border-slate-100">
+                <View className="p-5 border-t border-border bg-white pb-safe">
                     <Pressable 
                         onPress={handleSave}
                         className="bg-primary py-4 rounded-xl flex-row items-center justify-center shadow-sm"
@@ -122,6 +111,6 @@ export default function RecordPaymentModal({
                     </Pressable>
                 </View>
             </View>
-        </AnimatedModal>
+        </SafeAreaView>
     );
 }

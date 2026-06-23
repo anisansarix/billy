@@ -1,8 +1,9 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { useShallow } from 'zustand/react/shallow';
-import { Bell, Boxes, ChevronDown, RefreshCcw } from "lucide-react-native";
+import { Bell, Boxes } from "lucide-react-native";
 import { useState, useRef } from "react";
 import { Image, Pressable, ScrollView, Text, View, Dimensions, Vibration } from "react-native";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useAppStore } from "@/store";
@@ -15,7 +16,6 @@ import StatCard from "@/components/ui/StatCard";
 import "../../../../global.css";
 import { useDeferredRender } from "@/hooks/useDeferredRender";
 import { StatCardSkeleton } from "@/components/ui/skeletons/StatCardSkeleton";
-import MonthPickerModal from "@/components/domain/dashboard/MonthPickerModal";
 import { SegmentedTabs } from "@/components/ui/SegmentedTabs";
 import { useTabTransition } from "@/hooks/useTabTransition";
 import { useDashboardData } from "@/hooks/useDashboardData";
@@ -36,7 +36,6 @@ export default function App() {
   const [menuVisible, setMenuVisible] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
   
-  const [monthModalVisible, setMonthModalVisible] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState("June 2026");
   const [chartMode, setChartMode] = useState<"Performance" | "Cash Flow">("Performance");
 
@@ -86,7 +85,7 @@ export default function App() {
     >
       <SafeAreaView style={{ flex: 1 }}>
         <View className="flex-1 p-5 pb-0">
-          <View className="mb-2.5 flex-row items-center justify-between mb-6">
+          <Animated.View entering={FadeInDown.duration(800).springify().damping(14)} className="mb-2.5 flex-row items-center justify-between mb-6">
             <View>
               <Text className="text-3xl font-sans-bold text-primary leading-tight">{getGreeting()}</Text>
               <Text className="text-3xl font-sans-bold text-primary leading-tight">{currentBusiness?.tradeName || "Guest"}!</Text>
@@ -103,27 +102,31 @@ export default function App() {
               <Image source={images.avatar} className="size-12 rounded-full" />
           </Pressable>
             </View>
-          </View>
+          </Animated.View>
 
           <ScrollView ref={scrollViewRef} className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 80 }}>
-            <View className="flex-row items-center justify-between mb-4">
-              <View className="flex-row items-center gap-2">
-                <RefreshCcw color="#16a34a" size={16} />
-                <Text className="font-sans-medium text-sm text-green-600">Synced</Text>
-              </View>
-              <Pressable 
-                accessibilityRole="button"
-                accessibilityLabel="Select Month"
-                className="flex-row items-center bg-white rounded-xl px-4 py-2 min-h-[44px] border border-white/50 shadow-sm"
-                onPress={() => {
-                  Vibration.vibrate(10);
-                  setMonthModalVisible(true);
-                }}
-                style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
-              >
-                <ChevronDown color="#000" size={16} className="mr-2" />
-                <Text className="font-sans-medium text-base text-primary">{selectedMonth}</Text>
-              </Pressable>
+            <View className="mb-4">
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingRight: 20 }}>
+                {monthOptions.map((month) => {
+                  const isSelected = selectedMonth === month;
+                  const displayMonth = month.replace(' 2026', " '26");
+                  return (
+                    <Pressable
+                      key={month}
+                      onPress={() => {
+                        Vibration.vibrate(10);
+                        setSelectedMonth(month);
+                      }}
+                      className={`mr-3 px-5 py-2.5 rounded-full border ${isSelected ? 'bg-[#081126] border-[#081126]' : 'bg-white border-border shadow-sm'}`}
+                      style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
+                    >
+                      <Text className={`font-sans-medium text-sm ${isSelected ? 'text-white' : 'text-primary'}`}>
+                        {displayMonth}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </ScrollView>
             </View>
 
             {/* GST Liability Widget */}
@@ -231,13 +234,6 @@ export default function App() {
             />
           </Pressable>
 
-          <MonthPickerModal
-            visible={monthModalVisible}
-            onClose={() => setMonthModalVisible(false)}
-            options={monthOptions}
-            selectedMonth={selectedMonth}
-            onSelect={setSelectedMonth}
-          />
         </View>
       </SafeAreaView>
     </LinearGradient>

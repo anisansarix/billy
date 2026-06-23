@@ -33,22 +33,22 @@ const menuItems = [
         href: "/(app)/dashboard",
     },
     {
-        label: "Sales | Invoices",
+        label: "Sales Documents",
         icon: ReceiptText,
         href: "/(app)/sales",
     },
     {
-        label: "Expenses | Purchases",
+        label: "Purchases & Bills",
         icon: Wallet,
         href: "/(app)/expenses-purchases",
     },
     {
-        label: "Customers | Vendors",
+        label: "Customers & Vendors",
         icon: Users,
         href: "/(app)/customers-vendors",
     },
     {
-        label: "Products | Services",
+        label: "Products & Services",
         icon: Boxes,
         href: "/(app)/products-services",
     },
