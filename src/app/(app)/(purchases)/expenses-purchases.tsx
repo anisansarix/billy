@@ -33,8 +33,7 @@ export default function ExpenseRecordsPurchasesScreen() {
             setActiveFilters(prev => prev.includes(filter) ? prev.filter(f => f !== filter) : [...prev, filter]);
         });
     };
-    const [mainTab, setMainTab] = useState<"expenses" | "purchases">("expenses");
-    const [purchaseTab, setPurchaseTab] = useState<"All" | "Pending" | "Paid" | "Overdue" | "Draft" | "Sent">("All");
+    const [mainTab, setMainTab] = useState<"purchases" | "expenses">("purchases");
 
     const [refreshing, setRefreshing] = useState(false);
 
@@ -81,8 +80,7 @@ export default function ExpenseRecordsPurchasesScreen() {
     }).sort((a, b) => new Date(b.updatedAt || b.createdAt || 0).getTime() - new Date(a.updatedAt || a.createdAt || 0).getTime());
 
     const filteredPurchases = purchases.filter(pur => {
-        const matchesTab = purchaseTab === "All" || pur.status === purchaseTab;
-        const vendorName = pur.partyName || pur.partyName || "";
+        const vendorName = pur.partyName || "";
         const matchesSearch = vendorName.toLowerCase().includes(search.toLowerCase()) || pur.documentNumber?.toLowerCase().includes(search.toLowerCase());
         
         let matchesFilters = true;
@@ -96,7 +94,7 @@ export default function ExpenseRecordsPurchasesScreen() {
                 if (daysDiff > 7) matchesFilters = false;
             }
         }
-        return matchesTab && matchesSearch && matchesFilters;
+        return matchesSearch && matchesFilters;
     }).sort((a, b) => new Date(b.updatedAt || b.createdAt || 0).getTime() - new Date(a.updatedAt || a.createdAt || 0).getTime());
 
     // Summaries
@@ -130,34 +128,15 @@ export default function ExpenseRecordsPurchasesScreen() {
         setSelectedPurchase(null);
     };
 
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case "Paid": return "bg-green-100 text-green-700";
-            case "Pending": return "bg-amber-100 text-amber-700";
-            case "Overdue": return "bg-red-100 text-red-700";
-            case "Draft": return "bg-slate-100 text-slate-700";
-            case "Sent": return "bg-blue-100 text-blue-700";
-            default: return "bg-gray-100 text-gray-700";
-        }
-    };
-
     const header = (
         <>
             {/* Main Tabs */}
             <View className="bg-white pb-1 pt-3">
                 <SegmentedTabs 
-                    tabs={["Expenses", "Purchases"]} 
-                    activeTab={mainTab === "expenses" ? "Expenses" : "Purchases"} 
-                    onTabChange={(t) => startTransition(() => setMainTab(t === "Expenses" ? "expenses" : "purchases"))} 
+                    tabs={["Purchases", "Expenses"]} 
+                    activeTab={mainTab === "purchases" ? "Purchases" : "Expenses"} 
+                    onTabChange={(t) => startTransition(() => setMainTab(t === "Purchases" ? "purchases" : "expenses"))} 
                 />
-                
-                {mainTab === 'purchases' && (
-                    <SegmentedTabs 
-                        tabs={["All", "Pending", "Paid", "Overdue", "Draft", "Sent"]} 
-                        activeTab={purchaseTab} 
-                        onTabChange={(t) => startTransition(() => setPurchaseTab(t as never))} 
-                    />
-                )}
             </View>
 
             {/* Summary Cards */}
@@ -232,7 +211,7 @@ export default function ExpenseRecordsPurchasesScreen() {
                 windowSize={10}
                 removeClippedSubviews={true}
                     renderItem={({ item: exp }) => (
-                        <Card className="mb-4 mx-5" isPressable onPress={() => setSelectedExpenseRecord(exp)}>
+                        <Card className="mb-4 mx-5 p-5 rounded-2xl shadow-sm border border-border" isPressable onPress={() => setSelectedExpenseRecord(exp)}>
                             <View className="flex-row justify-between items-start mb-2">
                                 <View className="flex-row items-center flex-1 mr-2">
                                     <View className="bg-primary/10 p-2 rounded-full mr-3">
@@ -285,15 +264,34 @@ export default function ExpenseRecordsPurchasesScreen() {
                 maxToRenderPerBatch={10}
                 windowSize={10}
                 removeClippedSubviews={true}
-                    renderItem={({ item: pur }) => (
-                        <Card className="mb-4 mx-5" isPressable onPress={() => router.push(`/(app)/(purchases)/purchase/${pur.id}` as never)}>
+                    renderItem={({ item: pur }) => {
+                        const getStatusPillStyle = (status: string) => {
+                            switch(status.toUpperCase()) {
+                                case 'PAID': return 'bg-green-100 text-green-700 border-green-200';
+                                case 'PARTIAL': return 'bg-orange-100 text-orange-700 border-orange-200';
+                                case 'OVERDUE': return 'bg-red-100 text-red-700 border-red-200';
+                                default: return 'bg-blue-100 text-blue-700 border-blue-200';
+                            }
+                        };
+                        const getStatusBorder = (status: string) => {
+                            switch(status.toUpperCase()) {
+                                case 'PAID': return 'border-l-[6px] border-l-green-500';
+                                case 'PARTIAL': return 'border-l-[6px] border-l-orange-500';
+                                case 'OVERDUE': return 'border-l-[6px] border-l-red-500';
+                                default: return 'border-l-[6px] border-l-blue-500';
+                            }
+                        };
+                        const borderStyle = getStatusBorder(pur.status);
+                        const pillStyle = getStatusPillStyle(pur.status);
+                        return (
+                        <Card className={`mb-4 mx-5 p-5 rounded-2xl shadow-sm border border-border overflow-hidden ${borderStyle}`} isPressable onPress={() => router.push(`/(app)/(purchases)/purchase/${pur.id}` as never)}>
                             <View className="flex-row justify-between items-start mb-3">
                                 <View className="flex-1 mr-2">
                                     <Text className="font-sans-bold text-base text-primary" numberOfLines={1}>{pur.partyName || pur.partyName}</Text>
                                     <Text className="font-sans-medium text-xs text-muted-foreground mt-1">{pur.documentNumber} • {formatDate(pur.documentDate)}</Text>
                                 </View>
-                                <View className={`px-2 py-1 rounded-md ${getStatusColor(pur.status).split(' ')[0]} flex-shrink-0`}>
-                                    <Text className={`font-sans-bold text-[10px] uppercase ${getStatusColor(pur.status).split(' ')[1]}`}>
+                                <View className={`px-2 py-1 rounded-md border ${pillStyle.split(' ').filter(c => c.startsWith('bg-') || c.startsWith('border-')).join(' ')} flex-shrink-0`}>
+                                    <Text className={`font-sans-bold text-[10px] uppercase ${pillStyle.split(' ').find(c => c.startsWith('text-'))}`}>
                                         {pur.status}
                                     </Text>
                                 </View>
@@ -312,7 +310,8 @@ export default function ExpenseRecordsPurchasesScreen() {
                                 </View>
                             </View>
                         </Card>
-                    )}
+                        );
+                    }}
                     ListEmptyComponent={
                         <View className="items-center justify-center py-20 px-5">
                             <View className="h-24 w-24 bg-primary/5 rounded-full items-center justify-center mb-6">

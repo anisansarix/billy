@@ -1,12 +1,13 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { useShallow } from 'zustand/react/shallow';
-import { Bell, Boxes } from "lucide-react-native";
+import { Bell, Boxes, TrendingDown, TrendingUp } from "lucide-react-native";
 import { useState, useRef } from "react";
 import { Image, Pressable, ScrollView, Text, View, Dimensions, Vibration } from "react-native";
-import Animated, { FadeInDown } from "react-native-reanimated";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useAppStore } from "@/store";
+import { useEffect } from "react";
 import images from "../../../../constants/images";
 
 import AreaChart from "@/components/charts/AreaChart";
@@ -25,18 +26,13 @@ import QuickActionsWidget from "@/components/domain/dashboard/QuickActionsWidget
 import NeedsAttentionWidget from "@/components/domain/dashboard/NeedsAttentionWidget";
 import InventoryInsightsWidget from "@/components/domain/dashboard/InventoryInsightsWidget";
 
-interface BalanceCardData {
-  title: string;
-  amountPaise: number;
-  gstAmountPaise: number;
-}
+
 
 export default function App() {
   const router = useRouter();
   const [menuVisible, setMenuVisible] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
   
-  const [selectedMonth, setSelectedMonth] = useState("June 2026");
   const [chartMode, setChartMode] = useState<"Performance" | "Cash Flow">("Performance");
 
   const getGreeting = () => {
@@ -46,14 +42,12 @@ export default function App() {
     return "Good evening";
   };
 
-  const monthOptions = [
-    "June 2026",
-    "May 2026",
-    "April 2026",
-    "March 2026",
-    "February 2026",
-    "January 2026",
-  ];
+  const [showGreeting, setShowGreeting] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowGreeting(false), 3500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const isReady = useDeferredRender();
   const { isTabReady, startTransition } = useTabTransition();
@@ -85,10 +79,22 @@ export default function App() {
     >
       <SafeAreaView style={{ flex: 1 }}>
         <View className="flex-1 p-5 pb-0">
-          <Animated.View entering={FadeInDown.duration(800).springify().damping(14)} className="mb-2.5 flex-row items-center justify-between mb-6">
-            <View>
-              <Text className="text-3xl font-sans-bold text-primary leading-tight">{getGreeting()}</Text>
-              <Text className="text-3xl font-sans-bold text-primary leading-tight">{currentBusiness?.tradeName || "Guest"}!</Text>
+          <View className="mb-2.5 flex-row items-center justify-between mb-6">
+            <View className="flex-1 justify-center min-h-[70px]">
+              {showGreeting ? (
+                <Animated.View entering={FadeIn} exiting={FadeOut}>
+                  <Text className="text-3xl font-sans-bold text-primary leading-tight">{getGreeting()}</Text>
+                  <Text className="text-3xl font-sans-bold text-primary leading-tight">{currentBusiness?.tradeName || "Guest"}!</Text>
+                </Animated.View>
+              ) : (
+                <Animated.View entering={FadeIn} className="justify-center">
+                  <Image 
+                    source={require("../../../../assets/images/icon-black.png")} 
+                    style={{ width: 44, height: 44, borderRadius: 12 }} 
+                    resizeMode="contain" 
+                  />
+                </Animated.View>
+              )}
             </View>
             <View className="flex-row items-center gap-4">
               <View className="relative">
@@ -102,33 +108,9 @@ export default function App() {
               <Image source={images.avatar} className="size-12 rounded-full" />
           </Pressable>
             </View>
-          </Animated.View>
+          </View>
 
           <ScrollView ref={scrollViewRef} className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 80 }}>
-            <View className="mb-4">
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingRight: 20 }}>
-                {monthOptions.map((month) => {
-                  const isSelected = selectedMonth === month;
-                  const displayMonth = month.replace(' 2026', " '26");
-                  return (
-                    <Pressable
-                      key={month}
-                      onPress={() => {
-                        Vibration.vibrate(10);
-                        setSelectedMonth(month);
-                      }}
-                      className={`mr-3 px-5 py-2.5 rounded-full border ${isSelected ? 'bg-[#081126] border-[#081126]' : 'bg-white border-border shadow-sm'}`}
-                      style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
-                    >
-                      <Text className={`font-sans-medium text-sm ${isSelected ? 'text-white' : 'text-primary'}`}>
-                        {displayMonth}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </ScrollView>
-            </View>
-
             {/* GST Liability Widget */}
             <GstLiabilityWidget estimatedLiability={estimatedLiability} />
 
@@ -142,8 +124,13 @@ export default function App() {
                   <StatCardSkeleton />
                 </>
               ) : (
-                dashboardBalances.map((balance: BalanceCardData, index: number) => (
-                  <StatCard key={index} {...balance} />
+                dashboardBalances.map((balance: any, index: number) => (
+                  <StatCard 
+                    key={index} 
+                    {...balance} 
+                    icon={balance.title === 'Sales' ? <TrendingDown color="#16a34a" size={16} /> : <TrendingUp color="#ef4444" size={16} />}
+                    iconBgClass={balance.title === 'Sales' ? 'bg-green-100' : 'bg-red-100'}
+                  />
                 ))
               )}
             </View>

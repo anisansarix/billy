@@ -213,15 +213,13 @@ export default function ProductsServicesScreen() {
                     windowSize={10}
                     removeClippedSubviews={true}
                     renderItem={({ item }) => {
-                        const isLowStock = item.stock && item.stock <= (item.minimumStock || 5);
-                        const stockStyle = isLowStock ? 'border-l-4 border-l-red-500' : 'border-l-4 border-l-green-500';
                         return (
-                        <Card className={`flex-row items-center mb-4 p-4 mx-5 ${stockStyle}`} isPressable onPress={() => setSelectedItem(item)}>
-                            <View className="size-12 rounded-lg bg-[#e3e8fc] items-center justify-center mr-4">
+                        <Card className="flex-row items-center mb-4 p-5 mx-5 rounded-2xl shadow-sm border border-border" isPressable onPress={() => setSelectedItem(item)}>
+                            <View className="size-12 rounded-full bg-primary/10 items-center justify-center mr-4">
                                 {tab === "product" ? (
-                                    <Package color="#081126" size={24} />
+                                    <Package color="#208AEF" size={24} />
                                 ) : (
-                                    <Briefcase color="#081126" size={24} />
+                                    <Briefcase color="#208AEF" size={24} />
                                 )}
                             </View>
                             <View className="flex-1 mr-2">

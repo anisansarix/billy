@@ -208,23 +208,33 @@ export default function SalesScreen() {
                 windowSize={10}
                 removeClippedSubviews={true}
                 renderItem={({ item: inv }) => {
-                    const getCardStyle = (status: string) => {
+                    const getStatusPillStyle = (status: string) => {
                         switch(status.toUpperCase()) {
-                            case 'PAID': return 'border-l-4 border-l-green-500';
-                            case 'PARTIAL': return 'border-l-4 border-l-orange-500';
-                            case 'OVERDUE': return 'border-l-4 border-l-red-500';
-                            default: return 'border-l-4 border-l-blue-500';
+                            case 'PAID': return 'bg-green-100 text-green-700 border-green-200';
+                            case 'PARTIAL': return 'bg-orange-100 text-orange-700 border-orange-200';
+                            case 'OVERDUE': return 'bg-red-100 text-red-700 border-red-200';
+                            default: return 'bg-blue-100 text-blue-700 border-blue-200';
                         }
                     };
+                    const getStatusBorder = (status: string) => {
+                        switch(status.toUpperCase()) {
+                            case 'PAID': return 'border-l-[6px] border-l-green-500';
+                            case 'PARTIAL': return 'border-l-[6px] border-l-orange-500';
+                            case 'OVERDUE': return 'border-l-[6px] border-l-red-500';
+                            default: return 'border-l-[6px] border-l-blue-500';
+                        }
+                    };
+                    const borderStyle = getStatusBorder(inv.status);
+                    const pillStyle = getStatusPillStyle(inv.status);
                     return (
-                    <Card className={`mb-4 mx-5 ${getCardStyle(inv.status)}`} isPressable onPress={() => setSelectedInvoice(inv)}>
+                    <Card className={`mb-4 mx-5 p-5 rounded-2xl shadow-sm border border-border overflow-hidden ${borderStyle}`} isPressable onPress={() => setSelectedInvoice(inv)}>
                         <View className="flex-row justify-between items-start mb-3">
                             <View className="flex-1 mr-2">
                                 <Text className="font-sans-bold text-base text-primary">{inv.partyName}</Text>
                                 <Text className="font-sans-medium text-xs text-muted-foreground mt-1">{inv.documentNumber} • {formatDate(inv.documentDate)}</Text>
                             </View>
-                            <View className={`px-2 py-1 rounded-md border ${getStatusColor(inv.status)} flex-shrink-0`}>
-                                <Text className="font-sans-bold text-[10px] uppercase">
+                            <View className={`px-2 py-1 rounded-md border ${pillStyle.split(' ').filter(c => c.startsWith('bg-') || c.startsWith('border-')).join(' ')} flex-shrink-0`}>
+                                <Text className={`font-sans-bold text-[10px] uppercase ${pillStyle.split(' ').find(c => c.startsWith('text-'))}`}>
                                     {inv.status}
                                 </Text>
                             </View>

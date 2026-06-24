@@ -1,7 +1,7 @@
 import { BlurView } from "expo-blur";
 import { useState, useEffect } from "react";
 import { Pressable, View, Modal, Dimensions, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSpring, runOnJS } from "react-native-reanimated";
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, runOnJS, Easing } from "react-native-reanimated";
 import "../../../global.css";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -27,20 +27,20 @@ export default function AnimatedModal({ visible, onClose, children, avoidKeyboar
 
     useEffect(() => {
         if (visible) {
-            fadeAnim.value = withTiming(1, { duration: 150 });
+            fadeAnim.value = withTiming(1, { duration: 250, easing: Easing.out(Easing.ease) });
             if (placement === 'bottom') {
-                slideAnim.value = withSpring(0, { damping: 22, stiffness: 280, mass: 0.9 });
+                slideAnim.value = withTiming(0, { duration: 250, easing: Easing.out(Easing.ease) });
             } else {
-                scaleAnim.value = withSpring(1, { damping: 22, stiffness: 280, mass: 0.9 });
+                scaleAnim.value = withTiming(1, { duration: 250, easing: Easing.out(Easing.ease) });
             }
         } else {
-            fadeAnim.value = withTiming(0, { duration: 100 });
+            fadeAnim.value = withTiming(0, { duration: 150, easing: Easing.out(Easing.ease) });
             if (placement === 'bottom') {
-                slideAnim.value = withTiming(SCREEN_HEIGHT, { duration: 150 }, () => {
+                slideAnim.value = withTiming(SCREEN_HEIGHT, { duration: 150, easing: Easing.out(Easing.ease) }, () => {
                     runOnJS(setShow)(false);
                 });
             } else {
-                scaleAnim.value = withTiming(0.9, { duration: 150 }, () => {
+                scaleAnim.value = withTiming(0.9, { duration: 150, easing: Easing.out(Easing.ease) }, () => {
                     runOnJS(setShow)(false);
                 });
             }

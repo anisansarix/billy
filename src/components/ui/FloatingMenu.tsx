@@ -3,8 +3,8 @@ import {
     Pressable,
     Text,
     View,
-    Vibration,
 } from "react-native";
+import * as Haptics from 'expo-haptics';
 
 import { useRouter, usePathname } from "expo-router";
 import AnimatedModal from "@/components/ui/AnimatedModal";
@@ -104,7 +104,7 @@ export default function FloatingMenu({
                                     accessibilityRole="menuitem"
                                     accessibilityLabel={`Navigate to ${item.label}`}
                                     onPress={() => {
-                                        Vibration.vibrate(10);
+                                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                                         onClose();
                                         if (item.label === "Dashboard" && (pathname === '/(app)/dashboard' || pathname === '/dashboard' || pathname === '/')) {
                                             if (onScrollToTop) {
@@ -131,7 +131,7 @@ export default function FloatingMenu({
                         <Pressable 
                             className="mt-2 flex-row items-center justify-center rounded-3xl border border-primary min-h-[44px] py-3"
                             onPress={() => {
-                                Vibration.vibrate(10);
+                                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                                 setFyModalVisible(true);
                             }}
                             accessibilityRole="button"

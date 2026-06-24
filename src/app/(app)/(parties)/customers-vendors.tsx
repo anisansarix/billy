@@ -149,10 +149,13 @@ export default function CustomersVendorsScreen() {
                 windowSize={10}
                 removeClippedSubviews={true}
                 renderItem={({ item: party }) => (
-                    <Card className="flex-row justify-between items-center mb-4 mx-5" isPressable onPress={() => openDetailsModal(party)}>
+                    <Card className="flex-row items-center mb-4 mx-5 p-5 rounded-2xl shadow-sm border border-border" isPressable onPress={() => openDetailsModal(party)}>
+                        <View className="size-12 rounded-full bg-primary/10 items-center justify-center mr-4">
+                            <Text className="font-sans-bold text-lg text-primary uppercase">{party.legalName.substring(0, 1)}</Text>
+                        </View>
                         <View className="flex-1 mr-2">
                             <Text className="font-sans-bold text-lg text-primary mb-1" numberOfLines={1}>{party.legalName}</Text>
-                            <Text className="font-sans-regular text-sm text-muted-foreground" numberOfLines={1}>GSTIN: {party.gstin}</Text>
+                            <Text className="font-sans-medium text-xs text-muted-foreground" numberOfLines={1}>GSTIN: {party.gstin || "N/A"}</Text>
                         </View>
                         <View className="items-end flex-shrink-0">
                             <Text className={`font-sans-bold text-base ${party.openingBalancePaise > 0 ? (tab === 'customer' ? 'text-green-600' : 'text-red-500') : 'text-primary'}`} numberOfLines={1} adjustsFontSizeToFit>
