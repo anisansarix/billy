@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 import { ArrowLeft, Save, Plus, Trash2, X } from "lucide-react-native";
 import { useState, useMemo, useRef, useCallback } from "react";
 import { Vibration, Pressable, ScrollView, Text, TextInput, View, KeyboardAvoidingView, Platform } from "react-native";
-import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView, BottomSheetFlatList, BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { useAppStore } from "@/store";
 import { useAlertStore } from "@/store/alertStore";
 import { useShallow } from 'zustand/react/shallow';
@@ -115,6 +115,8 @@ export default function DocumentBuilder({
         transporterName: initialData?.transport?.transporterName || "",
     });
     const [notes, setNotes] = useState<DocumentData['notes']>(initialData?.notes || { internal: "", external: defaultNotes });
+    const [partySearch, setPartySearch] = useState("");
+    const [itemSearch, setItemSearch] = useState("");
 
     const isInterState = useMemo(() => {
         if (!currentBusiness?.address?.stateCode || !selectedParty?.billingAddress?.stateCode) return false;
@@ -300,8 +302,8 @@ export default function DocumentBuilder({
                                             <Text className="font-sans-bold text-primary">{item.description}</Text>
                                             <Text className="font-sans-medium text-xs text-muted-foreground">HSN/SAC: {item.hsnSacCode}</Text>
                                         </View>
-                                        <Pressable onPress={() => setDocumentItems(documentItems.filter((_, i) => i !== index))} className="h-11 w-11 items-center justify-center -mr-2 -mt-2">
-                                            <Trash2 color="#ef4444" size={18} />
+                                            <Pressable onPress={() => handleRemoveItem(item.id)} className="p-2 bg-red-50 rounded-lg ml-2 active:opacity-70">
+                                                <Trash2 color="#ef4444" size={18} />
                                         </Pressable>
                                     </View>
                                     <View className="flex-row flex-wrap justify-between items-end mt-2 border-t border-border pt-2 gap-y-2">
@@ -309,7 +311,7 @@ export default function DocumentBuilder({
                                             <Text className="font-sans-medium text-xs text-muted-foreground">Qty</Text>
                                             <View className="flex-row items-center mt-1">
                                                 <TextInput 
-                                                    style={{ backgroundColor: 'white', borderColor: '#e2e8f0', borderWidth: 1, borderRadius: 8, paddingHorizontal: 8, paddingVertical: 6, width: 64, textAlign: 'center', color: '#081126', fontWeight: 'bold' }}
+                                                    className="bg-white border border-slate-200 rounded-lg px-2 py-1.5 w-16 text-center text-primary font-sans-bold"
                                                     value={item.quantityDecimal !== undefined ? String(item.quantityDecimal) : ''}
                                                     keyboardType="numeric"
                                                     onChangeText={t => {
@@ -326,7 +328,7 @@ export default function DocumentBuilder({
                                         <View className="flex-1 min-w-[30%]">
                                             <Text className="font-sans-medium text-xs text-muted-foreground">Rate</Text>
                                             <TextInput 
-                                                style={{ backgroundColor: 'white', borderColor: '#e2e8f0', borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6, width: 96, marginTop: 4, color: '#081126', fontWeight: 'bold' }}
+                                                className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 w-24 mt-1 text-primary font-sans-bold"
                                                 keyboardType="numeric"
                                                 placeholder="0.00"
                                                 value={item.unitPricePaise !== undefined ? String(item.unitPricePaise / 100) : ''}
@@ -494,10 +496,21 @@ export default function DocumentBuilder({
                             <X color="#64748b" size={20} />
                         </Pressable>
                     </View>
-                    <BottomSheetScrollView showsVerticalScrollIndicator={false}>
-                        {parties.filter(p => partyFilter === 'both' || p.partyType === partyFilter.toUpperCase() || p.partyType === 'BOTH').map(party => (
+                    <View className="bg-slate-50 border border-border rounded-lg flex-row items-center px-3 mb-4 mx-5">
+                        <Search color="#64748b" size={20} />
+                        <BottomSheetTextInput
+                            className="flex-1 ml-3 h-12 font-sans-regular text-base text-primary"
+                            placeholder="Search parties..."
+                            placeholderTextColor="#64748b"
+                            value={partySearch}
+                            onChangeText={setPartySearch}
+                        />
+                    </View>
+                    <BottomSheetFlatList
+                        data={parties.filter(p => (partyFilter === 'both' || p.partyType === partyFilter.toUpperCase() || p.partyType === 'BOTH') && p.legalName.toLowerCase().includes(partySearch.toLowerCase()))}
+                        keyExtractor={item => item.id}
+                        renderItem={({ item: party }) => (
                             <Pressable 
-                                key={party.id} 
                                 className="p-4 border-b border-border flex-row justify-between items-center"
                                 onPress={() => handlePartySelect(party)}
                             >
@@ -508,8 +521,9 @@ export default function DocumentBuilder({
                                     </Text>
                                 </View>
                             </Pressable>
-                        ))}
-                    </BottomSheetScrollView>
+                        )}
+                        showsVerticalScrollIndicator={false}
+                    />
                 </BottomSheetView>
             </BottomSheetModal>
 
@@ -529,10 +543,21 @@ export default function DocumentBuilder({
                             <X color="#64748b" size={20} />
                         </Pressable>
                     </View>
-                    <BottomSheetScrollView showsVerticalScrollIndicator={false}>
-                        {items.map(item => (
+                    <View className="bg-slate-50 border border-border rounded-lg flex-row items-center px-3 mb-4 mx-5">
+                        <Search color="#64748b" size={20} />
+                        <BottomSheetTextInput
+                            className="flex-1 ml-3 h-12 font-sans-regular text-base text-primary"
+                            placeholder="Search products or services..."
+                            placeholderTextColor="#64748b"
+                            value={itemSearch}
+                            onChangeText={setItemSearch}
+                        />
+                    </View>
+                    <BottomSheetFlatList
+                        data={items.filter(i => i.name.toLowerCase().includes(itemSearch.toLowerCase()) || i.description?.toLowerCase().includes(itemSearch.toLowerCase()))}
+                        keyExtractor={item => item.id}
+                        renderItem={({ item }) => (
                             <Pressable 
-                                key={item.id} 
                                 className="p-4 border-b border-border flex-row justify-between items-center"
                                 onPress={() => { 
                                     const newItem = computeLineItem({
@@ -553,15 +578,16 @@ export default function DocumentBuilder({
                                 <View>
                                     <Text className="font-sans-bold text-primary">{item.name}</Text>
                                     <Text className="font-sans-medium text-muted-foreground text-xs mt-1">
-                                        {formatINR(item.unitPricePaise)} • Stock: {item.stock || 0}
+                                        {formatINR(item.unitPricePaise)} • GST: {item.taxRate}%
                                     </Text>
                                 </View>
-                                <View className="bg-primary/10 px-2 py-1 rounded">
-                                    <Text className="font-sans-bold text-[10px] text-primary">ADD</Text>
+                                <View className="h-8 w-8 bg-primary/10 rounded-full items-center justify-center">
+                                    <Plus color="#208AEF" size={16} />
                                 </View>
                             </Pressable>
-                        ))}
-                    </BottomSheetScrollView>
+                        )}
+                        showsVerticalScrollIndicator={false}
+                    />
                 </BottomSheetView>
             </BottomSheetModal>
 

@@ -46,7 +46,7 @@ export default function PaymentHeader({ tab, setTab, startTransition, totalMoney
                     <TextInput
                         className="flex-1 ml-3 h-full font-sans-regular text-base text-primary"
                         placeholder={`Search ${tab === 'in' ? 'customers' : 'vendors'}...`}
-                        placeholderTextColor="#9ca3af"
+                        placeholderTextColor="#64748b"
                         value={search}
                         onChangeText={setSearch}
                     />

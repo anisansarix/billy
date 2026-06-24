@@ -4,7 +4,8 @@ import { useRouter } from "expo-router";
 import { useShallow } from 'zustand/react/shallow';
 import { ArrowDownLeft, ArrowLeft, ArrowUpRight, Plus, X, Edit, Trash2, CreditCard, Calendar } from "lucide-react-native";
 import { useState } from "react";
-import {  Pressable, ScrollView, Text, TextInput, View, RefreshControl, Alert, FlatList , Vibration } from "react-native";
+import { Pressable, Text, TextInput, View, RefreshControl, Alert, FlatList, Vibration, ScrollView } from "react-native";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDeferredRender } from "@/hooks/useDeferredRender";
 import { useTabTransition } from "@/hooks/useTabTransition";
@@ -142,13 +143,13 @@ export default function PaymentScreen() {
 
             {/* Summary Card */}
             <View className="px-5 mt-4 mb-2">
-                <View className="bg-white rounded-2xl p-4 flex-row border border-border shadow-sm">
+                <View className="bg-white rounded-xl p-4 flex-row border border-border shadow-sm">
                     <View className="flex-1 border-r border-border pl-2">
-                        <Text className="font-sans-medium text-[10px] text-muted-foreground mb-1 uppercase tracking-wider">Total Received</Text>
+                        <Text className="font-sans-bold text-xs text-muted-foreground mb-1 uppercase tracking-wider">Total Received</Text>
                         <Text className="font-sans-bold text-lg text-green-600">{formatINR(totalMoneyIn)}</Text>
                     </View>
                     <View className="flex-1 pl-4">
-                        <Text className="font-sans-medium text-[10px] text-muted-foreground mb-1 uppercase tracking-wider">Total Paid</Text>
+                        <Text className="font-sans-bold text-xs text-muted-foreground mb-1 uppercase tracking-wider">Total Paid</Text>
                         <Text className="font-sans-bold text-lg text-red-500">{formatINR(totalMoneyOut)}</Text>
                     </View>
                 </View>
@@ -172,7 +173,7 @@ export default function PaymentScreen() {
     );
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: " bg-slate-50".includes("bg-white") ? "white" : "#f8fafc" }} className="flex-1 bg-slate-50">
             {/* Header */}
             <View className="flex-row items-center p-4 bg-white shadow-sm z-10 border-b border-border">
                 <Pressable onPress={() => { Vibration.vibrate(10); router.back(); }} className="h-10 w-10 items-center justify-center rounded-full active:bg-gray-100">
@@ -249,7 +250,7 @@ export default function PaymentScreen() {
 
             {/* Details Modal */}
             <AnimatedModal visible={!!selectedPayment} onClose={() => setSelectedPayment(null)}>
-                <View className="bg-white rounded-t-3xl p-8 min-h-[350px]">
+                <View className="bg-white rounded-t-2xl p-5 min-h-[350px]">
                     {selectedPayment && (
                         <>
                             <View className="flex-row justify-between items-start mb-6">
@@ -262,7 +263,7 @@ export default function PaymentScreen() {
                                 </Pressable>
                             </View>
 
-                            <View className={`p-4 rounded-2xl mb-6 ${selectedPayment.type === 'in' ? 'bg-green-50' : 'bg-red-50'}`}>
+                            <View className={`p-4 rounded-xl mb-4 ${selectedPayment.type === 'in' ? 'bg-green-50' : 'bg-red-50'}`}>
                                 <Text className="font-sans-medium text-sm text-muted-foreground mb-1">
                                     {selectedPayment.type === 'in' ? 'Amount Received' : 'Amount Paid'}
                                 </Text>
@@ -316,7 +317,7 @@ export default function PaymentScreen() {
 
             {/* Form Modal */}
             <AnimatedModal visible={isFormVisible} onClose={() => setIsFormVisible(false)} avoidKeyboard>
-                <View className="bg-white rounded-t-3xl h-[85%] p-5 pb-12 shadow-xl flex-col">
+                <View className="bg-white rounded-t-2xl h-[85%] p-5 pb-12 shadow-xl flex-col">
                     <View className="flex-row justify-between items-center mb-6">
                         <Text className="font-sans-bold text-xl text-primary">
                             {editingPayment ? 'Edit PaymentRecord' : 'Log PaymentRecord'}
@@ -326,7 +327,7 @@ export default function PaymentScreen() {
                         </Pressable>
                     </View>
                     
-                    <ScrollView showsVerticalScrollIndicator={false} className="mb-4">
+                    <KeyboardAwareScrollView showsVerticalScrollIndicator={false} className="mb-4" keyboardShouldPersistTaps="handled">
                         
                         <View className="mb-6">
                             <SegmentedTabs 
@@ -373,7 +374,7 @@ export default function PaymentScreen() {
                                 ))}
                             </View>
                         </View>
-                    </ScrollView>
+                    </KeyboardAwareScrollView>
 
                     <Pressable 
                         onPress={handleSave}

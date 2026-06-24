@@ -26,7 +26,7 @@ export default class ErrorBoundary extends Component<Props, State> {
   public render() {
     if (this.state.hasError) {
       return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#f8fafc', justifyContent: 'center', alignItems: 'center' }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: " justify-center items-center bg-slate-50".includes("bg-white") ? "white" : "#f8fafc" }} className="flex-1 justify-center items-center bg-slate-50">
           <View style={{ padding: 24, alignItems: 'center' }}>
             <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#0f172a', marginBottom: 12 }}>Oops, something went wrong.</Text>
             <Text style={{ fontSize: 16, color: '#64748b', textAlign: 'center', marginBottom: 24 }}>

@@ -60,7 +60,7 @@ export default function SignInScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: " bg-white".includes("bg-white") ? "white" : "#f8fafc" }} className="flex-1 bg-white">
       <StatusBar style="dark" />
       <KeyboardAwareScrollView
         contentContainerStyle={{ flexGrow: 1, padding: 24 }}

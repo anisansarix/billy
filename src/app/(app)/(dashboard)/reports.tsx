@@ -3,6 +3,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { ArrowLeft, Download, FileBarChart } from "lucide-react-native";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View, RefreshControl, Vibration } from "react-native";
+import Button from "@/components/ui/Button";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppStore } from "@/store";
 import "../../../../global.css";
@@ -63,7 +64,7 @@ export default function ReportsScreen() {
     const cashflowData = { cashIn, cashOut, netCashflow };
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: " bg-slate-50".includes("bg-white") ? "white" : "#f8fafc" }} className="flex-1 bg-slate-50">
             {/* Header */}
             <View className="flex-row items-center p-4 bg-white shadow-sm z-10 border-b border-border mb-4">
                 <Pressable onPress={() => { Vibration.vibrate(10); router.back(); }} className="h-10 w-10 items-center justify-center rounded-full active:bg-gray-100">
@@ -99,12 +100,11 @@ export default function ReportsScreen() {
                         <Text className="font-sans-medium text-sm text-muted-foreground text-center mb-8">
                             Start generating invoices, recording expenses, and receiving payments to see your business performance.
                         </Text>
-                        <Pressable 
-                            onPress={() => { Vibration.vibrate(10); router.push('/(app)/dashboard' as never); }}
-                            className="bg-primary flex-row items-center px-6 py-3 rounded-xl"
-                        >
-                            <Text className="font-sans-bold text-white text-base">Go to Dashboard</Text>
-                        </Pressable>
+                        <Button 
+                            title="Go to Dashboard"
+                            onPress={() => { router.push('/(app)/dashboard' as never); }}
+                            variant="primary"
+                        />
                     </View>
                 ) : (
                     <ReportCards

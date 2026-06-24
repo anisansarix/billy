@@ -62,7 +62,7 @@ export default function GSTReturnsScreen() {
     const isDataEmpty = activeInvoices.length === 0 && activePurchases.length === 0;
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: " bg-slate-50".includes("bg-white") ? "white" : "#f8fafc" }} className="flex-1 bg-slate-50">
             {/* Header */}
             <View className="flex-row items-center p-4 bg-white shadow-sm z-10 border-b border-border">
                 <Pressable onPress={() => { Vibration.vibrate(10); router.back(); }} className="h-10 w-10 items-center justify-center rounded-full active:bg-gray-100">
@@ -104,7 +104,7 @@ export default function GSTReturnsScreen() {
                             </View>
                         ) : tab === "GSTR-1" ? (
                             <View>
-                                <View className="bg-white rounded-2xl p-5 mb-5 border border-border shadow-sm">
+                                <View className="bg-white rounded-xl p-4 mb-4 border border-border shadow-sm">
                                     <Text className="font-sans-bold text-lg text-primary mb-4">Outward Supplies (Sales)</Text>
                                     
                                     <View className="flex-row justify-between mb-4">
@@ -143,7 +143,7 @@ export default function GSTReturnsScreen() {
                             </View>
                         ) : tab === "GSTR-3B" ? (
                             <View>
-                                <View className="bg-white rounded-2xl p-5 mb-5 border border-border shadow-sm">
+                                <View className="bg-white rounded-xl p-4 mb-4 border border-border shadow-sm">
                                     <Text className="font-sans-bold text-lg text-primary mb-4">Tax Summary</Text>
                                     
                                     <View className="flex-row justify-between mb-4">

@@ -4,6 +4,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { ArrowLeft, Save, Search } from "lucide-react-native";
 import { useState, useMemo } from "react";
 import { Pressable, ScrollView, Text, TextInput, View, Alert, KeyboardAvoidingView, Platform, Vibration } from "react-native";
+import Button from "@/components/ui/Button";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppStore } from "@/store";
 import "../../../../global.css";
@@ -32,7 +33,7 @@ export default function CreateStockAdjustmentScreen() {
 
     const handleSave = () => {
         if (!selectedItem) {
-            Alert.alert("Error", "Please select an item");
+            Alert.alert("Error", "Please select a product or service to adjust.");
             return;
         }
         if (!qty || isNaN(Number(qty)) || Number(qty) <= 0) {
@@ -69,7 +70,7 @@ export default function CreateStockAdjustmentScreen() {
     };
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: " bg-slate-50".includes("bg-white") ? "white" : "#f8fafc" }} className="flex-1 bg-slate-50">
             {/* Header */}
             <View className="flex-row items-center p-4 bg-white shadow-sm z-10 border-b border-border">
                 <Pressable onPress={() => { Vibration.vibrate(10); router.back(); }} className="h-10 w-10 items-center justify-center rounded-full active:bg-gray-100">
@@ -165,13 +166,12 @@ export default function CreateStockAdjustmentScreen() {
                 </ScrollView>
 
                 <View className="p-5 bg-white border-t border-border">
-                    <Pressable
+                    <Button
+                        title="Record Adjustment"
                         onPress={handleSave}
-                        className="bg-primary py-4 rounded-xl flex-row justify-center items-center shadow-md shadow-primary/30"
-                    >
-                        <Save color="white" size={20} className="mr-2" />
-                        <Text className="font-sans-bold text-white text-lg">Save Adjustment</Text>
-                    </Pressable>
+                        variant="primary"
+                        className="shadow-sm shadow-primary/20"
+                    />
                 </View>
             </KeyboardAvoidingView>
 
@@ -184,7 +184,7 @@ export default function CreateStockAdjustmentScreen() {
                         <TextInput
                             className="flex-1 ml-3 h-full font-sans-regular text-base text-primary"
                             placeholder="Search products..."
-                            placeholderTextColor="#9ca3af"
+                            placeholderTextColor="#64748b"
                             value={search}
                             onChangeText={setSearch}
                         />

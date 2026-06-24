@@ -81,7 +81,7 @@ export default function InvoiceDetailScreen() {
 
     if (!invoice) {
         return (
-            <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1', justifyContent: 'center', alignItems: 'center' }}>
+            <SafeAreaView style={{ flex: 1, backgroundColor: " justify-center items-center bg-slate-50".includes("bg-white") ? "white" : "#f8fafc" }} className="flex-1 justify-center items-center bg-slate-50">
                 <Text className="font-sans-bold text-xl text-primary mb-4">Invoice not found</Text>
                 <Pressable onPress={() => { Vibration.vibrate(10); router.back(); }} className="bg-primary px-6 py-3 rounded-xl">
                     <Text className="font-sans-bold text-white">Go Back</Text>
@@ -107,7 +107,7 @@ export default function InvoiceDetailScreen() {
 
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }} edges={['top', 'left', 'right']}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: " bg-slate-50".includes("bg-white") ? "white" : "#f8fafc" }} className="flex-1 bg-slate-50" edges={['top', 'left', 'right']}>
             {/* Header */}
             <View className="flex-row items-center p-4 bg-white shadow-sm z-10 border-b border-border">
                 <Pressable 

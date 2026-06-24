@@ -5,6 +5,8 @@ import AnimatedModal from "@/components/ui/AnimatedModal";
 import { ExpenseRecord } from "@/types/entities";
 import { formatINR } from "@/utils/money";
 import { formatDate } from "@/utils/date";
+import { useModalReady } from "@/hooks/useModalReady";
+import { DetailsModalSkeleton } from "@/components/ui/skeletons/DetailsModalSkeleton";
 
 interface ExpenseDetailsModalProps {
     visible: boolean;
@@ -15,10 +17,11 @@ interface ExpenseDetailsModalProps {
 }
 
 export default function ExpenseDetailsModal({ visible, onClose, expense, onEdit, onDelete }: ExpenseDetailsModalProps) {
-    if (!expense) return null;
+    const isReady = useModalReady(visible);
 
     return (
         <AnimatedModal visible={visible} onClose={onClose}>
+            {(!isReady || !expense) ? <DetailsModalSkeleton /> : (
             <View className="bg-white rounded-t-3xl p-8 min-h-[350px]">
                 <View className="flex-row justify-between items-start mb-6">
                     <View className="flex-1 mr-4">
@@ -82,6 +85,7 @@ export default function ExpenseDetailsModal({ visible, onClose, expense, onEdit,
                     </Pressable>
                 </View>
             </View>
+            )}
         </AnimatedModal>
     );
 }

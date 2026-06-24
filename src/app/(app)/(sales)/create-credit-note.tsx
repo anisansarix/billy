@@ -136,7 +136,7 @@ export default function CreateCreditNoteScreen() {
         }).sort((a, b) => new Date(b.documentDate).getTime() - new Date(a.documentDate).getTime());
 
         return (
-            <SafeAreaView style={{ flex: 1, backgroundColor: '#f8fafc' }} edges={['top', 'left', 'right']}>
+            <SafeAreaView style={{ flex: 1, backgroundColor: " bg-slate-50".includes("bg-white") ? "white" : "#f8fafc" }} className="flex-1 bg-slate-50" edges={['top', 'left', 'right']}>
                 <View className="flex-row items-center p-4 bg-white shadow-sm z-10 border-b border-border">
                     <Pressable onPress={() => { Vibration.vibrate(10); router.back(); }} className="h-10 w-10 items-center justify-center rounded-full active:bg-gray-100">
                         <ArrowLeft color="#081126" size={24} />

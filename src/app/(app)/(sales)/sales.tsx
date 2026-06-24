@@ -2,6 +2,7 @@
 import { ListCardSkeleton } from "@/components/ui/skeletons/ListCardSkeleton";
 import { useDeferredRender } from "@/hooks/useDeferredRender";
 import { useTabTransition } from "@/hooks/useTabTransition";
+import { useModalReady } from "@/hooks/useModalReady";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useShallow } from 'zustand/react/shallow';
 import { ArrowLeft, Plus, ReceiptText, X, Edit, Trash2, Box, Undo2, Truck } from "lucide-react-native";
@@ -14,6 +15,7 @@ import Card from "@/components/ui/Card";
 import { useAppStore } from "@/store";
 import { SegmentedTabs } from "@/components/ui/SegmentedTabs";
 import { SearchBar } from "@/components/ui/SearchBar";
+import { DetailsModalSkeleton } from "@/components/ui/skeletons/DetailsModalSkeleton";
 import "../../../../global.css";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { formatINR } from "@/utils/money";
@@ -30,6 +32,7 @@ export default function SalesScreen() {
     
     // Details Modal State
     const [selectedInvoice, setSelectedInvoice] = useState<any | null>(null);
+    const isModalReady = useModalReady(!!selectedInvoice);
     
     // Filter State
     const [activeFilters, setActiveFilters] = useState<string[]>([]);
@@ -172,7 +175,7 @@ export default function SalesScreen() {
         </>
     );
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: " bg-slate-50".includes("bg-white") ? "white" : "#f8fafc" }} className="flex-1 bg-slate-50">
             {/* Header */}
             <View className="flex-row items-center p-4 bg-white shadow-sm z-10 border-b border-border">
                 <Pressable onPress={() => { Vibration.vibrate(10); router.back(); }} className="h-10 w-10 items-center justify-center rounded-full active:bg-gray-100">
@@ -276,6 +279,7 @@ export default function SalesScreen() {
 
             {/* Details Modal */}
             <AnimatedModal visible={!!selectedInvoice} onClose={() => setSelectedInvoice(null)}>
+                {!isModalReady ? <DetailsModalSkeleton /> : (
                 <View className="bg-white rounded-t-3xl p-6 min-h-[400px]">
                     {selectedInvoice && (
                         <>
@@ -370,6 +374,7 @@ export default function SalesScreen() {
                         </>
                     )}
                 </View>
+                )}
             </AnimatedModal>
 
             {/* Create Options Modal */}

@@ -102,7 +102,7 @@ export default function CustomersVendorsScreen() {
                     <TextInput
                         className="flex-1 ml-3 h-full font-sans-regular text-base text-primary"
                         placeholder={`Search ${tab}s...`}
-                        placeholderTextColor="#9ca3af"
+                        placeholderTextColor="#64748b"
                         value={search}
                         onChangeText={setSearch}
                     />
@@ -112,7 +112,7 @@ export default function CustomersVendorsScreen() {
     );
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: " bg-slate-50".includes("bg-white") ? "white" : "#f8fafc" }} className="flex-1 bg-slate-50">
             {/* Header */}
             <View className="flex-row items-center p-4 bg-white shadow-sm z-10 border-b border-border">
                 <Pressable onPress={() => { Vibration.vibrate(10); router.back(); }} className="h-10 w-10 items-center justify-center rounded-full active:bg-gray-100">

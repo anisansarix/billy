@@ -4,6 +4,8 @@ import { X, Edit, Trash2 } from "lucide-react-native";
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { InventoryItem } from "@/types/entities";
 import { formatINR } from "@/utils/money";
+import { useModalReady } from "@/hooks/useModalReady";
+import { DetailsModalSkeleton } from "@/components/ui/skeletons/DetailsModalSkeleton";
 
 interface InventoryItemDetailsModalProps {
     visible: boolean;
@@ -32,7 +34,7 @@ export default function InventoryItemDetailsModal({ visible, onClose, item, onEd
         [onClose]
     );
 
-    if (!item) return null;
+    const isReady = useModalReady(visible);
 
     return (
         <BottomSheetModal
@@ -44,6 +46,7 @@ export default function InventoryItemDetailsModal({ visible, onClose, item, onEd
             handleIndicatorStyle={{ backgroundColor: '#cbd5e1' }}
             backgroundStyle={{ backgroundColor: 'white', borderRadius: 24 }}
         >
+            {(!isReady || !item) ? <DetailsModalSkeleton /> : (
             <BottomSheetView className="p-6 min-h-[350px]">
                 <View className="flex-row justify-between items-start mb-6">
                     <View className="flex-1 mr-4">
@@ -103,6 +106,7 @@ export default function InventoryItemDetailsModal({ visible, onClose, item, onEd
                     </Pressable>
                 </View>
             </BottomSheetView>
+            )}
         </BottomSheetModal>
     );
 }

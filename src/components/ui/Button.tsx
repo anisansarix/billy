@@ -55,23 +55,28 @@ export default function Button({
   let baseClass = "h-14 flex-row items-center justify-center rounded-xl px-4 ";
   let textClass = "text-base font-sans-medium ";
 
-  switch (variant) {
-    case 'primary':
-      baseClass += "bg-primary border border-transparent";
-      textClass += "text-white";
-      break;
-    case 'secondary':
-      baseClass += "bg-primary/10 border border-transparent";
-      textClass += "text-primary font-sans-bold";
-      break;
-    case 'outline':
-      baseClass += "bg-transparent border border-border";
-      textClass += "text-primary";
-      break;
-    case 'danger':
-      baseClass += "bg-destructive/10 border border-transparent";
-      textClass += "text-destructive font-sans-bold";
-      break;
+  if (disabled) {
+    baseClass += "bg-slate-200 border border-transparent";
+    textClass += "text-slate-400 font-sans-bold";
+  } else {
+    switch (variant) {
+      case 'primary':
+        baseClass += "bg-primary border border-transparent";
+        textClass += "text-white";
+        break;
+      case 'secondary':
+        baseClass += "bg-primary/10 border border-transparent";
+        textClass += "text-primary font-sans-bold";
+        break;
+      case 'outline':
+        baseClass += "bg-transparent border border-border";
+        textClass += "text-primary";
+        break;
+      case 'danger':
+        baseClass += "bg-destructive/10 border border-transparent";
+        textClass += "text-destructive font-sans-bold";
+        break;
+    }
   }
 
   return (
@@ -79,7 +84,7 @@ export default function Button({
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       className={`${baseClass} ${className}`}
-      style={[animatedStyle, { opacity: disabled || loading ? 0.6 : opacity.value }]}
+      style={[animatedStyle, { opacity: loading ? 0.6 : opacity.value }]}
       accessibilityRole="button"
       accessibilityLabel={title}
       disabled={disabled || loading}

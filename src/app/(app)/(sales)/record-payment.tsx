@@ -43,7 +43,7 @@ export default function RecordPaymentScreen() {
     const paymentModes = ['UPI', 'Bank Transfer', 'Cash', 'Cheque'] as const;
 
     return (
-        <SafeAreaView className="flex-1 bg-white">
+        <SafeAreaView style={{ flex: 1, backgroundColor: " bg-white".includes("bg-white") ? "white" : "#f8fafc" }} className="flex-1 bg-white">
             <View className="flex-1 flex-col">
                 <View className="flex-row items-center mb-6 p-6 pb-2">
                     <Pressable 

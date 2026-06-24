@@ -125,7 +125,7 @@ export default function ProductsServicesScreen() {
                 <>
                     {tab === 'product' && lowStockItems.length > 0 && (
                         <View className="px-5 mb-4 mt-2">
-                            <View className="bg-red-50 border border-red-200 rounded-2xl p-4 flex-row items-center shadow-sm">
+                            <View className="bg-red-50 border border-red-200 rounded-xl p-4 flex-row items-center shadow-sm">
                                 <View className="h-10 w-10 bg-red-100 rounded-full items-center justify-center mr-4">
                                     <AlertCircle color="#ef4444" size={20} />
                                 </View>
@@ -137,7 +137,7 @@ export default function ProductsServicesScreen() {
                         </View>
                     )}
                     <View className="px-5 mb-4">
-                        <View className="bg-white rounded-2xl p-4 flex-row border border-border shadow-sm">
+                        <View className="bg-white rounded-xl p-4 flex-row border border-border shadow-sm">
                     {tab === 'product' ? (
                         <View className="flex-1 border-r border-border pl-2">
                             <Text className="font-sans-medium text-[10px] text-muted-foreground mb-1 uppercase tracking-wider">Inventory Value</Text>
@@ -177,7 +177,7 @@ export default function ProductsServicesScreen() {
         </View>
     );
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#f1f1f1' }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: " bg-slate-50".includes("bg-white") ? "white" : "#f8fafc" }} className="flex-1 bg-slate-50">
             {/* Header */}
             <View className="flex-row items-center p-4 bg-white shadow-sm z-10 border-b border-border">
                 <Pressable onPress={() => { Vibration.vibrate(10); router.back(); }} className="h-10 w-10 items-center justify-center rounded-full active:bg-gray-100">
@@ -214,7 +214,7 @@ export default function ProductsServicesScreen() {
                     removeClippedSubviews={true}
                     renderItem={({ item }) => {
                         return (
-                        <Card className="flex-row items-center mb-4 p-5 mx-5 rounded-2xl shadow-sm border border-border" isPressable onPress={() => setSelectedItem(item)}>
+                        <Card className="flex-row items-center mb-3 p-4 mx-4 rounded-xl shadow-sm border border-border" isPressable onPress={() => setSelectedItem(item)}>
                             <View className="size-12 rounded-full bg-primary/10 items-center justify-center mr-4">
                                 {tab === "product" ? (
                                     <Package color="#208AEF" size={24} />

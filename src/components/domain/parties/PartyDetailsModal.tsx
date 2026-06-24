@@ -4,6 +4,8 @@ import { X, Phone, Edit, Trash2 } from "lucide-react-native";
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { Party, PartyType } from "@/types/entities";
 import { formatINR } from "@/utils/money";
+import { useModalReady } from "@/hooks/useModalReady";
+import { DetailsModalSkeleton } from "@/components/ui/skeletons/DetailsModalSkeleton";
 
 interface PartyDetailsModalProps {
     visible: boolean;
@@ -32,7 +34,7 @@ export default function PartyDetailsModal({ visible, onClose, party, onEdit, onD
         [onClose]
     );
 
-    if (!party) return null;
+    const isReady = useModalReady(visible);
 
     const handleCall = () => {
         if (party.phone) {
@@ -69,6 +71,7 @@ export default function PartyDetailsModal({ visible, onClose, party, onEdit, onD
             handleIndicatorStyle={{ backgroundColor: '#cbd5e1' }}
             backgroundStyle={{ backgroundColor: 'white', borderRadius: 24 }}
         >
+            {(!isReady || !party) ? <DetailsModalSkeleton /> : (
             <BottomSheetView className="p-8 min-h-[400px]">
                 <View className="flex-row justify-between items-start mb-6">
                     <View className="flex-1 mr-4">
@@ -137,6 +140,7 @@ export default function PartyDetailsModal({ visible, onClose, party, onEdit, onD
                     <Text className="font-sans-bold text-red-500 text-base">Delete {party.partyType === PartyType.CUSTOMER ? 'Customer' : 'Vendor'}</Text>
                 </Pressable>
             </BottomSheetView>
+            )}
         </BottomSheetModal>
     );
 }

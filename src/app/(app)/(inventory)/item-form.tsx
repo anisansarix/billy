@@ -1,5 +1,6 @@
 import {  useState, useEffect  } from 'react';
-import { View, Text, Pressable, TextInput, FlatList } from "react-native";
+import { View, Text, TextInput, Pressable, Vibration, FlatList } from 'react-native';
+import Button from '@/components/ui/Button';
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -169,7 +170,7 @@ export default function InventoryItemFormScreen() {
     };
 
     return (
-        <SafeAreaView className="flex-1 bg-white">
+        <SafeAreaView style={{ flex: 1, backgroundColor: " bg-white".includes("bg-white") ? "white" : "#f8fafc" }} className="flex-1 bg-white">
             <KeyboardAwareScrollView 
                 className="flex-1"
                 contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}
@@ -379,13 +380,13 @@ export default function InventoryItemFormScreen() {
             </KeyboardAwareScrollView>
 
             <View className="p-5 border-t border-border bg-white pb-safe absolute bottom-0 left-0 right-0">
-                <Pressable
+                <Button
+                    title={`Save ${formData.type === 'product' ? 'Product' : 'Service'}`}
                     onPress={handleSave}
-                    className="bg-primary py-4 rounded-xl flex-row justify-center items-center shadow-md shadow-primary/30"
-                >
-                    <Save color="white" size={20} className="mr-2" />
-                    <Text className="font-sans-bold text-white text-lg">Save {formData.type === 'product' ? 'Product' : 'Service'}</Text>
-                </Pressable>
+                    variant="primary"
+                    icon={<Save color="white" size={20} />}
+                    className="shadow-md shadow-primary/30"
+                />
             </View>
         </SafeAreaView>
     );

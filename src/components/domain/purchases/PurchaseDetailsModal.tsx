@@ -6,6 +6,8 @@ import { PurchaseOrder } from "@/types/entities";
 import { formatINR } from "@/utils/money";
 import { useAppStore } from "@/store";
 import { CheckCircle2 } from "lucide-react-native";
+import { useModalReady } from "@/hooks/useModalReady";
+import { DetailsModalSkeleton } from "@/components/ui/skeletons/DetailsModalSkeleton";
 
 interface PurchaseDetailsModalProps {
     visible: boolean;
@@ -16,8 +18,7 @@ interface PurchaseDetailsModalProps {
 
 export default function PurchaseDetailsModal({ visible, onClose, purchase, onDelete }: PurchaseDetailsModalProps) {
     const markPurchaseAsReceived = useAppStore(s => s.markPurchaseAsReceived);
-
-    if (!purchase) return null;
+    const isReady = useModalReady(visible);
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -33,6 +34,7 @@ export default function PurchaseDetailsModal({ visible, onClose, purchase, onDel
 
     return (
         <AnimatedModal visible={visible} onClose={onClose}>
+            {(!isReady || !purchase) ? <DetailsModalSkeleton /> : (
             <View className="bg-white rounded-t-3xl p-8 min-h-[400px]">
                 <View className="flex-row justify-between items-start mb-6">
                     <View className="flex-1 mr-4">
@@ -105,6 +107,7 @@ export default function PurchaseDetailsModal({ visible, onClose, purchase, onDel
                     </Pressable>
                 </View>
             </View>
+            )}
         </AnimatedModal>
     );
 }

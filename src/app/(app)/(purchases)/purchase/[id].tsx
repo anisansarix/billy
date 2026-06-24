@@ -44,7 +44,7 @@ export default function PurchaseDetailScreen() {
                 await Sharing.shareAsync(uri);
             }
         } catch (error) {
-            Alert.alert("Error", "Failed to generate PDF.");
+            Alert.alert("Error", "We couldn't generate the PDF document. Please verify the details and try again.");
         } finally {
             setIsDownloading(false);
         }
